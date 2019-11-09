@@ -17,24 +17,30 @@ def init():
  gpio.setup(21, gpio.OUT, initial = gpio.LOW) #IN4
 
 def forward(sec):
+
  init()
+ #MOTORE SINISTRO
  gpio.output(12, True)
  gpio.output(16, False)
- gpio.output(20, True) 
- gpio.output(21, False)
+
+ #MOTORE DESTRO
+ gpio.output(20, False)
+ gpio.output(21, True)
+
  time.sleep(sec)
+
  gpio.cleanup()
 
 def reverse(sec):
  init()
  gpio.output(12, False)
  gpio.output(16, True)
-# gpio.output(20, False) 
-# gpio.output(21, True)
+ gpio.output(20, False)
+ gpio.output(21, True)
  time.sleep(sec)
  gpio.cleanup()
 
 print "forward"
 forward(4)
-print "reverse"
-reverse(2)
+#print "reverse"
+#reverse(1)
