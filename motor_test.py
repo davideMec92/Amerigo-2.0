@@ -41,6 +41,6 @@ def reverse(sec):
  gpio.cleanup()
 
 print "forward"
-forward(4)
+forward(5)
 #print "reverse"
 #reverse(1)
