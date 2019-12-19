@@ -1,4 +1,5 @@
 import RPi.GPIO as gpio
+import time
 
 class Motors:
 
@@ -50,11 +51,25 @@ class Motors:
     def rotation(self, type):
 
         if type == "COUNTERCLOCKWISE":
-            self.motor_right_gpio_forwards.start(45)
-            self.motor_left_gpio_backwards.start(45)
+            self.motor_right_gpio_forwards.start(50)
+            self.motor_left_gpio_backwards.start(50)
+            time.sleep(0.10)
+            self.motor_right_gpio_forwards.ChangeDutyCycle(50)
+            self.motor_left_gpio_backwards.ChangeDutyCycle(50)
         elif type == "CLOCKWISE":
-            self.motor_left_gpio_forwards.start(45)
-            self.motor_right_gpio_backwards.start(45)
+            self.motor_left_gpio_forwards.start(50)
+            self.motor_right_gpio_backwards.start(50)
+            time.sleep(0.10)
+            self.motor_left_gpio_forwards.ChangeDutyCycle(25)
+            self.motor_right_gpio_backwards.ChangeDutyCycle(20)
+
+    def forward(self):
+            self.motor_right_gpio_forwards.start(65)
+            self.motor_left_gpio_forwards.start(65)
+
+    def backward(self):
+            self.motor_right_gpio_backwards.start(70)
+            self.motor_left_gpio_backwards.start(70)
 
     def shutdown(self):
         gpio.cleanup()
