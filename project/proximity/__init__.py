@@ -1,20 +1,18 @@
-import RPi.GPIO as gpio
 import time
 
 class Proximity:
 
-    gpio.setmode(gpio.BCM)
-    triggers = {"LEFT": 5, "FRONT": 6, "RIGHT": 13}
-    echoes = {"LEFT": 17, "FRONT": 27, "RIGHT": 22}
+    #triggers = {"LEFT": 5, "FRONT": 6, "RIGHT": 13}
+    #echoes = {"LEFT": 17, "FRONT": 27, "RIGHT": 22}
+    triggers = None
+    echoes = None
     sensor = None
+    gpio = None
 
-    def __init__(self):
-
-        for trigger in self.triggers:
-          gpio.setup(self.triggers[ trigger ], gpio.OUT)
-
-        for echo in self.echoes:
-          gpio.setup(self.echoes[ echo ], gpio.IN)
+    def __init__(self, gpio, conf):
+        self.gpio = gpio
+        self.triggers = conf.get('Proximity').get('Triggers')
+        self.echoes = conf.get('Proximity').get('Echoes')
 
     def getDistance(self, sensor_orientation = None):
 
@@ -47,21 +45,21 @@ class Proximity:
             for i in range(len(triggers)):
 
                 # set Trigger to HIGH
-                gpio.output(triggers[i], True)
+                self.gpio.output(triggers[i], True)
 
                 # set Trigger after 0.01ms to LOW
                 time.sleep(0.00001)
-                gpio.output(triggers[i], False)
+                self.gpio.output(triggers[i], False)
 
                 StartTime = time.time()
                 StopTime = time.time()
 
                 # save StartTime
-                while gpio.input(echoes[i]) == 0:
+                while self.gpio.input(echoes[i]) == 0:
                     StartTime = time.time()
 
                 # save time of arrival
-                while gpio.input(echoes[i]) == 1:
+                while self.gpio.input(echoes[i]) == 1:
                     StopTime = time.time()
 
                 # time difference between start and arrival
@@ -84,6 +82,3 @@ class Proximity:
             return None
 
         return data
-
-    def shutdown(self):
-        gpio.cleanup()

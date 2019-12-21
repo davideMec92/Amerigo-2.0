@@ -1,10 +1,27 @@
 from compass import Compass
 from motors import Motors
 from proximity import Proximity
+from configurator import Configurator
 import time
 
-motors = Motors()
-"""compass = Compass()
+configurator = Configurator()
+configurator.setGpio()
+
+#motors = Motors( configurator.getGpio() )
+#motors.rotation("COUNTERCLOCKWISE")
+#time.sleep(2)
+#motors.stop()
+
+proximity = Proximity( configurator.getGpio(), configurator.getConf() )
+
+print( "LEFT DIST: " + str( proximity.getDistance('FRONT') ) )
+print( "LEFT DIST: " + str( proximity.getDistance() ) )
+
+#configurator.gpioCleanup()
+
+
+"""motors = Motors()
+compass = Compass()
 
 degrees = compass.getDegress()
 print("Start Degrees: " + str( degrees ))
@@ -28,7 +45,7 @@ while True:
         print("Obiettivo raggiunto")
         degrees = compass.getDegress()
         print("Final Degrees: " + str( degrees ))
-        break"""
+        break
 
 proximity = Proximity()
 
@@ -74,4 +91,4 @@ while True:
         #proximity.shutdown()
         motors.shutdown()
         print("Final Distance: " + str( distance ))
-        break
+        break"""

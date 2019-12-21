@@ -1,4 +1,3 @@
-import RPi.GPIO as gpio
 import time
 
 class Motors:
@@ -14,10 +13,14 @@ class Motors:
     motor_left_gpio_forwards = None
     motor_left_gpio_backwards = None
 
-    def __init__(self):
+    gpio = None
+
+    def __init__(self, gpio):
+
+        self.gpio = gpio
 
         #Settaggio GPIO mediante dicitura BCM (numeri GPIO e non pin board)
-        gpio.setmode(gpio.BCM)
+        """gpio.setmode(gpio.BCM)
 
         #Settaggio iniziale gpio, con stato LOW
 
@@ -27,14 +30,14 @@ class Motors:
 
         #MOTORE SINISTRO
         gpio.setup(self.LEFT_MOTOR_FORWARDS, gpio.OUT, initial = gpio.LOW) #IN3
-        gpio.setup(self.LEFT_MOTOR_BACKWARDS, gpio.OUT, initial = gpio.LOW) #IN4
+        gpio.setup(self.LEFT_MOTOR_BACKWARDS, gpio.OUT, initial = gpio.LOW) #IN4"""
 
         #INZIALIZZAZIONE MOTORI
-        self.motor_right_gpio_forwards = gpio.PWM(self.RIGHT_MOTOR_FORWARDS, 100)
-        self.motor_right_gpio_backwards = gpio.PWM(self.RIGHT_MOTOR_BACKWARDS, 100)
+        self.motor_right_gpio_forwards = self.gpio.PWM(self.RIGHT_MOTOR_FORWARDS, 100)
+        self.motor_right_gpio_backwards = self.gpio.PWM(self.RIGHT_MOTOR_BACKWARDS, 100)
 
-        self.motor_left_gpio_forwards = gpio.PWM(self.LEFT_MOTOR_FORWARDS, 100)
-        self.motor_left_gpio_backwards = gpio.PWM(self.LEFT_MOTOR_BACKWARDS, 100)
+        self.motor_left_gpio_forwards = self.gpio.PWM(self.LEFT_MOTOR_FORWARDS, 100)
+        self.motor_left_gpio_backwards = self.gpio.PWM(self.LEFT_MOTOR_BACKWARDS, 100)
 
     def stop(self):
 
@@ -70,6 +73,3 @@ class Motors:
     def backward(self):
             self.motor_right_gpio_backwards.start(70)
             self.motor_left_gpio_backwards.start(70)
-
-    def shutdown(self):
-        gpio.cleanup()
