@@ -67,9 +67,9 @@ class Motors:
             self.motor_right_gpio_backwards.ChangeDutyCycle(20)
 
     def forward(self):
-            self.motor_right_gpio_forwards.start(65)
-            self.motor_left_gpio_forwards.start(65)
+            self.motor_right_gpio_forwards.start(100)
+            self.motor_left_gpio_forwards.start(100)
 
     def backward(self):
-            self.motor_right_gpio_backwards.start(70)
-            self.motor_left_gpio_backwards.start(70)
+            self.motor_right_gpio_backwards.start(100)
+            self.motor_left_gpio_backwards.start(100)

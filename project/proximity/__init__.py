@@ -2,8 +2,6 @@ import time
 
 class Proximity:
 
-    #triggers = {"LEFT": 5, "FRONT": 6, "RIGHT": 13}
-    #echoes = {"LEFT": 17, "FRONT": 27, "RIGHT": 22}
     triggers = None
     echoes = None
     sensor = None
@@ -13,6 +11,7 @@ class Proximity:
         self.gpio = gpio
         self.triggers = conf.get('Proximity').get('Triggers')
         self.echoes = conf.get('Proximity').get('Echoes')
+        print("CONSTRUCTOR")
 
     def getDistance(self, sensor_orientation = None):
 
@@ -66,7 +65,10 @@ class Proximity:
                 TimeElapsed = StopTime - StartTime
                 # multiply with the sonic speed (34300 cm/s)
                 # and divide by 2, because there and back
-                distance = (TimeElapsed * 34300) / 2
+                distance = (TimeElapsed * 34326) / 2
+
+                if distance >= 1500:
+                    distance = 'OUT_OF_RANGE'
 
                 if sensor_orientation is not None:
                     data[sensor_orientation] = distance

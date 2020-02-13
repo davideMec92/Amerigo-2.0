@@ -52,5 +52,7 @@ class Configurator:
         for echo in self.conf.get('Proximity').get('Echoes'):
           gpio.setup(self.conf.get('Proximity').get('Echoes')[ echo ], gpio.IN)
 
+        print("TEST")
+
     def gpioCleanup(self):
         self.gpio.cleanup()
