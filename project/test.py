@@ -1,24 +1,74 @@
-#from compass import Compass
-#from motors import Motors
-#from proximity import Proximity
-#from configurator import Configurator
-from bluetooth_discoverer import BluetoothDiscoverer
+# -*- coding: utf-8 -*-
+
+from compass import Compass
+from motors import Motors
+from proximity import Proximity
+from configurator import Configurator
+#from bluetooth_discoverer import BluetoothDiscoverer
 import time
 
 configurator = None
 
 try :
 
-    """configurator = Configurator()
+    configurator = Configurator()
     configurator.setGpio()
     time.sleep(2)
 
     motors = Motors( configurator.getGpio() )
-    proximity = Proximity( configurator.getGpio(), configurator.getConf() )"""
+    degrees_goal = 305
+    compass_tolerance = 5
+
+    compass = Compass()
+
+    degrees = compass.getDegress()
+    print("Start Degrees: " + str( degrees ))
+
+    motors.forward()
+    print("Motors forward started")
+
+    while True:
+
+        degrees = compass.getDegress()
+        motor_left_actual_power = motors.getMotorLeftActualPower()
+        motor_right_actual_power = motors.getMotorRightActualPower()
+
+        print("Degrees: " + str( degrees ))
+        print("Motor left actual power: " + str( motor_left_actual_power ))
+        print("Motor right actual power: " + str( motor_right_actual_power ))
+
+        #Caso in cui si è a sinistra dell'obiettivo
+        if degrees + compass_tolerance < degrees_goal:
+            print("Goal on the right")
+            motor_right_actual_power = motor_right_actual_power - 1
+
+            if motor_right_actual_power >= 0:
+                motors.updateMotorPower( 'RIGHT', motor_right_actual_power )
+            else:
+                print( "STOPPING MOTORS.." )
+                motors.stop()
+                break
+        elif degrees - compass_tolerance > degrees_goal:
+            print("Goal on the left")
+            motor_left_actual_power = motor_left_actual_power - 1
+
+            if motor_left_actual_power >= 0:
+                motors.updateMotorPower( 'LEFT', motor_left_actual_power )
+            else:
+                print( "STOPPING MOTORS.." )
+                motors.stop()
+                break
+        else: #Caso in cui obiettivo in posizione frontale
+
+            print("Goal on the front")
+            motors.forward( True )
+
+
+    """proximity = Proximity( configurator.getGpio(), configurator.getConf() )
 
     bluetooth_discoverer = BluetoothDiscoverer()
     bluetooth_discoverer.startInquiring()
-    print( 'RESULT: ' + str( bluetooth_discoverer.getRssiStrength() ) )
+    print( 'RESULT: ' + str( bluetooth_discoverer.getRssiStrength() ) )"""
 
     """print( "LEFT DIST: " + str( proximity.getDistance('FRONT') ) )
 
