@@ -65,10 +65,7 @@ class Proximity:
                 TimeElapsed = StopTime - StartTime
                 # multiply with the sonic speed (34300 cm/s)
                 # and divide by 2, because there and back
-                distance = (TimeElapsed * 34326) / 2
-
-                if distance >= 1500:
-                    distance = 'OUT_OF_RANGE'
+                distance = float((TimeElapsed * 34326) / 2)
 
                 if sensor_orientation is not None:
                     data[sensor_orientation] = distance
@@ -80,7 +77,6 @@ class Proximity:
                     elif i == 2:
                         data['RIGHT'] = distance
         except:
-            print("Errore durante Proximity")
             return None
 
         return data
