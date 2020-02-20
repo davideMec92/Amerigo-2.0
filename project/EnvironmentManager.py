@@ -6,6 +6,7 @@ from threading import Thread
 
 from configurator import Configurator
 from ProximityManager import ProximityManager
+from RouteManager import RouteManager
 from compass import Compass
 from motors import Motors
 
@@ -22,16 +23,14 @@ class EnvironmentManager( Thread ):
 
     status = STOPPED
 
-    #Variabili direzionali
-    front_availability = True
-    left_availability = True
-    right_availability = True
-
     #Classe configurazione
     configurator = None
 
     #Manager sensori prossimità
     proximity_manager = None
+
+    #Classe per la gestione dei parametri direzinali
+    route_manager = None
 
     #Classe per la gestione motori
     motors = None
@@ -47,41 +46,33 @@ class EnvironmentManager( Thread ):
     #Tolleranza magnetometro
     compass_tolerance = 5
 
-    def getFrontAvailability(self):
-        return self.front_availability
+    def getEventLock(self):
+        return self.event_lock
 
-    def getLeftAvailability(self):
-        return self.left_availability
-
-    def getRightAvailability(self):
-        return self.right_availability
-
-    def setFrontAvailability(self, value):
-        self.front_availability = value
-
-    def setLeftAvailability(self, value):
-        self.left_availability = value
-
-    def setRightAvailability(self, value):
-        self.right_availability = value
+    def setEventLock(self,value):
+        self.event_lock = value
 
     def __init__(self):
 
         print('Getting configuration..')
         self.configurator = Configurator()
+
         print('Setting GPIO..')
         self.configurator.setGpio()
 
-        print('Starting Proximity Manager..')
-        self.proximity_manager = ProximityManager( self.configurator, self )
-
-        print('Starting adn configuring Motors..')
+        print('Starting and configuring Motors..')
         self.motors = Motors( self.configurator.getGpio() )
         self.motor_left_actual_power = self.motors.getMotorLeftActualPower()
         self.motor_right_actual_power = self.motors.getMotorRightActualPower()
 
+        print('Starting Proximity Manager..')
+        self.proximity_manager = ProximityManager( self.configurator, self.motors, self )
+
         print('Starting Compass..')
         self.compass = Compass()
+
+        print('Starting RouteManager..')
+        self.route_manager = RouteManager( self.motors, self.compass, self )
 
         Thread.__init__(self)
         self.deamon = True
@@ -91,31 +82,16 @@ class EnvironmentManager( Thread ):
 
     def run(self):
         while self.status != self.STOPPED:
-            time.sleep(0.1)
+            time.sleep(0.5)
 
             try:
-                #Check direzione stabilita
-                if self.goal_direction_degrees is not None:
 
-                    print('FRONT AVAILABILIT: ' + str( self.front_availability ))
-                    print('LEFT AVAILABILIT: ' + str( self.left_availability ))
-                    print('RIGHT AVAILABILIT: ' + str( self.right_availability ))
+                print('FRONT AVAILABILIT: ' + str( self.proximity_manager.getFrontAvailability() ))
+                print('LEFT AVAILABILIT: ' + str( self.proximity_manager.getLeftAvailability() ))
+                print('RIGHT AVAILABILIT: ' + str( self.proximity_manager.getRightAvailability() ))
 
-                    #Check direzione frontale libera
-                    if self.front_availability is True:
-
-                        print('self.motors.STOPPED: ' + str(self.motors.STOPPED))
-
-                        #Check caso in cui robot sia fermo
-                        if self.motors.getMotorsStatus() == self.motors.STOPPED:
-                            print('Starting motors forward')
-                            self.motors.forward()
-
-                    elif self.front_availability is False and self.motors.getMotorsStatus() == self.motors.FORWARD: #Check caso in cui direzione frontale non disponibile e robot avanza
-                        self.motors.stop()
-                        self.stop()
-            except Exception:
-                print('Exception')
+            except Exception, e:
+                print('Exception: ' + str(e))
                 self.motors.stop()
                 self.stop()
 
@@ -127,9 +103,13 @@ class EnvironmentManager( Thread ):
 
     def stop(self):
         self.status = self.STOPPED
+        print('Stopping EnvironmentManager..')
 
         if self.proximity_manager is not None:
             self.proximity_manager.stop()
+
+        if self.route_manager is not None:
+            self.route_manager.stop()
 
         if self.configurator is not None:
             self.configurator.gpioCleanup()
