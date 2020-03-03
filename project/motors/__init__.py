@@ -2,17 +2,6 @@ import time
 
 class Motors:
 
-    RIGHT_MOTOR_FORWARDS = 12
-    RIGHT_MOTOR_BACKWARDS = 16
-
-    LEFT_MOTOR_FORWARDS = 20
-    LEFT_MOTOR_BACKWARDS = 21
-
-    motor_right_gpio_forwards = None
-    motor_right_gpio_backwards = None
-    motor_left_gpio_forwards = None
-    motor_left_gpio_backwards = None
-
     #Costanti stato motori
     STOPPED = 0
     FORWARD = 1
@@ -21,35 +10,25 @@ class Motors:
     CLOCKWISE_ROTATION = 4
 
     motors_status = STOPPED
-    motors_default_power = 40
+    motors_default_power = 35
     motor_left_actual_power = motors_default_power
     motor_right_actual_power = motors_default_power
 
     gpio = None
+    configurator = None
 
-    def __init__(self, gpio):
+    def __init__(self, configurator):
 
-        self.gpio = gpio
+        if configurator is None:
+            raise Exception('Motors error: configurator element cannot be None')
+            return
 
-        #Settaggio GPIO mediante dicitura BCM (numeri GPIO e non pin board)
-        """gpio.setmode(gpio.BCM)
+        if configurator.getGpio() is None:
+            raise Exception('Motors error: gpio element cannot be None')
+            return
 
-        #Settaggio iniziale gpio, con stato LOW
-
-        #MOTORE DESTRO
-        gpio.setup(self.RIGHT_MOTOR_FORWARDS, gpio.OUT, initial = gpio.LOW) #IN1
-        gpio.setup(self.RIGHT_MOTOR_BACKWARDS, gpio.OUT, initial = gpio.LOW) #IN2
-
-        #MOTORE SINISTRO
-        gpio.setup(self.LEFT_MOTOR_FORWARDS, gpio.OUT, initial = gpio.LOW) #IN3
-        gpio.setup(self.LEFT_MOTOR_BACKWARDS, gpio.OUT, initial = gpio.LOW) #IN4"""
-
-        #INZIALIZZAZIONE MOTORI
-        self.motor_right_gpio_forwards = self.gpio.PWM(self.RIGHT_MOTOR_FORWARDS, 100)
-        self.motor_right_gpio_backwards = self.gpio.PWM(self.RIGHT_MOTOR_BACKWARDS, 100)
-
-        self.motor_left_gpio_forwards = self.gpio.PWM(self.LEFT_MOTOR_FORWARDS, 100)
-        self.motor_left_gpio_backwards = self.gpio.PWM(self.LEFT_MOTOR_BACKWARDS, 100)
+        self.configurator = configurator
+        self.gpio = self.configurator.getGpio()
 
     def getMotorsStatus(self):
         return self.motors_status
@@ -65,15 +44,10 @@ class Motors:
 
     def stop(self):
 
-        self.motor_right_gpio_forwards.ChangeDutyCycle(0)
-        self.motor_right_gpio_backwards.ChangeDutyCycle(0)
-        self.motor_left_gpio_forwards.ChangeDutyCycle(0)
-        self.motor_left_gpio_backwards.ChangeDutyCycle(0)
-
-        self.motor_right_gpio_forwards.stop(0)
-        self.motor_right_gpio_backwards.stop(0)
-        self.motor_left_gpio_forwards.stop(0)
-        self.motor_left_gpio_backwards.stop(0)
+        self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorForwardsPin(), 0)
+        self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorBackwardsPin(), 0)
+        self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorForwardsPin(), 0)
+        self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorBackwardsPin(), 0)
 
         self.motors_status = self.STOPPED
 
@@ -82,25 +56,27 @@ class Motors:
         if type == "COUNTERCLOCKWISE":
 
             if restoreToDefaultPower is False:
-                self.motor_right_gpio_forwards.start(50)
-                self.motor_left_gpio_backwards.start(50)
+                self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorForwardsPin(), 50)
+                self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorBackwardsPin(), 50)
                 time.sleep(0.10)
 
-            self.motor_right_gpio_forwards.ChangeDutyCycle(int(self.motors_default_power))
-            self.motor_left_gpio_backwards.ChangeDutyCycle(int(self.motors_default_power))
+            self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorForwardsPin(), int(self.motors_default_power))
+            self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorBackwardsPin(), int(self.motors_default_power))
+
             self.motor_right_actual_power = self.motors_default_power
             self.motor_left_actual_power = self.motors_default_power
             self.motors_status = self.COUNTERCLOCKWISE_ROTATION
 
         elif type == "CLOCKWISE":
 
-            if restoreMotorPower is False:
-                self.motor_left_gpio_forwards.start(50)
-                self.motor_right_gpio_backwards.start(50)
+            if restoreToDefaultPower is False:
+                self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorForwardsPin(), 50)
+                self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorBackwardsPin(), 50)
                 time.sleep(0.10)
 
-            self.motor_left_gpio_forwards.ChangeDutyCycle(int(self.motors_default_power))
-            self.motor_right_gpio_backwards.ChangeDutyCycle(int(self.motors_default_power))
+            self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorForwardsPin(), int(self.motors_default_power))
+            self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorBackwardsPin(), int(self.motors_default_power))
+
             self.motor_right_actual_power = self.motors_default_power
             self.motor_left_actual_power = self.motors_default_power
             self.motors_status = self.CLOCKWISE_ROTATION
@@ -108,11 +84,12 @@ class Motors:
     def forward(self, restoreToDefaultPower = False):
 
             if restoreToDefaultPower is False:
-                self.motor_right_gpio_forwards.start(100)
-                self.motor_left_gpio_forwards.start(100)
+                self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorForwardsPin(), 200)
+                self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorForwardsPin(), 200)
             else:
-                self.motor_right_gpio_forwards.ChangeDutyCycle(int(self.motors_default_power))
-                self.motor_left_gpio_forwards.ChangeDutyCycle(int(self.motors_default_power))
+                self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorForwardsPin(), int(self.motors_default_power))
+                self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorForwardsPin(), int(self.motors_default_power))
+
                 self.motor_right_actual_power = self.motors_default_power
                 self.motor_left_actual_power = self.motors_default_power
 
@@ -121,11 +98,12 @@ class Motors:
     def backward(self, restoreToDefaultPower = False):
 
             if restoreToDefaultPower is False:
-                self.motor_right_gpio_backwards.start(100)
-                self.motor_left_gpio_backwards.start(100)
+                self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorBackwardsPin(), 100)
+                self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorBackwardsPin(), 100)
             else:
-                self.motor_right_gpio_backwards.ChangeDutyCycle(int(self.motors_default_power))
-                self.motor_left_gpio_backwards.ChangeDutyCycle(int(self.motors_default_power))
+                self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorBackwardsPin(), int(self.motors_default_power))
+                self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorBackwardsPin(), int(self.motors_default_power))
+
                 self.motor_right_actual_power = self.motors_default_power
                 self.motor_left_actual_power = self.motors_default_power
 
@@ -139,7 +117,7 @@ class Motors:
         if value is None:
             return
 
-        if value > 100 or value < 0:
+        if value > 255 or value < 0:
             return
 
         #Check stato motori diverso da STOPPED
@@ -149,13 +127,13 @@ class Motors:
 
                 #Check caso in cui stato motori sia FORWARD
                 if self.motors_status == self.FORWARD:
-                    self.motor_left_gpio_forwards.ChangeDutyCycle(int(value))
+                    self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorForwardsPin(), int(value))
                 elif self.motors_status == self.BACKWARD: #Check caso in cui stato motori sia BACKWARD
-                    self.motor_left_gpio_backwards.ChangeDutyCycle(int(value))
+                    self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorBackwardsPin(), int(value))
                 elif self.motors_status == self.CLOCKWISE_ROTATION: #Check caso in cui stato motori sia CLOCKWISE_ROTATION
-                    self.motor_left_gpio_forwards.ChangeDutyCycle(int(value))
+                    self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorForwardsPin(), int(value))
                 elif self.motors_status == self.COUNTERCLOCKWISE_ROTATION: #Check caso in cui stato motori sia COUNTERCLOCKWISE_ROTATION
-                    self.motor_left_gpio_backwards.ChangeDutyCycle(int(value))
+                    self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorBackwardsPin(), int(value))
 
                 self.motor_left_actual_power = int(value)
 
@@ -163,12 +141,12 @@ class Motors:
 
                 #Check caso in cui stato motori sia FORWARD
                 if self.motors_status == self.FORWARD:
-                    self.motor_right_gpio_forwards.ChangeDutyCycle(int(value))
+                    self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorForwardsPin(), int(value))
                 elif self.motors_status == self.BACKWARD: #Check caso in cui stato motori sia BACKWARD
-                    self.motor_right_gpio_backwards.ChangeDutyCycle(int(value))
+                    self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorBackwardsPin(), int(value))
                 elif self.motors_status == self.CLOCKWISE_ROTATION: #Check caso in cui stato motori sia CLOCKWISE_ROTATION
-                    self.motor_right_gpio_backwards.ChangeDutyCycle(int(value))
+                    self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorBackwardsPin(), int(value))
                 elif self.motors_status == self.COUNTERCLOCKWISE_ROTATION: #Check caso in cui stato motori sia COUNTERCLOCKWISE_ROTATION
-                    self.motor_right_gpio_forwards.ChangeDutyCycle(int(value))
+                    self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorForwardsPin(), int(value))
 
                 self.motor_right_actual_power = int(value)

@@ -86,9 +86,13 @@ class EnvironmentManager( Thread ):
 
             try:
 
-                print('FRONT AVAILABILIT: ' + str( self.proximity_manager.getFrontAvailability() ))
+                if self.proximity_manager.getRightStopDistance() is None:
+                    print('Starting rotation..')
+                    self.proximity_manager.proximityRotation('LEFT', 'RIGHT')
+
+                """print('FRONT AVAILABILIT: ' + str( self.proximity_manager.getFrontAvailability() ))
                 print('LEFT AVAILABILIT: ' + str( self.proximity_manager.getLeftAvailability() ))
-                print('RIGHT AVAILABILIT: ' + str( self.proximity_manager.getRightAvailability() ))
+                print('RIGHT AVAILABILIT: ' + str( self.proximity_manager.getRightAvailability() ))"""
 
             except Exception, e:
                 print('Exception: ' + str(e))

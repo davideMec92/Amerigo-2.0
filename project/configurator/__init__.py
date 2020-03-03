@@ -1,4 +1,6 @@
-import RPi.GPIO as gpio
+# -*- coding: utf-8 -*-
+
+import pigpio as gpio
 import json
 from collections import namedtuple
 
@@ -10,6 +12,18 @@ class Configurator:
 
     def __init__(self):
         self.conf = self.loadConf()
+
+    def getRightMotorForwardsPin(self):
+        return int(self.conf.get('Motors').get('RIGHT_MOTOR_FORWARDS'))
+
+    def getLeftMotorForwardsPin(self):
+        return int(self.conf.get('Motors').get('LEFT_MOTOR_FORWARDS'))
+
+    def getRightMotorBackwardsPin(self):
+        return int(self.conf.get('Motors').get('RIGHT_MOTOR_BACKWARDS'))
+
+    def getLeftMotorBackwardsPin(self):
+        return int(self.conf.get('Motors').get('LEFT_MOTOR_BACKWARDS'))
 
     def fileGetContents(self, filename):
         with open(filename) as f:
@@ -29,30 +43,38 @@ class Configurator:
 
     def setGpio(self):
 
-        self.gpio = gpio
+        #Inizializzazione pigpio
+        self.gpio = gpio.pi()
 
-        #Settaggio GPIO mediante dicitura BCM (numeri GPIO e non pin board)
-        self.gpio.setmode(gpio.BCM)
-        #self.gpioCleanup()
+        if not self.gpio.connected:
+            raise Exception('Configurator error:  cannot extabilish pigpio deamon connection')
+            return
 
-        #Settaggio iniziale gpio, con stato LOW
+        #Settaggio iniziale gpio (Range valori PWM 0-255)
 
         #MOTORE DESTRO
-        self.gpio.setup(self.conf.get('Motors').get('RIGHT_MOTOR_FORWARDS'), gpio.OUT, initial = gpio.LOW) #IN1
-        self.gpio.setup(self.conf.get('Motors').get('RIGHT_MOTOR_BACKWARDS'), gpio.OUT, initial = gpio.LOW) #IN2
+        if self.gpio.set_PWM_dutycycle(self.conf.get('Motors').get('RIGHT_MOTOR_FORWARDS'),0) != 0:
+            raise Exception('Configurator error:  cannot initialize RIGHT_MOTOR_FORWARDS gpio')
+            return
 
-        #MOTORE SINISTRO
-        self.gpio.setup(self.conf.get('Motors').get('LEFT_MOTOR_FORWARDS'), gpio.OUT, initial = gpio.LOW) #IN3
-        self.gpio.setup(self.conf.get('Motors').get('LEFT_MOTOR_BACKWARDS'), gpio.OUT, initial = gpio.LOW) #IN4
+        if self.gpio.set_PWM_dutycycle(self.conf.get('Motors').get('RIGHT_MOTOR_BACKWARDS'),0) != 0:
+            raise Exception('Configurator error:  cannot initialize RIGHT_MOTOR_BACKWARDS gpio')
+            return
+
+        if self.gpio.set_PWM_dutycycle(self.conf.get('Motors').get('LEFT_MOTOR_FORWARDS'),0) != 0:
+            raise Exception('Configurator error:  cannot initialize LEFT_MOTOR_FORWARDS gpio')
+            return
+
+        if self.gpio.set_PWM_dutycycle(self.conf.get('Motors').get('LEFT_MOTOR_BACKWARDS'),0) != 0:
+            raise Exception('Configurator error:  cannot initialize LEFT_MOTOR_BACKWARDS gpio')
+            return
 
         #SETTAGGIO PROXIMITY SENSORS
         for trigger in self.conf.get('Proximity').get('Triggers'):
-          gpio.setup(self.conf.get('Proximity').get('Triggers')[ trigger ], gpio.OUT)
+            self.gpio.set_mode(self.conf.get('Proximity').get('Triggers')[ trigger ],gpio.OUTPUT)
 
         for echo in self.conf.get('Proximity').get('Echoes'):
-          gpio.setup(self.conf.get('Proximity').get('Echoes')[ echo ], gpio.IN)
-
-        print("TEST")
+            self.gpio.set_mode(self.conf.get('Proximity').get('Echoes')[ echo ],gpio.INPUT)
 
     def gpioCleanup(self):
-        self.gpio.cleanup()
+        self.gpio.stop()

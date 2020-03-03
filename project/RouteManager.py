@@ -62,8 +62,6 @@ class RouteManager( Thread ):
         #Reference istanza oggetto classe EnvironmentManager
         self.environment_manager_object = environment_manager_object
 
-        self.motors_object.forward()
-
         Thread.__init__(self)
         self.deamon = True
         self.status = self.RUNNING

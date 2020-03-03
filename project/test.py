@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from compass import Compass
+#from compass import Compass
 from motors import Motors
-from proximity import Proximity
+#from proximity import Proximity
 from configurator import Configurator
 #from bluetooth_discoverer import BluetoothDiscoverer
 import time
+import sys
 
 configurator = None
 
@@ -13,9 +14,16 @@ try :
 
     configurator = Configurator()
     configurator.setGpio()
-    time.sleep(2)
 
-    motors = Motors( configurator.getGpio() )
+    time.sleep(1)
+
+    motors = Motors( configurator )
+    print('Motors forward..')
+    motors.forward()
+    time.sleep(2)
+    print('Motors stop..')
+    motors.stop()
+    sys.exit()
     degrees_goal = 305
     compass_tolerance = 5
 
@@ -158,6 +166,7 @@ except KeyboardInterrupt:
     print("KeyboardInterrupt")
 finally:
 
+    print('Finally')
     if configurator is not None:
         configurator.gpioCleanup() # this ensures a clean exit
 """except:
