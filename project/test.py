@@ -17,17 +17,17 @@ try :
 
     time.sleep(1)
 
-    """motors = Motors( configurator )
+    motors = Motors( configurator )
     print('Motors forward..')
-    motors.forward()
+    motors.rotation('CLOCKWISE')
     time.sleep(2)
     print('Motors stop..')
-    motors.stop()"""
-
+    motors.stop()
+    sys.exit()
     proximity = Proximity( configurator )
     print('FINAL DESTINATIOOOONNNNNN DISTANCE: ' + str( proximity.getDistance() ))
     proximity.cancel()
-    sys.exit()
+
     degrees_goal = 305
     compass_tolerance = 5
 

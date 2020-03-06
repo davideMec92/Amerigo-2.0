@@ -40,12 +40,6 @@ class EnvironmentManager( Thread ):
     #Classe gestione magnetometro
     compass = None
 
-    #Direzione obiettivo
-    goal_direction_degrees = 305
-
-    #Tolleranza magnetometro
-    compass_tolerance = 5
-
     def getEventLock(self):
         return self.event_lock
 
@@ -82,21 +76,20 @@ class EnvironmentManager( Thread ):
 
     def run(self):
         while self.status != self.STOPPED:
-            time.sleep(0.5)
+            time.sleep(2)
 
             try:
 
-                """if self.proximity_manager.getRightStopDistance() is None:
+                if self.proximity_manager.getFrontStopDistance() is None:
                     print('Starting rotation..')
-                    self.proximity_manager.proximityRotation('LEFT', 'RIGHT')"""
+                    self.proximity_manager.proximityRotation('RIGHT', 'FRONT')
 
-                print('FRONT AVAILABILIT: ' + str( self.proximity_manager.getFrontAvailability() ))
-                print('LEFT AVAILABILIT: ' + str( self.proximity_manager.getLeftAvailability() ))
-                print('RIGHT AVAILABILIT: ' + str( self.proximity_manager.getRightAvailability() ))
+                """print('FRONT AVAILABILITY: ' + str( self.proximity_manager.getFrontAvailability() ))
+                print('LEFT AVAILABILITY: ' + str( self.proximity_manager.getLeftAvailability() ))
+                print('RIGHT AVAILABILITY: ' + str( self.proximity_manager.getRightAvailability() ))"""
 
             except Exception, e:
                 print('Exception: ' + str(e))
-                self.motors.stop()
                 self.stop()
 
             #self.bluetooth_discoverer.startInquiring(self)

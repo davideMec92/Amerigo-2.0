@@ -28,7 +28,7 @@ class ProximityManager( Thread ):
     right_stop_distance = None
 
     #Tolleranza misurazione in fase di rotazione
-    proximity_rotation_tollerance = 2
+    proximity_rotation_tollerance = 0
 
     #Reference all'istanza della classe EnvironmentManager
     environment_manager_object = None
@@ -120,7 +120,9 @@ class ProximityManager( Thread ):
     def run(self):
         while self.status != self.STOPPED:
 
-            time.sleep(0.09)
+            if self.left_stop_distance is None and self.right_stop_distance is None and self.front_stop_distance is None:
+                print('SLEEP')
+                time.sleep(0.09)
 
             try:
 
@@ -128,15 +130,15 @@ class ProximityManager( Thread ):
                     print('Main lock already acquire, continue..')
                     continue
 
-                print('Main acquire lock')
-                self.lock.acquire()
+                #print('Main acquire lock')
+                #self.lock.acquire()
 
                 print('Getting measurements for all directions..')
                 self.measurements = self.proximity.getDistance()
 
-                if self.left_stop_distance is not None or self.right_stop_distance is not None or self.front_stop_distance is not None:
+                """if self.left_stop_distance is not None or self.right_stop_distance is not None or self.front_stop_distance is not None:
                     print('Continue..')
-                    continue
+                    continue"""
 
                 print('front_stop_distance: ' + str( self.front_stop_distance ))
                 print('left_stop_distance: ' + str( self.left_stop_distance ))
@@ -157,6 +159,10 @@ class ProximityManager( Thread ):
 
                     if self.measurements.get('FRONT') is None:
                         self.front_availability = False
+                    elif self.front_stop_distance is not None and ((self.measurements.get('FRONT') - self.proximity_rotation_tollerance ) <= self.front_stop_distance or self.front_stop_distance >= (self.measurements.get('FRONT') + self.proximity_rotation_tollerance )):
+                        print('Stopping rotation front..')
+                        self.motors_object.stop()
+                        self.front_stop_distance = None
                     elif self.measurements.get('FRONT') > self.critical_distance:
                         self.front_availability = True
                     elif self.measurements.get('FRONT') <= self.critical_distance:
@@ -171,6 +177,10 @@ class ProximityManager( Thread ):
 
                     if self.measurements.get('LEFT') is None:
                         self.left_availability = False
+                    elif self.left_stop_distance is not None and ((self.measurements.get('LEFT') - self.proximity_rotation_tollerance ) <= self.left_stop_distance or self.left_stop_distance >= (self.measurements.get('LEFT') + self.proximity_rotation_tollerance )):
+                        print('Stopping rotation left..')
+                        self.motors_object.stop()
+                        self.left_stop_distance = None
                     elif self.measurements.get('LEFT') > self.critical_distance:
                         self.left_availability = True
                     elif self.measurements.get('LEFT') <= self.critical_distance:
@@ -178,6 +188,10 @@ class ProximityManager( Thread ):
 
                     if self.measurements.get('RIGHT') is None:
                         self.right_availability = False
+                    elif self.right_stop_distance is not None and ((self.measurements.get('RIGHT') - self.proximity_rotation_tollerance ) <= self.right_stop_distance or self.right_stop_distance >= (self.measurements.get('RIGHT') + self.proximity_rotation_tollerance )):
+                        print('Stopping rotation right..')
+                        self.motors_object.stop()
+                        self.right_stop_distance = None
                     elif self.measurements.get('RIGHT') > self.critical_distance:
                         self.right_availability = True
                     elif self.measurements.get('RIGHT') <= self.critical_distance:
@@ -186,17 +200,17 @@ class ProximityManager( Thread ):
             except Exception, e:
                 print('ProximityManager exception: ' + str(e))
                 raise Exception('ProximityManager execption')
-            finally:
-                print('Main release lock')
-                self.lock.release()
+            #finally:
+                #print('Main release lock')
+                #self.lock.release()
 
     def proximityRotation(self, from_dir, to_dir):
 
         print('proximityRotation start..')
 
-        if self.lock.locked() == True:
+        """if self.lock.locked() == True:
             print('Lock attivo su un altro processo, rilascio e proseguo')
-            self.lock.release()
+            self.lock.release()"""
 
         if from_dir is None:
             raise Exception('Parameter "from_dir" cannot be None')
@@ -204,13 +218,14 @@ class ProximityManager( Thread ):
         if to_dir is None:
             raise Exception('Parameter "to_dir" cannot be None')
 
-        #Check caso in cui roboto non sia fermo
+        #Check caso in cui robot non sia fermo
         if self.motors_object.getMotorsStatus() != self.motors_object.STOPPED:
             print('Stopping motors..')
             self.motors_object.stop()
 
         #Check parametro distanza "from_dir"
         if self.measurements.get(from_dir) is None:
+            print('Distance from obastacle not found')
             return
             #raise Exception('None value distance for ' + str(from_dir) + ' direction, cannot use it as reference')
 
@@ -259,9 +274,9 @@ class ProximityManager( Thread ):
 
         #try:
 
-        self.lock.acquire()
+        #self.lock.acquire()
 
-        while True:
+        """while True:
 
             self.measurements = self.proximity.getDistance()
 
@@ -285,13 +300,13 @@ class ProximityManager( Thread ):
                 self.motors_object.stop()
                 self.left_stop_distance = None
                 break;
-            elif self.right_stop_distance is not None and (self.measurements.get('RIGHT') - self.proximity_rotation_tollerance ) <= self.right_stop_distance <= (self.measurements.get('RIGHT') + self.proximity_rotation_tollerance ):
+            elif self.right_stop_distance is not None and ((self.measurements.get('RIGHT') - self.proximity_rotation_tollerance ) <= self.right_stop_distance or self.right_stop_distance >= (self.measurements.get('RIGHT') + self.proximity_rotation_tollerance )):
                 print('Stopping rotation..')
                 self.motors_object.stop()
                 self.right_stop_distance = None
-                break;
+                break;"""
 
-        self.lock.release()
+        #self.lock.release()
         """except Exception, e:
             print('ProximityManager proximityRotation exception: ' + str(e))
             raise Exception('ProximityManager execption')"""
@@ -299,9 +314,13 @@ class ProximityManager( Thread ):
 
 
     def stop(self):
+
+        print('Stopping ProximityManager..')
+
         self.status = self.STOPPED
 
         if self.lock.locked() == True:
             self.lock.release()
 
-        print('Stopping ProximityManager..')
+        if self.proximity is not None:
+            self.proximity.cancel()

@@ -12,17 +12,23 @@ class RouteManager( Thread ):
 
     status = STOPPED
 
+    #Reference oggetto classo Motors
     motors_object = None
+
+    #Reference classe oggetto EnvironmentManager
     environment_manager_object = None
+
+    #Reference classe oggetto Compass
     compass_object = None
 
-    #Variabili direzionali
-
     #Direzione obiettivo
-    goal_direction_degrees = 125
+    goal_direction_degrees = 150
 
     #Tolleranza magnetometro
     compass_tolerance = 5
+
+    #Step decrementale potenza motori
+    motors_deceleration_step = 5
 
     def getGoalDirectionDegrees(self):
         return self.goal_direction_degrees
@@ -65,12 +71,13 @@ class RouteManager( Thread ):
         Thread.__init__(self)
         self.deamon = True
         self.status = self.RUNNING
-        self.motors_object.forward()
         self.start()
 
     def run(self):
+
         while self.status != self.STOPPED:
-            time.sleep(0.05)
+
+            time.sleep(0.005)
 
             try:
 
@@ -88,32 +95,33 @@ class RouteManager( Thread ):
                     #Caso in cui si è a sinistra dell'obiettivo
                     if degrees + self.compass_tolerance < self.goal_direction_degrees:
                         print("Goal on the right")
-                        motor_right_actual_power = motor_right_actual_power - 1
 
                         if motor_right_actual_power >= 0:
+                            motor_right_actual_power = motor_right_actual_power - self.motors_deceleration_step
                             self.motors_object.updateMotorPower( 'RIGHT', motor_right_actual_power )
-                        else:
-                            print( "STOPPING MOTORS.." )
-                            self.motors_object.stop()
-                            break
+
                     elif degrees - self.compass_tolerance > self.goal_direction_degrees:
                         print("Goal on the left")
-                        motor_left_actual_power = motor_left_actual_power - 1
 
                         if motor_left_actual_power >= 0:
+                            motor_left_actual_power = motor_left_actual_power - self.motors_deceleration_step
                             self.motors_object.updateMotorPower( 'LEFT', motor_left_actual_power )
-                        else:
-                            print( "STOPPING MOTORS.." )
-                            self.motors_object.stop()
-                            break
+
                     else: #Caso in cui obiettivo in posizione frontale
                         print("Goal on the front")
                         self.motors_object.forward( True )
+
             except Exception, e:
                 print('RouteManager exception')
                 raise Exception('RouteManager execption: ' + str(e))
 
 
     def stop(self):
-        self.status = self.STOPPED
+
         print('Stopping RouteManager..')
+
+        self.status = self.STOPPED
+
+        if self.motors_object is not None and self.motors_object.getMotorsStatus() != self.motors_object.STOPPED:
+            print('Stopping motors..')
+            self.motors_object.stop()

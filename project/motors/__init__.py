@@ -10,7 +10,7 @@ class Motors:
     CLOCKWISE_ROTATION = 4
 
     motors_status = STOPPED
-    motors_default_power = 35
+    motors_default_power = 150
     motor_left_actual_power = motors_default_power
     motor_right_actual_power = motors_default_power
 
@@ -29,6 +29,11 @@ class Motors:
 
         self.configurator = configurator
         self.gpio = self.configurator.getGpio()
+
+        """self.gpio.set_PWM_frequency(self.configurator.getRightMotorForwardsPin(),5)
+        self.gpio.set_PWM_frequency(self.configurator.getRightMotorBackwardsPin(),5)
+        self.gpio.set_PWM_frequency(self.configurator.getLeftMotorForwardsPin(),5)
+        self.gpio.set_PWM_frequency(self.configurator.getLeftMotorBackwardsPin(),5)"""
 
     def getMotorsStatus(self):
         return self.motors_status
@@ -56,8 +61,8 @@ class Motors:
         if type == "COUNTERCLOCKWISE":
 
             if restoreToDefaultPower is False:
-                self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorForwardsPin(), 100)
-                self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorBackwardsPin(), 100)
+                self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorForwardsPin(), int(self.motor_right_actual_power))
+                self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorBackwardsPin(), int(self.motor_left_actual_power))
                 time.sleep(0.10)
 
             self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorForwardsPin(), int(self.motors_default_power))
@@ -70,8 +75,8 @@ class Motors:
         elif type == "CLOCKWISE":
 
             if restoreToDefaultPower is False:
-                self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorForwardsPin(), 100)
-                self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorBackwardsPin(), 100)
+                self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorForwardsPin(), int(self.motor_left_actual_power))
+                self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorBackwardsPin(), int(self.motor_right_actual_power))
                 time.sleep(0.10)
 
             self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorForwardsPin(), int(self.motors_default_power))
@@ -84,8 +89,8 @@ class Motors:
     def forward(self, restoreToDefaultPower = False):
 
             if restoreToDefaultPower is False:
-                self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorForwardsPin(), 200)
-                self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorForwardsPin(), 200)
+                self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorForwardsPin(), int(self.motor_right_actual_power))
+                self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorForwardsPin(), int(self.motor_left_actual_power))
             else:
                 self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorForwardsPin(), int(self.motors_default_power))
                 self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorForwardsPin(), int(self.motors_default_power))
@@ -98,8 +103,8 @@ class Motors:
     def backward(self, restoreToDefaultPower = False):
 
             if restoreToDefaultPower is False:
-                self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorBackwardsPin(), 100)
-                self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorBackwardsPin(), 100)
+                self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorBackwardsPin(), int(self.motor_right_actual_power))
+                self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorBackwardsPin(), int(self.motor_left_actual_power))
             else:
                 self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorBackwardsPin(), int(self.motors_default_power))
                 self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorBackwardsPin(), int(self.motors_default_power))
