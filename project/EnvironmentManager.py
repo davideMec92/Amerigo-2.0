@@ -61,7 +61,7 @@ class EnvironmentManager( Thread ):
         self.configurator.setGpio()
 
         print('Starting and configuring Motors..')
-        self.motors = Motors( self.configurator.getGpio() )
+        self.motors = Motors( self.configurator )
         self.motor_left_actual_power = self.motors.getMotorLeftActualPower()
         self.motor_right_actual_power = self.motors.getMotorRightActualPower()
 
@@ -86,13 +86,13 @@ class EnvironmentManager( Thread ):
 
             try:
 
-                if self.proximity_manager.getRightStopDistance() is None:
+                """if self.proximity_manager.getRightStopDistance() is None:
                     print('Starting rotation..')
-                    self.proximity_manager.proximityRotation('LEFT', 'RIGHT')
+                    self.proximity_manager.proximityRotation('LEFT', 'RIGHT')"""
 
-                """print('FRONT AVAILABILIT: ' + str( self.proximity_manager.getFrontAvailability() ))
+                print('FRONT AVAILABILIT: ' + str( self.proximity_manager.getFrontAvailability() ))
                 print('LEFT AVAILABILIT: ' + str( self.proximity_manager.getLeftAvailability() ))
-                print('RIGHT AVAILABILIT: ' + str( self.proximity_manager.getRightAvailability() ))"""
+                print('RIGHT AVAILABILIT: ' + str( self.proximity_manager.getRightAvailability() ))
 
             except Exception, e:
                 print('Exception: ' + str(e))

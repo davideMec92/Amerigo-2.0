@@ -56,8 +56,8 @@ class Motors:
         if type == "COUNTERCLOCKWISE":
 
             if restoreToDefaultPower is False:
-                self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorForwardsPin(), 50)
-                self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorBackwardsPin(), 50)
+                self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorForwardsPin(), 100)
+                self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorBackwardsPin(), 100)
                 time.sleep(0.10)
 
             self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorForwardsPin(), int(self.motors_default_power))
@@ -70,8 +70,8 @@ class Motors:
         elif type == "CLOCKWISE":
 
             if restoreToDefaultPower is False:
-                self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorForwardsPin(), 50)
-                self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorBackwardsPin(), 50)
+                self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorForwardsPin(), 100)
+                self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorBackwardsPin(), 100)
                 time.sleep(0.10)
 
             self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorForwardsPin(), int(self.motors_default_power))

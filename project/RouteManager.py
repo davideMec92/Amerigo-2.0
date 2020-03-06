@@ -65,6 +65,7 @@ class RouteManager( Thread ):
         Thread.__init__(self)
         self.deamon = True
         self.status = self.RUNNING
+        self.motors_object.forward()
         self.start()
 
     def run(self):

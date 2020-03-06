@@ -109,7 +109,7 @@ class ProximityManager( Thread ):
         self.motors_object = motors_object
 
         #Inizializzazione oggetto classe Proximity
-        self.proximity = Proximity( configurator.getGpio(), configurator.getConf() )
+        self.proximity = Proximity( configurator )
         print( 'Initializing proximity sensors..' )
 
         Thread.__init__(self)
