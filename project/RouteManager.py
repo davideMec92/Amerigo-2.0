@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from compass import Compass
 from threading import Thread
 
 import time
@@ -15,20 +16,19 @@ class RouteManager( Thread ):
     #Reference oggetto classo Motors
     motors_object = None
 
-    #Reference classe oggetto EnvironmentManager
-    environment_manager_object = None
-
     #Reference classe oggetto Compass
     compass_object = None
 
     #Direzione obiettivo
-    goal_direction_degrees = 150
+    goal_direction_degrees = 300
 
     #Tolleranza magnetometro
     compass_tolerance = 5
 
     #Step decrementale potenza motori
     motors_deceleration_step = 5
+
+    queue = None
 
     def getGoalDirectionDegrees(self):
         return self.goal_direction_degrees
@@ -42,42 +42,36 @@ class RouteManager( Thread ):
     def setCompassTolerance(self,value):
         self.compass_tolerance = value
 
-    def __init__(self, motors_object, compass_object, environment_manager_object):
+    def __init__(self, motors_object, queue):
 
         #Check oggetto classe Motors
         if motors_object is None:
             raise Exception('Motors object cannot be null')
             return
 
-        #Check oggetto classe Compass
-        if compass_object is None:
-            raise Exception('Compass object cannot be null')
-            return
-
-        #Check oggetto classe EnvironmentManager
-        if environment_manager_object is None:
-            raise Exception('EnvironmentManager object cannot be null')
-            return
-
         #Reference istanza oggetto classe Motors
         self.motors_object = motors_object
 
         #Reference istanza oggetto classe Compass
-        self.compass_object = compass_object
+        print('Starting Compass..')
+        self.compass_object = Compass()
 
-        #Reference istanza oggetto classe EnvironmentManager
-        self.environment_manager_object = environment_manager_object
+        self.queue = queue
 
         Thread.__init__(self)
         self.deamon = True
         self.status = self.RUNNING
+        self.motors_object.forward()
         self.start()
 
     def run(self):
 
         while self.status != self.STOPPED:
 
-            time.sleep(0.005)
+            if self.queue.full() is not True:
+                print('RouteManager Return')
+                time.sleep(0.05)
+                continue
 
             try:
 
@@ -110,6 +104,9 @@ class RouteManager( Thread ):
                     else: #Caso in cui obiettivo in posizione frontale
                         print("Goal on the front")
                         self.motors_object.forward( True )
+
+                    print('Queue get')
+                    data = self.queue.get()
 
             except Exception, e:
                 print('RouteManager exception')

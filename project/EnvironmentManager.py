@@ -4,12 +4,6 @@
 
 from threading import Thread
 
-from configurator import Configurator
-from ProximityManager import ProximityManager
-from RouteManager import RouteManager
-from compass import Compass
-from motors import Motors
-
 import time
 
 class EnvironmentManager( Thread ):
@@ -23,50 +17,16 @@ class EnvironmentManager( Thread ):
 
     status = STOPPED
 
-    #Classe configurazione
-    configurator = None
+    #Coda ProximityManager
+    proximity_manager_queue = None
 
-    #Manager sensori prossimità
-    proximity_manager = None
+    #Coda RouteManager
+    route_manager_queue = None
 
-    #Classe per la gestione dei parametri direzinali
-    route_manager = None
+    def __init__(self, proximity_manager_queue, route_manager_queue):
 
-    #Classe per la gestione motori
-    motors = None
-    motor_left_actual_power = None
-    motor_right_actual_power = None
-
-    #Classe gestione magnetometro
-    compass = None
-
-    def getEventLock(self):
-        return self.event_lock
-
-    def setEventLock(self,value):
-        self.event_lock = value
-
-    def __init__(self):
-
-        print('Getting configuration..')
-        self.configurator = Configurator()
-
-        print('Setting GPIO..')
-        self.configurator.setGpio()
-
-        print('Starting and configuring Motors..')
-        self.motors = Motors( self.configurator )
-        self.motor_left_actual_power = self.motors.getMotorLeftActualPower()
-        self.motor_right_actual_power = self.motors.getMotorRightActualPower()
-
-        print('Starting Proximity Manager..')
-        self.proximity_manager = ProximityManager( self.configurator, self.motors, self )
-
-        print('Starting Compass..')
-        self.compass = Compass()
-
-        print('Starting RouteManager..')
-        self.route_manager = RouteManager( self.motors, self.compass, self )
+        self.proximity_manager_queue = proximity_manager_queue
+        self.route_manager_queue = route_manager_queue
 
         Thread.__init__(self)
         self.deamon = True
@@ -76,17 +36,17 @@ class EnvironmentManager( Thread ):
 
     def run(self):
         while self.status != self.STOPPED:
-            time.sleep(2)
+            time.sleep(0.05)
 
             try:
 
-                if self.proximity_manager.getFrontStopDistance() is None:
-                    print('Starting rotation..')
-                    self.proximity_manager.proximityRotation('RIGHT', 'FRONT')
+                if self.proximity_manager_queue.full() is not True:
+                    print('Start proximity check..')
+                    self.proximity_manager_queue.put('START')
 
-                """print('FRONT AVAILABILITY: ' + str( self.proximity_manager.getFrontAvailability() ))
-                print('LEFT AVAILABILITY: ' + str( self.proximity_manager.getLeftAvailability() ))
-                print('RIGHT AVAILABILITY: ' + str( self.proximity_manager.getRightAvailability() ))"""
+                if self.route_manager_queue.full() is not True:
+                    print('Start route manager check..')
+                    self.route_manager_queue.put('START')
 
             except Exception, e:
                 print('Exception: ' + str(e))
@@ -102,11 +62,11 @@ class EnvironmentManager( Thread ):
         self.status = self.STOPPED
         print('Stopping EnvironmentManager..')
 
-        if self.proximity_manager is not None:
+        """if self.proximity_manager is not None:
             self.proximity_manager.stop()
 
         if self.route_manager is not None:
             self.route_manager.stop()
 
         if self.configurator is not None:
-            self.configurator.gpioCleanup()
+            self.configurator.gpioCleanup()"""

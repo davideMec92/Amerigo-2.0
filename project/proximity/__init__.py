@@ -134,7 +134,10 @@ class Proximity:
 
                 TimeElapsed = self.read(triggers[i])
 
-                distance = float( (TimeElapsed / 1000000.0 * 34030) / 2 )
+                if TimeElapsed == 5:
+                    distance = None
+                else:
+                    distance = float( (TimeElapsed / 1000000.0 * 34030) / 2 )
 
                 if sensor_orientation is not None:
                     data[sensor_orientation] = distance

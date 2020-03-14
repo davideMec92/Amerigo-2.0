@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-#from compass import Compass
+from compass import Compass
 from motors import Motors
 from proximity import Proximity
 from configurator import Configurator
@@ -19,12 +19,13 @@ try :
 
     motors = Motors( configurator )
     print('Motors forward..')
-    motors.rotation('CLOCKWISE')
-    time.sleep(2)
+    motors.rotation('COUNTERCLOCKWISE')
+    time.sleep(0.425)
     print('Motors stop..')
     motors.stop()
     sys.exit()
-    proximity = Proximity( configurator )
+
+    """proximity = Proximity( configurator )
     print('FINAL DESTINATIOOOONNNNNN DISTANCE: ' + str( proximity.getDistance() ))
     proximity.cancel()
 
@@ -76,7 +77,7 @@ try :
             motors.forward( True )
 
 
-    """proximity = Proximity( configurator.getGpio(), configurator.getConf() )
+    proximity = Proximity( configurator.getGpio(), configurator.getConf() )
 
     bluetooth_discoverer = BluetoothDiscoverer()
     bluetooth_discoverer.startInquiring()
@@ -88,32 +89,34 @@ try :
         #time.sleep(0.05)
         print( "LEFT DIST: " + str( proximity.getDistance() ) )"""
 
-    """motors = Motors()
+    motors = Motors(configurator)
     compass = Compass()
 
     degrees = compass.getDegress()
     print("Start Degrees: " + str( degrees ))
-
+    #sys.exit()
     time.sleep(2)
 
-    rotation_degress = 180
-    tolerance = 5
-    goal = degrees - rotation_degress + tolerance
+    rotation_degress = 90
+    tolerance = 0
+    goal = degrees + rotation_degress + tolerance
 
-    motors.rotation("COUNTERCLOCKWISE")
-    #motors.rotation("CLOCKWISE")
+    #motors.rotation("COUNTERCLOCKWISE")
+    motors.rotation("CLOCKWISE")
 
     while True:
         degrees = compass.getDegress()
-        #print("Degrees: " + str( degrees ))
+        print("Degrees: " + str( degrees ))
 
-        if degrees <= goal:
+        if degrees >= goal:
             motors.stop()
-            motors.shutdown()
             print("Obiettivo raggiunto")
             degrees = compass.getDegress()
             print("Final Degrees: " + str( degrees ))
             break
+
+    sys.exit()
+
 
     proximity = Proximity()
 
