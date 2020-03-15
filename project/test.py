@@ -7,6 +7,11 @@ from configurator import Configurator
 #from bluetooth_discoverer import BluetoothDiscoverer
 import time
 import sys
+import random
+
+print('RANDOMMMMMMM: ' + str(random.randint(0, 1)))
+
+sys.exit()
 
 configurator = None
 

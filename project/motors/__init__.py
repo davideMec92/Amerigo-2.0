@@ -30,11 +30,6 @@ class Motors:
         self.configurator = configurator
         self.gpio = self.configurator.getGpio()
 
-        """self.gpio.set_PWM_frequency(self.configurator.getRightMotorForwardsPin(),5)
-        self.gpio.set_PWM_frequency(self.configurator.getRightMotorBackwardsPin(),5)
-        self.gpio.set_PWM_frequency(self.configurator.getLeftMotorForwardsPin(),5)
-        self.gpio.set_PWM_frequency(self.configurator.getLeftMotorBackwardsPin(),5)"""
-
     def getMotorsStatus(self):
         return self.motors_status
 

@@ -29,8 +29,8 @@ class EnvironmentManager( Thread ):
         self.route_manager_queue = route_manager_queue
 
         Thread.__init__(self)
-        self.deamon = True
         self.status = self.RUNNING
+        self.name = self.__class__.__name__
         self.start()
         #self.bluetooth_discoverer = BluetoothDiscoverer()
 

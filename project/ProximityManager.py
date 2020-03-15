@@ -34,6 +34,8 @@ class ProximityManager( Thread ):
 
     queue = None
 
+    proximity_manager_object = None
+
     def getMeasurements(self):
         return self.measurements
 
@@ -73,11 +75,13 @@ class ProximityManager( Thread ):
     def setRightStopDistance(self, value):
         self.right_stop_distance = value
 
+    def getAvailability(self):
+        directions_availability = { 'LEFT' : self.left_availability, 'FRONT' : self.front_availability, 'RIGHT' : self.right_availability }
+        return directions_availability
+
     def __init__(self, configurator, motors_object, queue):
 
         print( 'Initializing ProximityManager..' )
-
-        self.lock = threading.Lock()
 
         #Check configurazione
         if configurator is None:
@@ -99,9 +103,8 @@ class ProximityManager( Thread ):
         self.queue = queue
 
         Thread.__init__(self)
-        self.deamon = True
         self.status = self.RUNNING
-        self.motors_object.forward()
+        self.name = self.__class__.__name__
         self.start()
 
     def run(self):
@@ -133,7 +136,16 @@ class ProximityManager( Thread ):
                 else:
 
                     if self.measurements.get('FRONT') is None:
+
+                        #TODO Valutare se nel BUG può dare problemi
                         self.front_availability = False
+
+                        #Check caso in cui la direzione motori sia FORWARD e direzione FRONT bloccata
+                        if self.motors_object.getMotorsStatus() == self.motors_object.FORWARD:
+
+                            print('Stopping front measurement None')
+                            self.motors_object.stop()
+
                     elif self.measurements.get('FRONT') > self.critical_distance:
                         self.front_availability = True
                     elif self.measurements.get('FRONT') <= self.critical_distance:
@@ -238,9 +250,6 @@ class ProximityManager( Thread ):
         self.status = self.STOPPED
 
         self.motors_object.stop()
-
-        if self.lock.locked() == True:
-            self.lock.release()
 
         if self.proximity is not None:
             self.proximity.cancel()
