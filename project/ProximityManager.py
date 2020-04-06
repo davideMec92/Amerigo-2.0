@@ -34,6 +34,8 @@ class ProximityManager( Thread ):
 
     queue = None
 
+    lock = None
+
     proximity_manager_object = None
 
     def getMeasurements(self):
@@ -79,7 +81,7 @@ class ProximityManager( Thread ):
         directions_availability = { 'LEFT' : self.left_availability, 'FRONT' : self.front_availability, 'RIGHT' : self.right_availability }
         return directions_availability
 
-    def __init__(self, configurator, motors_object, queue):
+    def __init__(self, configurator, motors_object, queue, lock):
 
         print( 'Initializing ProximityManager..' )
 
@@ -95,6 +97,8 @@ class ProximityManager( Thread ):
 
         #Reference istanza oggetto classe Motors
         self.motors_object = motors_object
+
+        self.lock = lock
 
         #Inizializzazione oggetto classe Proximity
         self.proximity = Proximity( configurator )
@@ -119,6 +123,9 @@ class ProximityManager( Thread ):
                 continue
 
             try:
+
+                print('ProximityManager lock acquire..')
+                self.lock.acquire()
 
                 print('Getting measurements for all directions..')
                 self.measurements = self.proximity.getDistance()
@@ -181,6 +188,9 @@ class ProximityManager( Thread ):
             except Exception, e:
                 print('ProximityManager exception: ' + str(e))
                 raise Exception('ProximityManager execption: ' + str(e))
+            finally:
+                print('ProximityManager lock release..')
+                self.lock.release()
 
     def proximityRotation(self, from_dir, to_dir):
 

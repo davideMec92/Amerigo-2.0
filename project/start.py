@@ -6,8 +6,13 @@ from configurator import Configurator
 from motors import Motors
 
 from multiprocessing import Queue
+from threading import Lock
+
 
 try:
+
+    multi_threading_lock = Lock()
+
     print('Getting configuration..')
     configurator = Configurator()
 
@@ -20,13 +25,13 @@ try:
     proximity_manager_queue = Queue( maxsize = 1 )
     route_manager_queue = Queue( maxsize = 1 )
 
-    environment_manager = EnvironmentManager( proximity_manager_queue, route_manager_queue )
+    environment_manager = EnvironmentManager( proximity_manager_queue, route_manager_queue, multi_threading_lock )
     #print('Join environment_manager..')
     #environment_manager.join()
-    proximity_manager = ProximityManager( configurator, motors, proximity_manager_queue )
+    proximity_manager = ProximityManager( configurator, motors, proximity_manager_queue, multi_threading_lock )
     #print('Join proximity_manager..')
     #proximity_manager.join()
-    route_manager = RouteManager( motors, route_manager_queue, proximity_manager )
+    route_manager = RouteManager( motors, route_manager_queue, proximity_manager, multi_threading_lock )
     #print('Join route_manager..')
     #route_manager.join()
     raw_input("Press Enter to stop...")

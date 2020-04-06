@@ -23,10 +23,13 @@ class EnvironmentManager( Thread ):
     #Coda RouteManager
     route_manager_queue = None
 
-    def __init__(self, proximity_manager_queue, route_manager_queue):
+    lock = None
+
+    def __init__(self, proximity_manager_queue, route_manager_queue, lock):
 
         self.proximity_manager_queue = proximity_manager_queue
         self.route_manager_queue = route_manager_queue
+        self.lock = lock
 
         Thread.__init__(self)
         self.status = self.RUNNING
