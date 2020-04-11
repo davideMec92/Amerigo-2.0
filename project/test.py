@@ -9,13 +9,15 @@ import time
 import sys
 import random
 
-print('RANDOMMMMMMM: ' + str(random.randint(0, 1)))
-
-sys.exit()
-
 configurator = None
 
 try :
+
+    compass = Compass()
+
+    print('Result: ' + str( compass.getRotationDegreeCosts(310, 89) ))
+
+    sys.exit()
 
     configurator = Configurator()
     configurator.setGpio()

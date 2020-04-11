@@ -81,6 +81,33 @@ class ProximityManager( Thread ):
         directions_availability = { 'LEFT' : self.left_availability, 'FRONT' : self.front_availability, 'RIGHT' : self.right_availability }
         return directions_availability
 
+    def refreshData(self):
+        print('Getting measurements for all directions..')
+        self.measurements = self.proximity.getDistance()
+
+        print('measurements: ' + str(self.measurements))
+
+        if self.measurements.get('FRONT') is None:
+            self.front_availability = False
+        if self.measurements.get('FRONT') > self.critical_distance:
+            self.front_availability = True
+        elif self.measurements.get('FRONT') <= self.critical_distance:
+            self.front_availability = False
+
+        if self.measurements.get('LEFT') is None:
+            self.left_availability = False
+        elif self.measurements.get('LEFT') > self.critical_distance:
+            self.left_availability = True
+        elif self.measurements.get('LEFT') <= self.critical_distance:
+            self.left_availability = False
+
+        if self.measurements.get('RIGHT') is None:
+            self.right_availability = False
+        elif self.measurements.get('RIGHT') > self.critical_distance:
+            self.right_availability = True
+        elif self.measurements.get('RIGHT') <= self.critical_distance:
+            self.right_availability = False
+
     def __init__(self, configurator, motors_object, queue, lock):
 
         print( 'Initializing ProximityManager..' )

@@ -99,6 +99,9 @@ class RouteManager( Thread ):
 
             try:
 
+                print('RouteManager Acquire lock..')
+                self.lock.acquire()
+
                 """if self.normal_mode_status == 'ENABLED':
                     print('Starting normalMode..')
                     self.normalMode()"""
@@ -107,12 +110,13 @@ class RouteManager( Thread ):
                     self.bugMode( self.goal_direction_degrees )
 
             except Exception, e:
-                print('RouteManager exception')
+                print('RouteManager exception: ' + str(e))
                 raise Exception('RouteManager execption: ' + str(e))
             finally:
                 print('ROUTE MANAGER Queue get')
                 data = self.queue.get()
-
+                print('RouteManager Release lock..')
+                self.lock.release()
 
     def normalMode( self ):
 
@@ -151,7 +155,12 @@ class RouteManager( Thread ):
 
     def bugMode( self, goal_degrees, parent_degrees = goal_direction_degrees, locked_direction = None ):
 
+        print('Refreshing proximity data..')
+        self.proximity_manager_object.refreshData()
+
+        print('goal_degrees: ' + str(goal_degrees))
         print('parent_degrees: ' + str(parent_degrees))
+        print('locked_direction: ' + str(locked_direction))
 
     	if locked_direction is not None:
     		if self.bug_mode_status == 'DISABLED':
@@ -177,6 +186,7 @@ class RouteManager( Thread ):
 
             #In questo caso ricordare di dare un minimo di tolleranza alla bussola dato che parent_degrees è determinato dai gradi bussola (+-5°)
             if abs(self.goal_direction_degrees - parent_degrees) > self.compass_tolerance:
+                print('STO CAZZO')
             	return self.bugMode(parent_degrees, self.goal_direction_degrees, self.main_locked_direction)
 
             if self.main_locked_direction is not None:
@@ -187,24 +197,30 @@ class RouteManager( Thread ):
 
         if abs( self.compass_object.getDegress() - goal_degrees ) > self.compass_tolerance:
 
-            print('BUG MODE: Rotation to goal degrees')
+            print('BUG MODE: Rotation to goal degrees: ' + str(goal_degrees))
             self.rotationToDegrees( goal_degrees )
 
-            if (
-                self.u_turn_forward_steps > 0 or
-                (self.proximity_manager_object.getAvailability().get('FRONT') is True and self.proximity_manager_object.getAvailability().get(locked_direction) is False) or
-                (self.u_turn is True and self.proximity_manager_object.getAvailability().get('RIGHT') is False and self.proximity_manager_object.getAvailability().get('LEFT') is False)
 
-            ):
+        print('FRONT availability: ' + str(self.proximity_manager_object.getAvailability().get('FRONT')))
+        print('LEFT availability: ' + str(self.proximity_manager_object.getAvailability().get('LEFT')))
+        print('RIGHT availability: ' + str(self.proximity_manager_object.getAvailability().get('RIGHT')))
+        print('locked_direction (' + str(locked_direction) + ') availability: ' + str(self.proximity_manager_object.getAvailability().get(locked_direction)))
+        print('self u_turn: ' + str( self.u_turn ))
 
-        	self.motors_object.forward(True)
+        if self.u_turn_forward_steps > 0 or (self.proximity_manager_object.getAvailability().get('FRONT') is True and ( locked_direction is None or self.proximity_manager_object.getAvailability().get(locked_direction) is False) ) or (self.u_turn is True and self.proximity_manager_object.getAvailability().get('RIGHT') is False and self.proximity_manager_object.getAvailability().get('LEFT') is False):
 
-        	if self.u_turn_forward_steps > 0:
-        		self.u_turn_forward_steps = self.u_turn_forward_steps - 1
+            self.motors_object.forward(True)
 
-        	return self.bugMode( goal_degrees, parent_degrees, locked_direction )
+            if self.u_turn_forward_steps > 0:
+            	self.u_turn_forward_steps = self.u_turn_forward_steps - 1
 
-    	else:
+            print('BUG MODE: Dritto')
+
+            return self.bugMode( goal_degrees, parent_degrees, locked_direction )
+
+        else:
+
+            print('BUG MODE: Else marco di merda!')
 
             #Check caso in cui sinistra è occupata
             if self.proximity_manager_object.getAvailability().get('LEFT') is False:
@@ -250,6 +266,7 @@ class RouteManager( Thread ):
                     	if abs(goal_degrees - parent_degrees) <= self.compass_tolerance:
                     		self.main_locked_direction = 'LEFT'
 
+                        print('BUG MODE: Recursive first call')
                     	return self.bugMode( self.compass_object.getDegress(), goal_degrees, 'LEFT' )
 
             elif self.proximity_manager_object.getAvailability().get('RIGHT') is False: #Solo sinistra libera
@@ -322,16 +339,34 @@ class RouteManager( Thread ):
                 	if abs(goal_degrees - parent_degrees) <= self.compass_tolerance:
                 		self.main_locked_direction = opposite_dir
 
-                	return self.bugMode( self.compass_object.getDegress(), goal_degrees, opposite_dir )
+                    print('BUG MODE: Recursive call 2')
+                    #TODO ESEGUIRE ROTAZIONE PRIMA RICORSIONE
+                    return self.bugMode( self.compass_object.getDegress(), goal_degrees, opposite_dir )
 
     def rotationToDegrees(self, degress):
 
-        print('RouteManager Acquire lock..')
-        self.lock.acquire()
+        """print('RouteManager Acquire lock..')
+        self.lock.acquire()"""
 
         print('Starting rotation to degrees..')
 
-        self.motors_object.rotation('CLOCKWISE')
+        #Ottenimento posizione attuale
+        temp_degrees = self.compass_object.getDegress()
+
+        rotation_degree_costs = self.compass_object.getRotationDegreeCosts( temp_degrees, degress )
+
+        print('rotation_degree_costs: ' + str( rotation_degree_costs ))
+
+        if rotation_degree_costs.get('clockwise_cost') < rotation_degree_costs.get('counterclockwise_cost'):
+            print('Sono nel range')
+            self.motors_object.rotation('CLOCKWISE')
+        else:
+            print('Non sono nel range')
+            self.motors_object.rotation('COUNTERCLOCKWISE')
+
+        print('Now dregrees: ' + str(temp_degrees))
+        #self.motors_object.updateMotorPower('LEFT', 150)
+        #self.motors_object.updateMotorPower('RIGHT', 150)
 
         while True:
 
@@ -342,13 +377,18 @@ class RouteManager( Thread ):
 
             print('Degrees: ' + str(temp_degrees))
 
-            if abs( degress - temp_degrees ) <= self.compass_tolerance:
+            if abs( degress - temp_degrees ) <= self.compass_tolerance + 5:
                 print('Stopping rotation')
                 self.motors_object.stop()
+                temp_degrees = self.compass_object.getDegress()
+                print('Degrees: ' + str(temp_degrees))
                 break
 
-        print('RouteManager Release lock..')
-        self.lock.release()
+        self.motors_object.updateMotorPower('LEFT', 200)
+        self.motors_object.updateMotorPower('RIGHT', 200)
+
+        """print('RouteManager Release lock..')
+        self.lock.release()"""
 
     def getRandomDirection(self):
         return self.directions.get( random.randint(0, 1) )
