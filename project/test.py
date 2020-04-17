@@ -4,6 +4,7 @@ from compass import Compass
 from motors import Motors
 from proximity import Proximity
 from configurator import Configurator
+from custom_exceptions import *
 #from bluetooth_discoverer import BluetoothDiscoverer
 import time
 import sys
@@ -13,21 +14,21 @@ configurator = None
 
 try :
 
-    compass = Compass()
-
-    print('Result: ' + str( compass.getRotationDegreeCosts(310, 89) ))
-
-    sys.exit()
-
     configurator = Configurator()
     configurator.setGpio()
 
     time.sleep(1)
 
+    proximity = Proximity( configurator )
+
+    while True:
+        print('FINAL DESTINATIOOOONNNNNN DISTANCE: ' + str( proximity.getDistance('FRONT') ))
+
+    sys.exit()
+
     motors = Motors( configurator )
-    print('Motors forward..')
-    motors.rotation('COUNTERCLOCKWISE')
-    time.sleep(0.425)
+    print('Motors compass rotation..')
+    motors.compassRotation('COUNTERCLOCKWISE')
     print('Motors stop..')
     motors.stop()
     sys.exit()
@@ -179,6 +180,8 @@ except KeyboardInterrupt:
     # exits when you press CTRL+C
     print("KeyboardInterrupt")
 finally:
+
+    proximity.cancel()
 
     print('Finally')
     if configurator is not None:

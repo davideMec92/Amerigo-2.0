@@ -81,7 +81,7 @@ class Proximity:
             start = time.time()
 
             while not self.ping:
-                if (time.time()-start) > 5.0:
+                if (time.time()-start) >= 0.23:
                     return 20000
                 time.sleep(0.001)
             return self.time
@@ -131,6 +131,8 @@ class Proximity:
                 echoes.append(self.echoes['RIGHT'])
 
             for i in range(len(triggers)):
+
+                time.sleep(0.05)
 
                 TimeElapsed = self.read(triggers[i])
 

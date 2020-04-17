@@ -46,6 +46,8 @@ class Configurator:
         #Inizializzazione pigpio
         self.gpio = gpio.pi()
 
+        self.gpio.exceptions = True
+
         if not self.gpio.connected:
             raise Exception('Configurator error:  cannot extabilish pigpio deamon connection')
             return
@@ -68,13 +70,6 @@ class Configurator:
         if self.gpio.set_PWM_dutycycle(self.conf.get('Motors').get('LEFT_MOTOR_BACKWARDS'),0) != 0:
             raise Exception('Configurator error:  cannot initialize LEFT_MOTOR_BACKWARDS gpio')
             return
-
-        #SETTAGGIO PROXIMITY SENSORS
-        for trigger in self.conf.get('Proximity').get('Triggers'):
-            self.gpio.set_mode(self.conf.get('Proximity').get('Triggers')[ trigger ],gpio.OUTPUT)
-
-        for echo in self.conf.get('Proximity').get('Echoes'):
-            self.gpio.set_mode(self.conf.get('Proximity').get('Echoes')[ echo ],gpio.INPUT)
 
     def gpioCleanup(self):
         self.gpio.stop()

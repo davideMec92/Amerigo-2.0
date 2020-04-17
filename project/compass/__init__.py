@@ -33,13 +33,31 @@ class Compass:
 
         phi = abs(arrive - start) % 360
 
-        if phi > 180:
-            clockwise_cost = 360 - phi
-            counterclockwise_cost = 360 - clockwise_cost
+        sign = None
+
+        if (start - arrive >= 0 and start - arrive <= 180) or (start - arrive <=-180 and start- arrive >= -360):
+            sign = 'positive' #counterclockwise
         else:
-            counterclockwise_cost = phi
-            clockwise_cost = 360 - counterclockwise_cost
-        
+            sign = 'negative' #clockwise
+
+        if phi > 180:
+
+            if sign == 'negative':
+                clockwise_cost = 360 - phi
+                counterclockwise_cost = 360 - clockwise_cost
+            else:
+                counterclockwise_cost = 360 - phi
+                clockwise_cost = 360 - counterclockwise_cost
+
+        else:
+
+            if sign == 'positive':
+                counterclockwise_cost = phi
+                clockwise_cost = 360 - counterclockwise_cost
+            else:
+                clockwise_cost = phi
+                counterclockwise_cost = 360 - clockwise_cost
+
         result = { 'clockwise_cost' : int( clockwise_cost ), 'counterclockwise_cost' : int( counterclockwise_cost ) }
 
         return result

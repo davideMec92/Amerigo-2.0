@@ -8,6 +8,8 @@ class Motors:
     BACKWARD = 2
     COUNTERCLOCKWISE_ROTATION = 3
     CLOCKWISE_ROTATION = 4
+    COMPASS_COUNTERCLOCKWISE_ROTATION = 5
+    COMPASS_CLOCKWISE_ROTATION = 6
 
     motors_status = STOPPED
     motors_default_power = 200
@@ -82,6 +84,28 @@ class Motors:
         if ninetyDegreesRotation is True:
             time.sleep(0.425)
             self.stop()
+
+    def compassRotation(self, type):
+
+        if type == "COUNTERCLOCKWISE":
+
+            self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorForwardsPin(), int(255))
+            self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorForwardsPin(), int(140))
+
+            self.motors_status = self.COMPASS_COUNTERCLOCKWISE_ROTATION
+
+            time.sleep(1.3)
+
+        elif type == "CLOCKWISE":
+
+            self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorForwardsPin(), int(255))
+            self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorForwardsPin(), int(130))
+
+            self.motors_status = self.COMPASS_CLOCKWISE_ROTATION
+
+            time.sleep(1.2)
+
+        self.stop()
 
     def forward(self, restoreToDefaultPower = False):
 

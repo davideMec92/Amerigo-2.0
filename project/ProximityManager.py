@@ -2,6 +2,7 @@
 
 from threading import Thread
 from proximity import Proximity
+from custom_exceptions import *
 
 import threading
 import time
@@ -81,33 +82,6 @@ class ProximityManager( Thread ):
         directions_availability = { 'LEFT' : self.left_availability, 'FRONT' : self.front_availability, 'RIGHT' : self.right_availability }
         return directions_availability
 
-    def refreshData(self):
-        print('Getting measurements for all directions..')
-        self.measurements = self.proximity.getDistance()
-
-        print('measurements: ' + str(self.measurements))
-
-        if self.measurements.get('FRONT') is None:
-            self.front_availability = False
-        if self.measurements.get('FRONT') > self.critical_distance:
-            self.front_availability = True
-        elif self.measurements.get('FRONT') <= self.critical_distance:
-            self.front_availability = False
-
-        if self.measurements.get('LEFT') is None:
-            self.left_availability = False
-        elif self.measurements.get('LEFT') > self.critical_distance:
-            self.left_availability = True
-        elif self.measurements.get('LEFT') <= self.critical_distance:
-            self.left_availability = False
-
-        if self.measurements.get('RIGHT') is None:
-            self.right_availability = False
-        elif self.measurements.get('RIGHT') > self.critical_distance:
-            self.right_availability = True
-        elif self.measurements.get('RIGHT') <= self.critical_distance:
-            self.right_availability = False
-
     def __init__(self, configurator, motors_object, queue, lock):
 
         print( 'Initializing ProximityManager..' )
@@ -154,70 +128,83 @@ class ProximityManager( Thread ):
                 print('ProximityManager lock acquire..')
                 self.lock.acquire()
 
-                print('Getting measurements for all directions..')
-                self.measurements = self.proximity.getDistance()
-
-                print('Measurements: ' + str(self.measurements))
-
-                #Check caso di errore
-                if self.measurements is None:
-
-                    print('Error while getting measurements')
-                    self.front_availability = False
-                    self.left_availability = False
-                    self.right_availability = False
-
-                else:
-
-                    if self.measurements.get('FRONT') is None:
-
-                        #TODO Valutare se nel BUG può dare problemi
-                        self.front_availability = False
-
-                        #Check caso in cui la direzione motori sia FORWARD e direzione FRONT bloccata
-                        if self.motors_object.getMotorsStatus() == self.motors_object.FORWARD:
-
-                            print('Stopping front measurement None')
-                            self.motors_object.stop()
-
-                    elif self.measurements.get('FRONT') > self.critical_distance:
-                        self.front_availability = True
-                    elif self.measurements.get('FRONT') <= self.critical_distance:
-
-                        self.front_availability = False
-
-                        #Check caso in cui la direzione motori sia FORWARD e direzione FRONT bloccata
-                        if self.motors_object.getMotorsStatus() == self.motors_object.FORWARD:
-
-                            print('Stopping motors 1')
-                            self.motors_object.stop()
-
-                            print('ninetyDegreesRotation..')
-                            self.motors_object.rotation('CLOCKWISE', False, True)
-
-                    if self.measurements.get('LEFT') is None:
-                        self.left_availability = False
-                    elif self.measurements.get('LEFT') > self.critical_distance:
-                        self.left_availability = True
-                    elif self.measurements.get('LEFT') <= self.critical_distance:
-                        self.left_availability = False
-
-                    if self.measurements.get('RIGHT') is None:
-                        self.right_availability = False
-                    elif self.measurements.get('RIGHT') > self.critical_distance:
-                        self.right_availability = True
-                    elif self.measurements.get('RIGHT') <= self.critical_distance:
-                        self.right_availability = False
+                #Ottenimento misurazioni sensori di prossimità
+                self.retrieveProximityData()
 
                 print('Queue get')
                 data = self.queue.get()
 
+            except proximityMeasurementErrorException, e:
+                print('ProximityManager proximityMeasurementErrorException: ' + str(e))
+                continue
             except Exception, e:
                 print('ProximityManager exception: ' + str(e))
                 raise Exception('ProximityManager execption: ' + str(e))
             finally:
                 print('ProximityManager lock release..')
                 self.lock.release()
+
+    def retrieveProximityData(self):
+
+        print('Getting measurements for all directions..')
+        self.measurements = self.proximity.getDistance()
+
+        print('Measurements: ' + str(self.measurements))
+
+        #Check caso di errore
+        if self.measurements is None:
+
+            print('Error while getting measurements')
+            raise proximityMeasurementErrorException('Error while getting proximity measurements')
+            self.front_availability = False
+            self.left_availability = False
+            self.right_availability = False
+
+        else:
+
+            if self.measurements.get('FRONT') is None:
+
+                #TODO Valutare se nel BUG può dare problemi
+                self.front_availability = False
+
+                #Check caso in cui la direzione motori sia FORWARD e direzione FRONT bloccata
+                if self.motors_object.getMotorsStatus() == self.motors_object.FORWARD:
+
+                    print('Stopping front measurement None')
+                    self.motors_object.stop()
+
+                raise proximityMeasurementErrorException('FRONT measure None')
+
+            elif self.measurements.get('FRONT') > self.critical_distance:
+                self.front_availability = True
+            elif self.measurements.get('FRONT') <= self.critical_distance:
+
+                self.front_availability = False
+
+                #Check caso in cui la direzione motori sia FORWARD e direzione FRONT bloccata
+                if self.motors_object.getMotorsStatus() == self.motors_object.FORWARD:
+
+                    print('Stopping motors 1')
+                    self.motors_object.stop()
+
+                    print('ninetyDegreesRotation..')
+                    self.motors_object.rotation('CLOCKWISE', False, True)
+
+            if self.measurements.get('LEFT') is None:
+                self.left_availability = False
+                raise proximityMeasurementErrorException('LEFT measure None')
+            elif self.measurements.get('LEFT') > self.critical_distance:
+                self.left_availability = True
+            elif self.measurements.get('LEFT') <= self.critical_distance:
+                self.left_availability = False
+
+            if self.measurements.get('RIGHT') is None:
+                self.right_availability = False
+                raise proximityMeasurementErrorException('RIGHT measure None')
+            elif self.measurements.get('RIGHT') > self.critical_distance:
+                self.right_availability = True
+            elif self.measurements.get('RIGHT') <= self.critical_distance:
+                self.right_availability = False
 
     def proximityRotation(self, from_dir, to_dir):
 
@@ -278,7 +265,6 @@ class ProximityManager( Thread ):
         time.sleep(0.4)
         print('Motors stop..')
         self.motors_object.stop()
-
 
     def stop(self):
 
