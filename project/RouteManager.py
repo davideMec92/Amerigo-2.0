@@ -146,14 +146,14 @@ class RouteManager( Thread ):
             if degrees + self.compass_tolerance < self.goal_direction_degrees:
                 print("Goal on the right")
 
-                if motor_right_actual_power - self.motors_deceleration_step >= 100:
+                if motor_right_actual_power - self.motors_deceleration_step >= 140:
                     motor_right_actual_power = motor_right_actual_power - self.motors_deceleration_step
                     self.motors_object.updateMotorPower( 'RIGHT', motor_right_actual_power )
 
             elif degrees - self.compass_tolerance > self.goal_direction_degrees:
                 print("Goal on the left")
 
-                if motor_left_actual_power - self.motors_deceleration_step >= 100:
+                if motor_left_actual_power - self.motors_deceleration_step >= 140:
                     motor_left_actual_power = motor_left_actual_power - self.motors_deceleration_step
                     self.motors_object.updateMotorPower( 'LEFT', motor_left_actual_power )
 

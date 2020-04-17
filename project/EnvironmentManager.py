@@ -12,17 +12,13 @@ class EnvironmentManager( Thread ):
 
     status = STOPPED
 
-    #Coda ProximityManager
-    proximity_manager_queue = None
-
     #Coda RouteManager
     route_manager_queue = None
 
     lock = None
 
-    def __init__(self, proximity_manager_queue, route_manager_queue, lock):
+    def __init__(self, route_manager_queue, lock):
 
-        self.proximity_manager_queue = proximity_manager_queue
         self.route_manager_queue = route_manager_queue
         self.lock = lock
 
@@ -36,10 +32,6 @@ class EnvironmentManager( Thread ):
             time.sleep(0.05)
 
             try:
-
-                """if self.proximity_manager_queue.full() is not True:
-                    print('Start proximity check..')
-                    self.proximity_manager_queue.put('START')"""
 
                 if self.route_manager_queue.full() is not True:
                     print('Start route manager check..')

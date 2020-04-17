@@ -1,19 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from threading import Thread
 from proximity import Proximity
 from custom_exceptions import *
 
-import threading
 import time
 
-class ProximityManager( Thread ):
-
-    #Stati Thread
-    STOPPED = 0
-    RUNNING = 1
-
-    status = STOPPED
+class ProximityManager:
 
     #Oggetto classe Proximity
     proximity = None
@@ -32,12 +24,6 @@ class ProximityManager( Thread ):
     #Distanze ostacoli
     out_of_range_distance = float(150) #1,5m
     critical_distance = float(20) #20 cm
-
-    queue = None
-
-    lock = None
-
-    proximity_manager_object = None
 
     def getMeasurements(self):
         return self.measurements
@@ -82,7 +68,7 @@ class ProximityManager( Thread ):
         directions_availability = { 'LEFT' : self.left_availability, 'FRONT' : self.front_availability, 'RIGHT' : self.right_availability }
         return directions_availability
 
-    def __init__(self, configurator, motors_object, queue, lock):
+    def __init__(self, configurator, motors_object):
 
         print( 'Initializing ProximityManager..' )
 
@@ -99,50 +85,9 @@ class ProximityManager( Thread ):
         #Reference istanza oggetto classe Motors
         self.motors_object = motors_object
 
-        self.lock = lock
-
         #Inizializzazione oggetto classe Proximity
         self.proximity = Proximity( configurator )
         print( 'Initializing proximity sensors..' )
-
-        self.queue = queue
-
-        Thread.__init__(self)
-        self.status = self.RUNNING
-        self.name = self.__class__.__name__
-        self.start()
-
-    def run(self):
-        while self.status != self.STOPPED:
-
-            print('Queue size: ' + str( self.queue.qsize() ))
-            print('Queue empty: ' + str( self.queue.empty() ))
-
-            if self.queue.full() is not True:
-                print('ProximityManager Return')
-                time.sleep(0.05)
-                continue
-
-            try:
-
-                print('ProximityManager lock acquire..')
-                self.lock.acquire()
-
-                #Ottenimento misurazioni sensori di prossimità
-                self.retrieveProximityData()
-
-                print('Queue get')
-                data = self.queue.get()
-
-            except proximityMeasurementErrorException, e:
-                print('ProximityManager proximityMeasurementErrorException: ' + str(e))
-                continue
-            except Exception, e:
-                print('ProximityManager exception: ' + str(e))
-                raise Exception('ProximityManager execption: ' + str(e))
-            finally:
-                print('ProximityManager lock release..')
-                self.lock.release()
 
     def retrieveProximityData(self):
 
@@ -164,7 +109,6 @@ class ProximityManager( Thread ):
 
             if self.measurements.get('FRONT') is None:
 
-                #TODO Valutare se nel BUG può dare problemi
                 self.front_availability = False
 
                 #Check caso in cui la direzione motori sia FORWARD e direzione FRONT bloccata
@@ -269,8 +213,6 @@ class ProximityManager( Thread ):
     def stop(self):
 
         print('Stopping ProximityManager..')
-
-        self.status = self.STOPPED
 
         self.motors_object.stop()
 
