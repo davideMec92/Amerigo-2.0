@@ -128,11 +128,11 @@ class ProximityManager:
                 #Check caso in cui la direzione motori sia FORWARD e direzione FRONT bloccata
                 if self.motors_object.getMotorsStatus() == self.motors_object.FORWARD:
 
-                    print('Stopping motors 1')
+                    print('ProximityManager stopping motors..')
                     self.motors_object.stop()
 
-                    print('ninetyDegreesRotation..')
-                    self.motors_object.rotation('CLOCKWISE', False, True)
+                    #print('ninetyDegreesRotation..')
+                    #self.motors_object.rotation('CLOCKWISE', False, True)
 
             if self.measurements.get('LEFT') is None:
                 self.left_availability = False
@@ -140,7 +140,15 @@ class ProximityManager:
             elif self.measurements.get('LEFT') > self.critical_distance:
                 self.left_availability = True
             elif self.measurements.get('LEFT') <= self.critical_distance:
+
                 self.left_availability = False
+
+                #Check caso in cui il robot sia in movimento e abbia raggiunto la distanza critica
+                if self.motors_object.getMotorsStatus() != self.motors_object.STOPPED:
+
+                    print('ProximityManager stopping motors..')
+                    self.motors_object.stop()
+
 
             if self.measurements.get('RIGHT') is None:
                 self.right_availability = False
@@ -148,7 +156,14 @@ class ProximityManager:
             elif self.measurements.get('RIGHT') > self.critical_distance:
                 self.right_availability = True
             elif self.measurements.get('RIGHT') <= self.critical_distance:
+
                 self.right_availability = False
+
+                #Check caso in cui il robot sia in movimento e abbia raggiunto la distanza critica
+                if self.motors_object.getMotorsStatus() != self.motors_object.STOPPED:
+
+                    print('ProximityManager stopping motors..')
+                    self.motors_object.stop()
 
     def proximityRotation(self, from_dir, to_dir):
 

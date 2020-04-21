@@ -1,5 +1,5 @@
 
-from EnvironmentManager import EnvironmentManager
+#from EnvironmentManager import EnvironmentManager
 from ProximityManager import ProximityManager
 from RouteManager import RouteManager
 from configurator import Configurator
@@ -23,7 +23,7 @@ try:
 
     route_manager_queue = Queue( maxsize = 1 )
 
-    environment_manager = EnvironmentManager( route_manager_queue, multi_threading_lock )
+    #environment_manager = EnvironmentManager( route_manager_queue, multi_threading_lock )
     #print('Join environment_manager..')
     #environment_manager.join()
     proximity_manager = ProximityManager( configurator, motors )
@@ -37,9 +37,9 @@ except Exception, e:
     print("start.py Exception: " + str(e))
 finally:
 
-    if environment_manager is not None:
+    """if environment_manager is not None:
         print('Stopping EnvironmentManager..')
-        environment_manager.stop()
+        environment_manager.stop()"""
 
     if proximity_manager is not None:
         print('Stopping ProximityManager..')

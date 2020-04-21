@@ -44,6 +44,21 @@ class Motors:
     def getMotorRightActualPower(self):
         return self.motor_right_actual_power
 
+    def restoreMotorActualPowerToDefault(self, type = None):
+
+        if type is None:
+
+            self.motor_left_actual_power = self.motors_default_power
+            self.motor_right_actual_power = self.motors_default_power
+
+        else:
+
+            if type == 'LEFT':
+                self.motor_left_actual_power = self.motors_default_power
+            elif type == 'RIGHT':
+                self.motor_right_actual_power = self.motors_default_power
+
+
     def stop(self):
 
         self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorForwardsPin(), 0)
@@ -58,6 +73,8 @@ class Motors:
         if type == "COUNTERCLOCKWISE":
 
             if restoreToDefaultPower is False:
+                print('Rotation at: ' + str(self.motor_right_actual_power))
+                print('Rotation at: ' + str(self.motor_left_actual_power))
                 self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorForwardsPin(), int(self.motor_right_actual_power))
                 self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorBackwardsPin(), int(self.motor_left_actual_power))
             else:
@@ -71,6 +88,8 @@ class Motors:
         elif type == "CLOCKWISE":
 
             if restoreToDefaultPower is False:
+                print('Rotation at: ' + str(self.motor_right_actual_power))
+                print('Rotation at: ' + str(self.motor_left_actual_power))
                 self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorForwardsPin(), int(self.motor_left_actual_power))
                 self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorBackwardsPin(), int(self.motor_right_actual_power))
             else:

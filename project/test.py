@@ -22,13 +22,14 @@ try :
     proximity = Proximity( configurator )
 
     while True:
-        print('FINAL DESTINATIOOOONNNNNN DISTANCE: ' + str( proximity.getDistance('FRONT') ))
+        print('FINAL DESTINATIOOOONNNNNN DISTANCE: ' + str( proximity.getDistance() ))
 
     sys.exit()
 
     motors = Motors( configurator )
     print('Motors compass rotation..')
-    motors.compassRotation('COUNTERCLOCKWISE')
+    motors.forward()
+    time.sleep(1)
     print('Motors stop..')
     motors.stop()
     sys.exit()

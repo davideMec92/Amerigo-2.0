@@ -81,7 +81,7 @@ class Proximity:
             start = time.time()
 
             while not self.ping:
-                if (time.time()-start) >= 0.23:
+                if (time.time()-start) >= 0.23: #0.23 Timeout massimo 1.50m
                     return 20000
                 time.sleep(0.001)
             return self.time
@@ -132,14 +132,28 @@ class Proximity:
 
             for i in range(len(triggers)):
 
-                time.sleep(0.05)
+                distance = None
+                temp_distance = 0
 
-                TimeElapsed = self.read(triggers[i])
+                for char in 'do':
 
-                if TimeElapsed == 5:
+                    time.sleep(0.05)
+
+                    TimeElapsed = self.read(triggers[i])
+
+                    calc_distance = float( (TimeElapsed / 1000000.0 * 34030) / 2 )
+
+                    if char == 'd':
+                        temp_distance = calc_distance
+                    else:
+                        if calc_distance < temp_distance:
+                            temp_distance = calc_distance
+
+                distance = temp_distance
+
+                """if TimeElapsed == 20000:
                     distance = None
-                else:
-                    distance = float( (TimeElapsed / 1000000.0 * 34030) / 2 )
+                else:"""
 
                 if sensor_orientation is not None:
                     data[sensor_orientation] = distance

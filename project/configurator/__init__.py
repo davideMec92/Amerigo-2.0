@@ -54,22 +54,32 @@ class Configurator:
 
         #Settaggio iniziale gpio (Range valori PWM 0-255)
 
+        #frequency = int(8000)
+
         #MOTORE DESTRO
         if self.gpio.set_PWM_dutycycle(self.conf.get('Motors').get('RIGHT_MOTOR_FORWARDS'),0) != 0:
             raise Exception('Configurator error:  cannot initialize RIGHT_MOTOR_FORWARDS gpio')
             return
 
+        #self.gpio.set_PWM_frequency(self.conf.get('Motors').get('RIGHT_MOTOR_FORWARDS'),frequency)
+
         if self.gpio.set_PWM_dutycycle(self.conf.get('Motors').get('RIGHT_MOTOR_BACKWARDS'),0) != 0:
             raise Exception('Configurator error:  cannot initialize RIGHT_MOTOR_BACKWARDS gpio')
             return
+
+        #self.gpio.set_PWM_frequency(self.conf.get('Motors').get('RIGHT_MOTOR_BACKWARDS'),frequency)
 
         if self.gpio.set_PWM_dutycycle(self.conf.get('Motors').get('LEFT_MOTOR_FORWARDS'),0) != 0:
             raise Exception('Configurator error:  cannot initialize LEFT_MOTOR_FORWARDS gpio')
             return
 
+        #self.gpio.set_PWM_frequency(self.conf.get('Motors').get('LEFT_MOTOR_FORWARDS'),frequency)
+
         if self.gpio.set_PWM_dutycycle(self.conf.get('Motors').get('LEFT_MOTOR_BACKWARDS'),0) != 0:
             raise Exception('Configurator error:  cannot initialize LEFT_MOTOR_BACKWARDS gpio')
             return
+
+        #self.gpio.set_PWM_frequency(self.conf.get('Motors').get('LEFT_MOTOR_BACKWARDS'),frequency)
 
     def gpioCleanup(self):
         self.gpio.stop()
