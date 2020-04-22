@@ -73,8 +73,6 @@ class Motors:
         if type == "COUNTERCLOCKWISE":
 
             if restoreToDefaultPower is False:
-                print('Rotation at: ' + str(self.motor_right_actual_power))
-                print('Rotation at: ' + str(self.motor_left_actual_power))
                 self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorForwardsPin(), int(self.motor_right_actual_power))
                 self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorBackwardsPin(), int(self.motor_left_actual_power))
             else:
@@ -88,8 +86,6 @@ class Motors:
         elif type == "CLOCKWISE":
 
             if restoreToDefaultPower is False:
-                print('Rotation at: ' + str(self.motor_right_actual_power))
-                print('Rotation at: ' + str(self.motor_left_actual_power))
                 self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorForwardsPin(), int(self.motor_left_actual_power))
                 self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorBackwardsPin(), int(self.motor_right_actual_power))
             else:
@@ -102,7 +98,11 @@ class Motors:
 
         if ninetyDegreesRotation is True:
             time.sleep(0.425)
+            #time.sleep(0.5)
             self.stop()
+            print('***** TURN ' + str(type) + ' 90 degrees *****')
+        else:
+            print('***** TURN ' + str(type) + ' *****')
 
     def compassRotation(self, type):
 
