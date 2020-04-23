@@ -1,5 +1,7 @@
 import py_qmc5883l
 
+from custom_exceptions import *
+
 class Compass:
 
     sensor = None
@@ -13,8 +15,8 @@ class Compass:
 
         try:
             degrees = self.sensor.get_bearing()
-        except:
-            print("Errore durante nik")
+        except Exception, e:
+            print("Compass measurement Exception: " + str(e))
             return None
 
         return degrees
@@ -22,10 +24,10 @@ class Compass:
     def getRotationDegreeCosts(self, start, arrive):
 
         if start is None:
-            raise Exception('Parameter "start" cannot be None')
+            raise compassGetRotationDegreeCostsException('Parameter "start" cannot be None')
 
         if arrive is None:
-            raise Exception('Parameter "arrive" cannot be None')
+            raise compassGetRotationDegreeCostsException('Parameter "arrive" cannot be None')
 
         result = {}
         clockwise_cost = 0

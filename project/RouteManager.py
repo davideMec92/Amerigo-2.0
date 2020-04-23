@@ -31,6 +31,7 @@ class RouteManager( Thread ):
     motors_deceleration_step = 15
 
     normal_mode_status = 'DISABLED'
+
     bug_mode_status = 'ENABLED'
 
     directions = {0 : 'LEFT', 1 : 'RIGHT'}
@@ -44,6 +45,10 @@ class RouteManager( Thread ):
     max_before_turn_steps = 2
 
     main_locked_direction = None
+
+    max_bug_mode_critical_exceptions = 3
+
+    bug_mode_critical_exceptions_count = 0
 
     def getGoalDirectionDegrees(self):
         return self.goal_direction_degrees
@@ -150,15 +155,21 @@ class RouteManager( Thread ):
                 self.motors_object.forward( True )
 
         except proximityMeasurementErrorException, e:
-            print('Normal Mode exception: ' + str(e))
+            print('$$$$$ NORMAL MODE: proximityMeasurementErrorException: ' + str(e) + ' $$$$$')
+        except proximityGetDistanceException, e:
+            print('$$$$$ NORMAL MODE: proximityGetDistanceException: ' + str(e) + ' $$$$$')
         except Exception, e:
-            print('Generic Exception, return')
+            print('$$$$$ NORMAL MODE: Exception: ' + str(e) + ' $$$$$')
         finally:
             return
 
     def bugMode( self, goal_degrees, parent_degrees = goal_direction_degrees, locked_direction = None ):
 
         try:
+
+            #Check limite massimo eccezioni raggiunto
+            if self.bug_mode_critical_exceptions_count >= self.max_bug_mode_critical_exceptions:
+                print('##### BUG MODE: Critical Exceptions limit raised, return #####')
 
             #Caso di stop del thread
             if self.status == self.STOPPED or self.bug_mode_status == 'DISABLED':
@@ -388,9 +399,21 @@ class RouteManager( Thread ):
             print('##### BUG MODE: BugMode exception: ' + str(e) + ' #####')
             print('##### BUG MODE: Recall bugMode Method #####')
             self.bugMode( goal_degrees, parent_degrees, locked_direction )
+        except compassGetRotationDegreeCostsException, e:
+            print('##### BUG MODE: compassGetRotationDegreeCostsException: ' + str(e) + ' #####')
+            print('##### BUG MODE: Recall bugMode Method #####')
+            self.bug_mode_critical_exceptions_count = self.bug_mode_critical_exceptions_count + 1
+            self.bugMode( goal_degrees, parent_degrees, locked_direction )
+        except proximityGetDistanceException, e:
+            print('##### BUG MODE: proximityGetDistanceException: ' + str(e) + ' #####')
+            print('##### BUG MODE: Recall bugMode Method #####')
+            self.bug_mode_critical_exceptions_count = self.bug_mode_critical_exceptions_count + 1
+            self.bugMode( goal_degrees, parent_degrees, locked_direction )
         except Exception, e:
             print('##### BUG MODE: Generic Exception, return #####')
-            return
+            self.bug_mode_critical_exceptions_count = self.bug_mode_critical_exceptions_count + 1
+            self.bugMode( goal_degrees, parent_degrees, locked_direction )
+
 
     def rotationToDegrees(self, degress):
 

@@ -2,6 +2,7 @@ from ProximityManager import ProximityManager
 from RouteManager import RouteManager
 from configurator import Configurator
 from motors import Motors
+from custom_exceptions import *
 
 try:
 
@@ -21,6 +22,12 @@ try:
     raw_input("Press Enter to stop...")
 except KeyboardInterrupt, SystemExit:
     print("Threads STOP")
+except configuratorLoadConfException, e:
+    print(e)
+except motorsInitializationException, e:
+    print(e)
+except proximityInitializationException, e:
+    print(e)
 except Exception, e:
     print("start.py Exception: " + str(e))
 finally:

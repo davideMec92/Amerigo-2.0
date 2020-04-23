@@ -1,4 +1,5 @@
 import time
+from custom_exceptions import *
 
 class Motors:
 
@@ -22,11 +23,11 @@ class Motors:
     def __init__(self, configurator):
 
         if configurator is None:
-            raise Exception('Motors error: configurator element cannot be None')
+            raise motorsInitializationException('????? Motors Exception: configurator element cannot be None ?????')
             return
 
         if configurator.getGpio() is None:
-            raise Exception('Motors error: gpio element cannot be None')
+            raise motorsInitializationException('????? Motors Exception: gpio element cannot be None ?????')
             return
 
         self.configurator = configurator
@@ -98,7 +99,6 @@ class Motors:
 
         if ninetyDegreesRotation is True:
             time.sleep(0.425)
-            #time.sleep(0.5)
             self.stop()
             print('***** TURN ' + str(type) + ' 90 degrees *****')
         else:

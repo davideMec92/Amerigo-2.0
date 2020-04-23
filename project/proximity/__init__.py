@@ -1,5 +1,6 @@
 import pigpio
 import time
+from custom_exceptions import *
 
 class Proximity:
 
@@ -21,11 +22,11 @@ class Proximity:
     def __init__(self, configurator):
 
         if configurator is None:
-            raise Exception('Proximity error: configurator element cannot be None')
+            raise proximityInitializationException('@@@@@ Proximity Exception: configurator element cannot be None @@@@@')
             return
 
         if configurator.getGpio() is None:
-            raise Exception('Proximity error: gpio element cannot be None')
+            raise proximityInitializationException('@@@@@ Proximity Exception: gpio element cannot be None @@@@@')
             return
 
         self.gpio = configurator.getGpio()
@@ -151,10 +152,6 @@ class Proximity:
 
                 distance = temp_distance
 
-                """if TimeElapsed == 20000:
-                    distance = None
-                else:"""
-
                 if sensor_orientation is not None:
                     data[sensor_orientation] = distance
                 else:
@@ -166,7 +163,7 @@ class Proximity:
                         data['RIGHT'] = distance
 
         except Exception, e:
-            print('Proximity exception: ' + str(e))
+            raise proximityGetDistanceException('@@@@@ Proximity Exception: ' + str(e) + ' @@@@@')
             return None
 
         return data
