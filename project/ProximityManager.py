@@ -68,6 +68,13 @@ class ProximityManager:
         directions_availability = { 'LEFT' : self.left_availability, 'FRONT' : self.front_availability, 'RIGHT' : self.right_availability }
         return directions_availability
 
+    def getStringifyMeasurements(self):
+
+        if self.measurements is None:
+            return
+
+        return str(self.measurements.get('LEFT')) + ', ' + str(self.measurements.get('FRONT')) + ', ' + str(self.measurements.get('RIGHT'))
+
     def __init__(self, configurator, motors_object):
 
         print( 'Initializing ProximityManager..' )

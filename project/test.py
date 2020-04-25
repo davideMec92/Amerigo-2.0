@@ -4,6 +4,7 @@ from compass import Compass
 from motors import Motors
 from proximity import Proximity
 from configurator import Configurator
+from map_file_manager import MapFileManager
 from custom_exceptions import *
 #from bluetooth_discoverer import BluetoothDiscoverer
 import time
@@ -13,6 +14,17 @@ import random
 configurator = None
 
 try :
+
+    map_file_manager = MapFileManager()
+
+    map_file_manager.append('ROBOT DI MERDA 1')
+    map_file_manager.append('ROBOT DI MERDA 2')
+
+    map_file_manager.close()
+    sys.exit()
+
+
+
 
     configurator = Configurator()
     configurator.setGpio()
@@ -182,7 +194,7 @@ except KeyboardInterrupt:
     print("KeyboardInterrupt")
 finally:
 
-    proximity.cancel()
+    #proximity.cancel()
 
     print('Finally')
     if configurator is not None:

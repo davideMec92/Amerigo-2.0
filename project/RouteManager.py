@@ -2,6 +2,7 @@
 
 from compass import Compass
 from threading import Thread
+from map_file_manager import MapFileManager
 from custom_exceptions import *
 
 import time
@@ -30,9 +31,9 @@ class RouteManager( Thread ):
     #Step decrementale potenza motori
     motors_deceleration_step = 15
 
-    normal_mode_status = 'DISABLED'
+    normal_mode_status = 'ENABLED'
 
-    bug_mode_status = 'ENABLED'
+    bug_mode_status = 'DISABLED'
 
     directions = {0 : 'LEFT', 1 : 'RIGHT'}
 
@@ -49,6 +50,10 @@ class RouteManager( Thread ):
     max_bug_mode_critical_exceptions = 3
 
     bug_mode_critical_exceptions_count = 0
+
+    bug_mode_last_move = None
+
+    map_file_manager = None
 
     def getGoalDirectionDegrees(self):
         return self.goal_direction_degrees
@@ -120,6 +125,8 @@ class RouteManager( Thread ):
                 print('$$$$$ NORMAL MODE: Enabling bugMode.. $$$$$')
                 self.normal_mode_status = 'DISABLED'
                 self.bug_mode_status = 'ENABLED'
+                print('Initialing MapFileManager..')
+                self.map_file_manager = MapFileManager()
                 self.motors_object.restoreMotorActualPowerToDefault()
                 return
 
@@ -170,6 +177,7 @@ class RouteManager( Thread ):
             #Check limite massimo eccezioni raggiunto
             if self.bug_mode_critical_exceptions_count >= self.max_bug_mode_critical_exceptions:
                 print('##### BUG MODE: Critical Exceptions limit raised, return #####')
+                return
 
             #Caso di stop del thread
             if self.status == self.STOPPED or self.bug_mode_status == 'DISABLED':
@@ -180,6 +188,11 @@ class RouteManager( Thread ):
             self.motors_object.stop()
 
             self.proximity_manager_object.retrieveProximityData()
+
+            if self.map_file_manager is not None:
+                data = self.proximity_manager_object.getStringifyMeasurements() + ', ' + str(self.bug_mode_last_move)
+                print('Writing DATA: ' + str( data ))
+                self.map_file_manager.append( data )
 
             #print('goal_degrees: ' + str(goal_degrees))
             #print('parent_degrees: ' + str(parent_degrees))
@@ -231,6 +244,12 @@ class RouteManager( Thread ):
                 print('##### BUG MODE: Enabling normalMode.. #####')
                 self.normal_mode_status = 'ENABLED'
                 self.bug_mode_status = 'DISABLED'
+
+                if self.map_file_manager is not None:
+                    self.map_file_manager.close()
+
+                self.bug_mode_last_move = None
+
                 return
 
             #Check direzione front libera
@@ -410,7 +429,7 @@ class RouteManager( Thread ):
             self.bug_mode_critical_exceptions_count = self.bug_mode_critical_exceptions_count + 1
             self.bugMode( goal_degrees, parent_degrees, locked_direction )
         except Exception, e:
-            print('##### BUG MODE: Generic Exception, return #####')
+            print('##### BUG MODE: Generic Exception: ' + str(e) + ', return #####')
             self.bug_mode_critical_exceptions_count = self.bug_mode_critical_exceptions_count + 1
             self.bugMode( goal_degrees, parent_degrees, locked_direction )
 
@@ -456,3 +475,6 @@ class RouteManager( Thread ):
         if self.motors_object is not None and self.motors_object.getMotorsStatus() != self.motors_object.STOPPED:
             print('Stopping motors..')
             self.motors_object.stop()
+
+        if self.map_file_manager is not None:
+            self.map_file_manager.close()
