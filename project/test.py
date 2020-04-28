@@ -17,7 +17,7 @@ configurator = None
 try :
 
     dllist = circularList()
-    node = dllist.append('N')
+    """node = dllist.append('N')
 
     print('Node: ' + str(node.data) + ', Prev: ' + str(node.prev.data) + ', Next: ' + str(node.next.data))
     print('Head: ' + str(dllist.head.data))
@@ -40,7 +40,12 @@ try :
     print('Node: ' + str(node.data) + ', Prev: ' + str(node.prev.data) + ', Next: ' + str(node.next.data))
     print('Head: ' + str(dllist.head.data))
     print('Last: ' + str(dllist.last.data))
-    print("\n")
+    print("\n")"""
+
+    dllist.push('W')
+    dllist.push('S')
+    dllist.push('E')
+    dllist.push('N')
 
     head = dllist.head
     last = dllist.last
@@ -54,6 +59,9 @@ try :
     head = head.next
     print(str(head.next.data))
     head = head.next
+
+
+    print("\n")
 
     print(str(last.data))
     print(str(last.prev.data))
