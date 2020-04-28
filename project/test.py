@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from compass import Compass
+"""from compass import Compass
 from motors import Motors
 from proximity import Proximity
 from configurator import Configurator
 from map_file_manager import MapFileManager
-from custom_exceptions import *
+from custom_exceptions import *"""
+from circular_list import circularList
 #from bluetooth_discoverer import BluetoothDiscoverer
 import time
 import sys
@@ -14,6 +15,57 @@ import random
 configurator = None
 
 try :
+
+    dllist = circularList()
+    node = dllist.append('N')
+
+    print('Node: ' + str(node.data) + ', Prev: ' + str(node.prev.data) + ', Next: ' + str(node.next.data))
+    print('Head: ' + str(dllist.head.data))
+    print('Last: ' + str(dllist.last.data))
+    print("\n")
+
+    node = dllist.append('S')
+    print('Node: ' + str(node.data) + ', Prev: ' + str(node.prev.data) + ', Next: ' + str(node.next.data))
+    print('Head: ' + str(dllist.head.data))
+    print('Last: ' + str(dllist.last.data))
+    print("\n")
+
+    node = dllist.push('W')
+    print('Node: ' + str(node.data) + ', Prev: ' + str(node.prev.data) + ', Next: ' + str(node.next.data))
+    print('Head: ' + str(dllist.head.data))
+    print('Last: ' + str(dllist.last.data))
+    print("\n")
+
+    node = dllist.push('O')
+    print('Node: ' + str(node.data) + ', Prev: ' + str(node.prev.data) + ', Next: ' + str(node.next.data))
+    print('Head: ' + str(dllist.head.data))
+    print('Last: ' + str(dllist.last.data))
+    print("\n")
+
+    head = dllist.head
+    last = dllist.last
+
+    print(str(head.data))
+    print(str(head.next.data))
+    head = head.next
+    print(str(head.next.data))
+    head = head.next
+    print(str(head.next.data))
+    head = head.next
+    print(str(head.next.data))
+    head = head.next
+
+    print(str(last.data))
+    print(str(last.prev.data))
+    last = last.prev
+    print(str(last.prev.data))
+    last = last.prev
+    print(str(last.prev.data))
+    last = last.prev
+    print(str(last.prev.data))
+    last = last.prev
+
+    sys.exit()
 
     map_file_manager = MapFileManager()
 
