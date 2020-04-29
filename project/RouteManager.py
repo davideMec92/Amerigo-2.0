@@ -125,8 +125,11 @@ class RouteManager( Thread ):
                 print('$$$$$ NORMAL MODE: Enabling bugMode.. $$$$$')
                 self.normal_mode_status = 'DISABLED'
                 self.bug_mode_status = 'ENABLED'
-                print('Initialing MapFileManager..')
-                self.map_file_manager = MapFileManager()
+
+                if self.map_file_manager is None:
+                    print('Initialing MapFileManager..')
+                    self.map_file_manager = MapFileManager()
+                    
                 self.motors_object.restoreMotorActualPowerToDefault()
                 return
 
@@ -219,8 +222,12 @@ class RouteManager( Thread ):
 
                     if locked_direction == 'RIGHT':
                         self.motors_object.rotation('CLOCKWISE', False, True)
+                        #TEST
+                        self.bug_mode_last_move = 'C'
                     elif locked_direction == 'LEFT':
                         self.motors_object.rotation('COUNTERCLOCKWISE', False, True)
+                        #TEST
+                        self.bug_mode_last_move = 'CC'
 
                     #In questo caso ricordare di dare un minimo di tolleranza alla bussola dato che parent_degrees è determinato dai gradi bussola (+-5°)
                     if abs(self.goal_direction_degrees - parent_degrees) > self.compass_tolerance:
@@ -260,6 +267,9 @@ class RouteManager( Thread ):
 
                     self.motors_object.forward(True)
 
+                    #TEST
+                    self.bug_mode_last_move = 'F'
+
                     if self.before_turn_steps > 0:
                     	self.before_turn_steps = self.before_turn_steps - 1
 
@@ -280,6 +290,8 @@ class RouteManager( Thread ):
                     #2 rotazioni da 90° l'una
                     self.motors_object.rotation('CLOCKWISE', False, True)
                     self.motors_object.rotation('CLOCKWISE', False, True)
+                    #TEST
+                    self.bug_mode_last_move = '2C'
 
                     #Set flag u_turn a True
                     self.u_turn = True
@@ -297,6 +309,8 @@ class RouteManager( Thread ):
 
                     #Rotazione verso destra di 90°
                     self.motors_object.rotation('CLOCKWISE', False, True)
+                    #TEST
+                    self.bug_mode_last_move = 'C'
 
                     #TODO VEDERE SE ELIMINARE
                     if self.u_turn is True:
@@ -335,6 +349,8 @@ class RouteManager( Thread ):
 
         		#Rotazione verso sinistra di 90°
                 self.motors_object.rotation('COUNTERCLOCKWISE', False, True)
+                #TEST
+                self.bug_mode_last_move = 'CC'
 
                 #TODO VEDERE SE ELIMINARE
                 if self.u_turn is True:
@@ -378,11 +394,15 @@ class RouteManager( Thread ):
 
                 	#Rotazione verso sinistra di 90°
                     self.motors_object.rotation('COUNTERCLOCKWISE', False, True)
+                    #TEST
+                    self.bug_mode_last_move = 'CC'
 
                 elif random_dir == 'RIGHT':
 
                 	#Rotazione verso destra di 90°
                     self.motors_object.rotation('CLOCKWISE', False, True)
+                    #TEST
+                    self.bug_mode_last_move = 'C'
 
                 if self.u_turn is True:
 
