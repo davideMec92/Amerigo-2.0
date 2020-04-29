@@ -141,7 +141,7 @@ def updateRobotMatrixValues(coordinateType, value):
 	robot_movements_x.append(robot_matrix[0][1].get('x'))
 	robot_movements_y.append(robot_matrix[0][3].get('y'))
 
-    print(str(robot_matrix))
+    #print(str(robot_matrix))
 
 for line in Lines:
 
@@ -151,7 +151,7 @@ for line in Lines:
     temp_right_proximity = roundToLowerMultiple(strip_values[2].strip())
     temp_bug_mode_last_move = strip_values[3].strip()
 
-    print(str(temp_bug_mode_last_move))
+    #print(str(temp_bug_mode_last_move))
 
     if temp_bug_mode_last_move is not None:
 
@@ -195,7 +195,7 @@ for line in Lines:
         generateObstacleSquarePointsA( roundToLowerMultiple(front_proximity_actual_x) + temp_front_proximity, roundToLowerMultiple( front_proximity_actual_y ) )
         generateObstacleSquarePointsC( roundToLowerMultiple(right_proximity_actual_x), roundToLowerMultiple( right_proximity_actual_y ) - temp_right_proximity )
 
-    print(str(temp_left_proximity) + ' ' + str(temp_front_proximity) + ' ' + str(temp_right_proximity) + ' ' + str(temp_bug_mode_last_move))
+    #print(str(temp_left_proximity) + ' ' + str(temp_front_proximity) + ' ' + str(temp_right_proximity) + ' ' + str(temp_bug_mode_last_move))
 
 x = []
 y = []
@@ -206,6 +206,6 @@ for point in points_list:
 
 plt.scatter(x, y, color='red')
 plt.scatter(robot_movements_x, robot_movements_y)
-plt.xlim(-200,200)
-plt.ylim(-200,200)
-plt.show()
+#plt.xlim(-200,200)
+#plt.ylim(-200,200)
+plt.savefig('Map.png', dpi=200, bbox_inches='tight')
