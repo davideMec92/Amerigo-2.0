@@ -26,6 +26,15 @@ robot_matrix = array([[{ 'x' : 3, 'y' : 15}, {'x' : 15, 'y' : 13 }, {'x' : 0, 'y
 					[{ 'x' : 3, 'y' : 0}, {'x' : 0, 'y' : 13 }, {'x' : 15, 'y' : 3 }, {'x' : 13, 'y' : 15}] #LX
 					])
 
+points_list = []
+
+robot_movements_x = [ robot_matrix[0][2].get('x'), robot_matrix[0][2].get('x'), robot_matrix[0][1].get('x'), robot_matrix[0][1].get('x')]
+robot_movements_y = [ robot_matrix[0][3].get('y'), robot_matrix[0][0].get('y'), robot_matrix[0][0].get('y'), robot_matrix[0][3].get('y')]
+
+# Using readlines()
+file = open('data', 'r')
+Lines = file.readlines()
+
 def updateActualProximityValues():
 
     global left_proximity_actual_x
@@ -61,67 +70,49 @@ def updateActualProximityValues():
 
 updateActualProximityValues()
 
-orientation_index = 'N'
-
-points_list = []
-
-# Using readlines()
-file = open('data', 'r')
-Lines = file.readlines()
-
 def roundToLowerMultiple(x, base=5):
     #return int(base * round(float(x)/base))
 	x = float(x)
 	return int(x - (x%base))
 
-def generateObstacleSquarePointsLeft(x,y):
+def generateObstacleSquarePointsA(x,y):
 
-    global points_list
-    global actual_orientation
+	global points_list
 
-    if actual_orientation.data == 'W':
-        col_index = 0
-    elif actual_orientation.data == 'N':
-        col_index = 1
-    elif actual_orientation.data == 'S':
-        col_index = 2
-    elif actual_orientation.data == 'E':
-        col_index = 3
+	#print('A Values x: ' + str(x)+', y: ' + str(y))
 
-    #print('LEFT Values x: ' + str(x)+', y: ' + str(y))
+	points_list.append({'x' : x,'y' : y})
+	points_list.append({'x' : x + 5,'y' : y})
+	points_list.append({'x' : x + 5,'y' : y + 5})
+	points_list.append({'x' : x ,'y' : y + 5})
 
-    points_list.append({'x' : x,'y' : y})
-    points_list.append({'x' : x - 5,'y' : y})
-    points_list.append({'x' : x - 5,'y' : y + 5})
-    points_list.append({'x' : x ,'y' : y + 5})
+	#print('A list: ' + str(points_list))
 
-    #print('LEFT list: ' + str(points_list))
+def generateObstacleSquarePointsB(x,y):
 
-def generateObstacleSquarePointsFront(x,y):
+	global points_list
 
-    global points_list
+	#print('B Values x: ' + str(x)+', y: ' + str(y))
 
-    print('FRONT Values x: ' + str(x)+', y: ' + str(y))
+	points_list.append({'x' : x,'y' : y})
+	points_list.append({'x' : x - 5,'y' : y})
+	points_list.append({'x' : x - 5,'y' : y + 5})
+	points_list.append({'x' : x ,'y' : y + 5})
 
-    points_list.append({'x' : x,'y' : y})
-    points_list.append({'x' : x + 5,'y' : y})
-    points_list.append({'x' : x + 5,'y' : y + 5})
-    points_list.append({'x' : x ,'y' : y + 5})
+	#print('B list: ' + str(points_list))
 
-    print('FRONT list: ' + str(points_list))
+def generateObstacleSquarePointsC(x,y):
 
-def generateObstacleSquarePointsRight(x,y):
+	global points_list
 
-    global points_list
+	#print('C Values x: ' + str(x)+', y: ' + str(y))
 
-    #print('Values x: ' + str(x)+', y: ' + str(y))
+	points_list.append({'x' : x,'y' : y})
+	points_list.append({'x' : x + 5,'y' : y})
+	points_list.append({'x' : x + 5,'y' : y - 5})
+	points_list.append({'x' : x ,'y' : y - 5})
 
-    points_list.append({'x' : x,'y' : y})
-    points_list.append({'x' : x + 5,'y' : y})
-    points_list.append({'x' : x + 5,'y' : y + 5})
-    points_list.append({'x' : x ,'y' : y + 5})
-
-    #print('list: ' + str(points_list))
+	#print('C list: ' + str(points_list))
 
 def updateRobotMatrixValues(coordinateType, value):
 
@@ -129,14 +120,26 @@ def updateRobotMatrixValues(coordinateType, value):
 
     for row in robot_matrix: #Colonne
         for item in row: #Righe
-            #print('i: ' + str(i) + ' j: ' + str(j))
-            print('update value: ' + str(item.get( coordinateType )))
+
+            #print('update value: ' + str(item.get( coordinateType )))
 
             if coordinateType == 'y':
                 item.update( y = item.get( coordinateType ) + value )
             else:
                 item.update( x = item.get( coordinateType ) + value )
-            #robot_matrix[i][j][coordinateType] = robot_matrix[i][j].get( coordinateType ) + value
+
+
+	robot_movements_x.append(robot_matrix[0][2].get('x'))
+	robot_movements_y.append(robot_matrix[0][3].get('y'))
+
+	robot_movements_x.append(robot_matrix[0][2].get('x'))
+	robot_movements_y.append(robot_matrix[0][0].get('y'))
+
+	robot_movements_x.append(robot_matrix[0][1].get('x'))
+	robot_movements_y.append(robot_matrix[0][0].get('y'))
+
+	robot_movements_x.append(robot_matrix[0][1].get('x'))
+	robot_movements_y.append(robot_matrix[0][3].get('y'))
 
     print(str(robot_matrix))
 
@@ -164,8 +167,6 @@ for line in Lines:
             actual_orientation = actual_orientation.prev
         elif temp_bug_mode_last_move == 'F':
 
-            print('actual_orientation: ' + str(actual_orientation.data))
-
             if actual_orientation.data == 'N':
                 updateRobotMatrixValues('y', 10)
             elif actual_orientation.data == 'S':
@@ -178,34 +179,33 @@ for line in Lines:
     updateActualProximityValues()
 
     if actual_orientation.data == 'N':
-        generateObstacleSquarePointsLeft( roundToLowerMultiple(left_proximity_actual_x) - temp_left_proximity, roundToLowerMultiple( left_proximity_actual_y )  )
-        generateObstacleSquarePointsFront( roundToLowerMultiple(front_proximity_actual_x), temp_front_proximity + front_proximity_actual_y )
-        generateObstacleSquarePointsRight( roundToLowerMultiple(right_proximity_actual_x) + temp_right_proximity, roundToLowerMultiple( right_proximity_actual_y ) )
+        generateObstacleSquarePointsB( roundToLowerMultiple(left_proximity_actual_x) - temp_left_proximity, roundToLowerMultiple( left_proximity_actual_y )  )
+        generateObstacleSquarePointsA( roundToLowerMultiple(front_proximity_actual_x), temp_front_proximity + front_proximity_actual_y )
+        generateObstacleSquarePointsA( roundToLowerMultiple(right_proximity_actual_x) + temp_right_proximity, roundToLowerMultiple( right_proximity_actual_y ) )
     elif actual_orientation.data == 'S':
-        generateObstacleSquarePointsLeft( roundToLowerMultiple(left_proximity_actual_x) + temp_left_proximity, roundToLowerMultiple( left_proximity_actual_y )  )
-        generateObstacleSquarePointsFront( roundToLowerMultiple(front_proximity_actual_x), front_proximity_actual_y - temp_front_proximity )
-        generateObstacleSquarePointsRight( roundToLowerMultiple(right_proximity_actual_x) - temp_right_proximity, roundToLowerMultiple( right_proximity_actual_y ) )
+        generateObstacleSquarePointsA( roundToLowerMultiple(left_proximity_actual_x) + temp_left_proximity, roundToLowerMultiple( left_proximity_actual_y )  )
+        generateObstacleSquarePointsC( roundToLowerMultiple(front_proximity_actual_x), front_proximity_actual_y - temp_front_proximity )
+        generateObstacleSquarePointsB( roundToLowerMultiple(right_proximity_actual_x) - temp_right_proximity, roundToLowerMultiple( right_proximity_actual_y ) )
     elif actual_orientation.data == 'W':
-        generateObstacleSquarePointsLeft( roundToLowerMultiple( left_proximity_actual_x ), roundToLowerMultiple( left_proximity_actual_y ) - temp_left_proximity )
-        generateObstacleSquarePointsFront( roundToLowerMultiple(front_proximity_actual_x) - temp_front_proximity, roundToLowerMultiple( front_proximity_actual_y ) )
-        generateObstacleSquarePointsRight( roundToLowerMultiple(right_proximity_actual_x), temp_right_proximity + roundToLowerMultiple( right_proximity_actual_y ) )
+        generateObstacleSquarePointsC( roundToLowerMultiple( left_proximity_actual_x ), roundToLowerMultiple( left_proximity_actual_y ) - temp_left_proximity )
+        generateObstacleSquarePointsB( roundToLowerMultiple(front_proximity_actual_x) - temp_front_proximity, roundToLowerMultiple( front_proximity_actual_y ) )
+        generateObstacleSquarePointsA( roundToLowerMultiple(right_proximity_actual_x), temp_right_proximity + roundToLowerMultiple( right_proximity_actual_y ) )
     elif actual_orientation.data == 'E':
-        generateObstacleSquarePointsLeft( left_proximity_actual_x, temp_left_proximity + roundToLowerMultiple( left_proximity_actual_y ) )
-        generateObstacleSquarePointsFront( roundToLowerMultiple(front_proximity_actual_x) + temp_front_proximity, roundToLowerMultiple( front_proximity_actual_y ) )
-        generateObstacleSquarePointsRight( roundToLowerMultiple(right_proximity_actual_x), roundToLowerMultiple( right_proximity_actual_y ) - temp_right_proximity )
+        generateObstacleSquarePointsA( left_proximity_actual_x, temp_left_proximity + roundToLowerMultiple( left_proximity_actual_y ) )
+        generateObstacleSquarePointsA( roundToLowerMultiple(front_proximity_actual_x) + temp_front_proximity, roundToLowerMultiple( front_proximity_actual_y ) )
+        generateObstacleSquarePointsC( roundToLowerMultiple(right_proximity_actual_x), roundToLowerMultiple( right_proximity_actual_y ) - temp_right_proximity )
 
     print(str(temp_left_proximity) + ' ' + str(temp_front_proximity) + ' ' + str(temp_right_proximity) + ' ' + str(temp_bug_mode_last_move))
 
-x = [0,0,15,15]
-y = [0,15,15,0]
+x = []
+y = []
 
 for point in points_list:
 	x.append(point.get('x'))
 	y.append(point.get('y'))
 
-
-
-plt.scatter(x, y)
+plt.scatter(x, y, color='red')
+plt.scatter(robot_movements_x, robot_movements_y)
 plt.xlim(-200,200)
 plt.ylim(-200,200)
 plt.show()
