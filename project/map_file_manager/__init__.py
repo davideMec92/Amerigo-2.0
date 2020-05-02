@@ -8,7 +8,7 @@ class MapFileManager:
 
     filename_prefix = 'map_data_'
 
-    file_exstension = '.txt'
+    file_extension = '.map'
 
     file_counter = 0
 
@@ -32,7 +32,7 @@ class MapFileManager:
             print('MapFileManager Exception: ' + str(e))
 
     def getFileName(self):
-        return self.filename_prefix + self.today_date + '_' + str(self.file_counter) + self.file_exstension
+        return self.filename_prefix + self.today_date + '_' + str(self.file_counter) + self.file_extension
 
     def initFile(self):
 

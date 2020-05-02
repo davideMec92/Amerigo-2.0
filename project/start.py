@@ -2,9 +2,17 @@ from ProximityManager import ProximityManager
 from RouteManager import RouteManager
 from configurator import Configurator
 from motors import Motors
+from MapAnalyzer import MapAnalyzer
 from custom_exceptions import *
+import sys
 
 try:
+
+    draw_map = False
+
+    if len(sys.argv) > 1 and sys.argv[1].lower() == 'map':
+        draw_map = True
+        map_analyzer = MapAnalyzer()
 
     print('Getting configuration..')
     configurator = Configurator()
@@ -20,13 +28,18 @@ try:
     route_manager = RouteManager( motors, proximity_manager )
 
     raw_input("Press Enter to stop...")
-except KeyboardInterrupt, SystemExit:
+
+except KeyboardInterrupt:
     print("Threads STOP")
 except configuratorLoadConfException, e:
     print(e)
 except motorsInitializationException, e:
     print(e)
 except proximityInitializationException, e:
+    print(e)
+except mapAnalyzerInitializationsException, e:
+    print(e)
+except mapAnalyzerPlotBuildException, e:
     print(e)
 except Exception, e:
     print("start.py Exception: " + str(e))
@@ -43,3 +56,7 @@ finally:
     if configurator is not None:
         print('Cleaning up GPIO..')
         configurator.gpioCleanup()
+
+    if draw_map is True:
+        print('Creating plots..')
+        map_analyzer.plotMaps()

@@ -1,211 +1,257 @@
 
-#import numpy as np
 from numpy import *
 from circular_list import circularList
 import matplotlib.pyplot as plt
+import glob,os
+from custom_exceptions import *
 
-orientation_list = circularList()
+class MapAnalyzer:
 
-orientation_list.push('W')
-orientation_list.push('S')
-orientation_list.push('E')
-actual_orientation = orientation_list.push('N')
+	orientation_list = circularList()
 
-left_proximity_actual_x = 0
-left_proximity_actual_y = 0
+	actual_orientation = None
 
-front_proximity_actual_x = 0
-front_proximity_actual_y = 0
+	left_proximity_actual_x = None
+	left_proximity_actual_y = None
 
-right_proximity_actual_x = 0
-right_proximity_actual_y = 0
+	front_proximity_actual_x = None
+	front_proximity_actual_y = None
 
-#                           W                       N                       S                   E
-robot_matrix = array([[{ 'x' : 3, 'y' : 15}, {'x' : 15, 'y' : 13 }, {'x' : 0, 'y' : 3 }, {'x' : 13, 'y' : 0}], #DX
-					[{ 'x' : 0, 'y' : 8}, {'x' : 8, 'y' : 15 }, {'x' : 8, 'y' : 0 }, {'x' : 15, 'y' : 8}], #FRONT
-					[{ 'x' : 3, 'y' : 0}, {'x' : 0, 'y' : 13 }, {'x' : 15, 'y' : 3 }, {'x' : 13, 'y' : 15}] #LX
-					])
+	right_proximity_actual_x = None
+	right_proximity_actual_y = None
 
-points_list = []
+	robot_matrix = None
 
-robot_movements_x = [ robot_matrix[0][2].get('x'), robot_matrix[0][2].get('x'), robot_matrix[0][1].get('x'), robot_matrix[0][1].get('x')]
-robot_movements_y = [ robot_matrix[0][3].get('y'), robot_matrix[0][0].get('y'), robot_matrix[0][0].get('y'), robot_matrix[0][3].get('y')]
+	points_list = []
 
-# Using readlines()
-file = open('data', 'r')
-Lines = file.readlines()
+	robot_movements_x = None
+	robot_movements_y = None
 
-def updateActualProximityValues():
+	input_files = []
 
-    global left_proximity_actual_x
-    global left_proximity_actual_y
+	file_extension_in = '.map'
+	file_extension_out = '.png'
 
-    global front_proximity_actual_x
-    global front_proximity_actual_y
+	map_files_dir_in = 'map_files'
+	map_files_dir_out = 'map_files/map'
 
-    global right_proximity_actual_x
-    global right_proximity_actual_y
+	def __init__(self):
 
-    global actual_orientation
+		try:
 
-    col_index = None
+			print('MapAnalyzer init..')
 
-    if actual_orientation.data == 'W':
-        col_index = 0
-    elif actual_orientation.data == 'N':
-        col_index = 1
-    elif actual_orientation.data == 'S':
-        col_index = 2
-    elif actual_orientation.data == 'E':
-        col_index = 3
+			if not os.path.exists(self.map_files_dir_out):
+				print('Creation of ' + str(self.map_files_dir_out) + ' folder..')
+				os.makedirs(self.map_files_dir_out)
 
-    left_proximity_actual_x = robot_matrix[2][col_index].get('x') #0
-    left_proximity_actual_y = robot_matrix[2][col_index].get('y') #13
+			for file in glob.glob('./' + self.map_files_dir_in + '/*' + self.file_extension_in):
+				print('file: ' + str(file))
+				self.input_files.append(file)
 
-    front_proximity_actual_x = robot_matrix[1][col_index].get('x') #8
-    front_proximity_actual_y = robot_matrix[1][col_index].get('y') #15
+		except OSError as e:
+			print('MapAnalyzer Exception: ' + str(e))
+			raise mapAnalyzerInitializationsException( 'MapAnalyzer Exception: ' + str(e) )
 
-    right_proximity_actual_x = robot_matrix[0][col_index].get('x') #15
-    right_proximity_actual_y = robot_matrix[0][col_index].get('y') #13
+	def initValues(self):
 
-updateActualProximityValues()
+		self.orientation_list = circularList()
+		self.orientation_list.push('W')
+		self.orientation_list.push('S')
+		self.orientation_list.push('E')
+		self.actual_orientation = self.orientation_list.push('N')
 
-def roundToLowerMultiple(x, base=5):
-    #return int(base * round(float(x)/base))
-	x = float(x)
-	return int(x - (x%base))
+		self.left_proximity_actual_x = 0
+		self.left_proximity_actual_y = 0
 
-def generateObstacleSquarePointsA(x,y):
+		self.front_proximity_actual_x = 0
+		self.front_proximity_actual_y = 0
 
-	global points_list
+		self.right_proximity_actual_x = 0
+		self.right_proximity_actual_y = 0
 
-	#print('A Values x: ' + str(x)+', y: ' + str(y))
+		#                               W                       N                       S                   E
+		self.robot_matrix = array([[{ 'x' : 3, 'y' : 15}, {'x' : 15, 'y' : 13 }, {'x' : 0, 'y' : 3 }, {'x' : 13, 'y' : 0}], #DX
+							[{ 'x' : 0, 'y' : 8}, {'x' : 8, 'y' : 15 }, {'x' : 8, 'y' : 0 }, {'x' : 15, 'y' : 8}], #FRONT
+							[{ 'x' : 3, 'y' : 0}, {'x' : 0, 'y' : 13 }, {'x' : 15, 'y' : 3 }, {'x' : 13, 'y' : 15}] #LX
+							])
 
-	points_list.append({'x' : x,'y' : y})
-	points_list.append({'x' : x + 5,'y' : y})
-	points_list.append({'x' : x + 5,'y' : y + 5})
-	points_list.append({'x' : x ,'y' : y + 5})
+		self.robot_movements_x = [ self.robot_matrix[0][2].get('x'), self.robot_matrix[0][2].get('x'), self.robot_matrix[0][1].get('x'), self.robot_matrix[0][1].get('x')]
+		self.robot_movements_y = [ self.robot_matrix[0][3].get('y'), self.robot_matrix[0][0].get('y'), self.robot_matrix[0][0].get('y'), self.robot_matrix[0][3].get('y')]
 
-	#print('A list: ' + str(points_list))
+		self.points_list = []
 
-def generateObstacleSquarePointsB(x,y):
+		self.updateActualProximityValues()
 
-	global points_list
+	def plotMaps(self):
 
-	#print('B Values x: ' + str(x)+', y: ' + str(y))
+		if len(self.input_files) > 0:
 
-	points_list.append({'x' : x,'y' : y})
-	points_list.append({'x' : x - 5,'y' : y})
-	points_list.append({'x' : x - 5,'y' : y + 5})
-	points_list.append({'x' : x ,'y' : y + 5})
+			for file in self.input_files:
+				self.buildMap(file)
 
-	#print('B list: ' + str(points_list))
+	def updateActualProximityValues(self):
 
-def generateObstacleSquarePointsC(x,y):
+	    col_index = None
 
-	global points_list
+	    if self.actual_orientation.data == 'W':
+	        col_index = 0
+	    elif self.actual_orientation.data == 'N':
+	        col_index = 1
+	    elif self.actual_orientation.data == 'S':
+	        col_index = 2
+	    elif self.actual_orientation.data == 'E':
+	        col_index = 3
 
-	#print('C Values x: ' + str(x)+', y: ' + str(y))
+	    self.left_proximity_actual_x = self.robot_matrix[2][col_index].get('x')
+	    self.left_proximity_actual_y = self.robot_matrix[2][col_index].get('y')
 
-	points_list.append({'x' : x,'y' : y})
-	points_list.append({'x' : x + 5,'y' : y})
-	points_list.append({'x' : x + 5,'y' : y - 5})
-	points_list.append({'x' : x ,'y' : y - 5})
+	    self.front_proximity_actual_x = self.robot_matrix[1][col_index].get('x')
+	    self.front_proximity_actual_y = self.robot_matrix[1][col_index].get('y')
 
-	#print('C list: ' + str(points_list))
+	    self.right_proximity_actual_x = self.robot_matrix[0][col_index].get('x')
+	    self.right_proximity_actual_y = self.robot_matrix[0][col_index].get('y')
 
-def updateRobotMatrixValues(coordinateType, value):
+	def roundToLowerMultiple(self, x, base=5):
+	    #return int(base * round(float(x)/base))
+		x = float(x)
+		return int(x - (x%base))
 
-    global robot_matrix
+	def generateObstacleSquarePointsA(self, x, y):
 
-    for row in robot_matrix: #Colonne
-        for item in row: #Righe
+		#print('A Values x: ' + str(x)+', y: ' + str(y))
 
-            #print('update value: ' + str(item.get( coordinateType )))
+		self.points_list.append({'x' : x,'y' : y})
+		self.points_list.append({'x' : x + 5,'y' : y})
+		self.points_list.append({'x' : x + 5,'y' : y + 5})
+		self.points_list.append({'x' : x ,'y' : y + 5})
 
-            if coordinateType == 'y':
-                item.update( y = item.get( coordinateType ) + value )
-            else:
-                item.update( x = item.get( coordinateType ) + value )
+		#print('A list: ' + str(points_list))
+
+	def generateObstacleSquarePointsB(self, x, y):
+
+		#print('B Values x: ' + str(x)+', y: ' + str(y))
+
+		self.points_list.append({'x' : x,'y' : y})
+		self.points_list.append({'x' : x - 5,'y' : y})
+		self.points_list.append({'x' : x - 5,'y' : y + 5})
+		self.points_list.append({'x' : x ,'y' : y + 5})
+
+		#print('B list: ' + str(points_list))
+
+	def generateObstacleSquarePointsC(self, x, y):
+
+		#print('C Values x: ' + str(x)+', y: ' + str(y))
+
+		self.points_list.append({'x' : x,'y' : y})
+		self.points_list.append({'x' : x + 5,'y' : y})
+		self.points_list.append({'x' : x + 5,'y' : y - 5})
+		self.points_list.append({'x' : x ,'y' : y - 5})
+
+		#print('C list: ' + str(points_list))
+
+	def updateRobotMatrixValues(self, coordinateType, value):
+
+	    for row in self.robot_matrix: #Colonne
+	        for item in row: #Righe
+
+	            #print('update value: ' + str(item.get( coordinateType )))
+
+	            if coordinateType == 'y':
+	                item.update( y = item.get( coordinateType ) + value )
+	            else:
+	                item.update( x = item.get( coordinateType ) + value )
 
 
-	robot_movements_x.append(robot_matrix[0][2].get('x'))
-	robot_movements_y.append(robot_matrix[0][3].get('y'))
+		self.robot_movements_x.append(self.robot_matrix[0][2].get('x'))
+		self.robot_movements_y.append(self.robot_matrix[0][3].get('y'))
 
-	robot_movements_x.append(robot_matrix[0][2].get('x'))
-	robot_movements_y.append(robot_matrix[0][0].get('y'))
+		self.robot_movements_x.append(self.robot_matrix[0][2].get('x'))
+		self.robot_movements_y.append(self.robot_matrix[0][0].get('y'))
 
-	robot_movements_x.append(robot_matrix[0][1].get('x'))
-	robot_movements_y.append(robot_matrix[0][0].get('y'))
+		self.robot_movements_x.append(self.robot_matrix[0][1].get('x'))
+		self.robot_movements_y.append(self.robot_matrix[0][0].get('y'))
 
-	robot_movements_x.append(robot_matrix[0][1].get('x'))
-	robot_movements_y.append(robot_matrix[0][3].get('y'))
+		self.robot_movements_x.append(self.robot_matrix[0][1].get('x'))
+		self.robot_movements_y.append(self.robot_matrix[0][3].get('y'))
 
-    #print(str(robot_matrix))
+	    #print(str(robot_matrix))
 
-for line in Lines:
+	def buildMap(self, filename):
 
-    strip_values = line.strip().split(',')
-    temp_left_proximity = roundToLowerMultiple(strip_values[0].strip())
-    temp_front_proximity = roundToLowerMultiple(strip_values[1].strip())
-    temp_right_proximity = roundToLowerMultiple(strip_values[2].strip())
-    temp_bug_mode_last_move = strip_values[3].strip()
+		try:
 
-    #print(str(temp_bug_mode_last_move))
+			file = open(filename, 'r')
 
-    if temp_bug_mode_last_move is not None:
+			Lines = file.readlines()
 
-        if temp_bug_mode_last_move == 'C':
-            actual_orientation = actual_orientation.next
-        elif temp_bug_mode_last_move == 'CC':
-            actual_orientation = actual_orientation.prev
-        elif temp_bug_mode_last_move == '2C':
-            actual_orientation = actual_orientation.next
-            actual_orientation = actual_orientation.next
-        elif temp_bug_mode_last_move == '2CC':
-            actual_orientation = actual_orientation.prev
-            actual_orientation = actual_orientation.prev
-        elif temp_bug_mode_last_move == 'F':
+			self.initValues()
 
-            if actual_orientation.data == 'N':
-                updateRobotMatrixValues('y', 10)
-            elif actual_orientation.data == 'S':
-                updateRobotMatrixValues('y', -10)
-            elif actual_orientation.data == 'W':
-                updateRobotMatrixValues('x', -10)
-            elif actual_orientation.data == 'E':
-                updateRobotMatrixValues('x', 10)
+			for line in Lines:
 
-    updateActualProximityValues()
+			    strip_values = line.strip().split(',')
+			    temp_left_proximity = self.roundToLowerMultiple(strip_values[0].strip())
+			    temp_front_proximity = self.roundToLowerMultiple(strip_values[1].strip())
+			    temp_right_proximity = self.roundToLowerMultiple(strip_values[2].strip())
+			    temp_bug_mode_last_move = strip_values[3].strip()
 
-    if actual_orientation.data == 'N':
-        generateObstacleSquarePointsB( roundToLowerMultiple(left_proximity_actual_x) - temp_left_proximity, roundToLowerMultiple( left_proximity_actual_y )  )
-        generateObstacleSquarePointsA( roundToLowerMultiple(front_proximity_actual_x), temp_front_proximity + front_proximity_actual_y )
-        generateObstacleSquarePointsA( roundToLowerMultiple(right_proximity_actual_x) + temp_right_proximity, roundToLowerMultiple( right_proximity_actual_y ) )
-    elif actual_orientation.data == 'S':
-        generateObstacleSquarePointsA( roundToLowerMultiple(left_proximity_actual_x) + temp_left_proximity, roundToLowerMultiple( left_proximity_actual_y )  )
-        generateObstacleSquarePointsC( roundToLowerMultiple(front_proximity_actual_x), front_proximity_actual_y - temp_front_proximity )
-        generateObstacleSquarePointsB( roundToLowerMultiple(right_proximity_actual_x) - temp_right_proximity, roundToLowerMultiple( right_proximity_actual_y ) )
-    elif actual_orientation.data == 'W':
-        generateObstacleSquarePointsC( roundToLowerMultiple( left_proximity_actual_x ), roundToLowerMultiple( left_proximity_actual_y ) - temp_left_proximity )
-        generateObstacleSquarePointsB( roundToLowerMultiple(front_proximity_actual_x) - temp_front_proximity, roundToLowerMultiple( front_proximity_actual_y ) )
-        generateObstacleSquarePointsA( roundToLowerMultiple(right_proximity_actual_x), temp_right_proximity + roundToLowerMultiple( right_proximity_actual_y ) )
-    elif actual_orientation.data == 'E':
-        generateObstacleSquarePointsA( left_proximity_actual_x, temp_left_proximity + roundToLowerMultiple( left_proximity_actual_y ) )
-        generateObstacleSquarePointsA( roundToLowerMultiple(front_proximity_actual_x) + temp_front_proximity, roundToLowerMultiple( front_proximity_actual_y ) )
-        generateObstacleSquarePointsC( roundToLowerMultiple(right_proximity_actual_x), roundToLowerMultiple( right_proximity_actual_y ) - temp_right_proximity )
+			    #print(str(temp_bug_mode_last_move))
 
-    #print(str(temp_left_proximity) + ' ' + str(temp_front_proximity) + ' ' + str(temp_right_proximity) + ' ' + str(temp_bug_mode_last_move))
+			    if temp_bug_mode_last_move is not None:
 
-x = []
-y = []
+			        if temp_bug_mode_last_move == 'C':
+			            self.actual_orientation = self.actual_orientation.next
+			        elif temp_bug_mode_last_move == 'CC':
+			            self.actual_orientation = self.actual_orientation.prev
+			        elif temp_bug_mode_last_move == '2C':
+			            self.actual_orientation = self.actual_orientation.next
+			            self.actual_orientation = self.actual_orientation.next
+			        elif temp_bug_mode_last_move == '2CC':
+			            self.actual_orientation = self.actual_orientation.prev
+			            self.actual_orientation = self.actual_orientation.prev
+			        elif temp_bug_mode_last_move == 'F':
 
-for point in points_list:
-	x.append(point.get('x'))
-	y.append(point.get('y'))
+			            if self.actual_orientation.data == 'N':
+			                self.updateRobotMatrixValues('y', 10)
+			            elif self.actual_orientation.data == 'S':
+			                self.updateRobotMatrixValues('y', -10)
+			            elif self.actual_orientation.data == 'W':
+			                self.updateRobotMatrixValues('x', -10)
+			            elif self.actual_orientation.data == 'E':
+			                self.updateRobotMatrixValues('x', 10)
 
-plt.scatter(x, y, color='red')
-plt.scatter(robot_movements_x, robot_movements_y)
-#plt.xlim(-200,200)
-#plt.ylim(-200,200)
-plt.savefig('Map.png', dpi=200, bbox_inches='tight')
+			    self.updateActualProximityValues()
+
+			    if self.actual_orientation.data == 'N':
+			        self.generateObstacleSquarePointsB( self.roundToLowerMultiple(self.left_proximity_actual_x) - temp_left_proximity, self.roundToLowerMultiple( self.left_proximity_actual_y )  )
+			        self.generateObstacleSquarePointsA( self.roundToLowerMultiple(self.front_proximity_actual_x), temp_front_proximity + self.front_proximity_actual_y )
+			        self.generateObstacleSquarePointsA( self.roundToLowerMultiple(self.right_proximity_actual_x) + temp_right_proximity, self.roundToLowerMultiple( self.right_proximity_actual_y ) )
+			    elif self.actual_orientation.data == 'S':
+			        self.generateObstacleSquarePointsA( self.roundToLowerMultiple(self.left_proximity_actual_x) + temp_left_proximity, self.roundToLowerMultiple( self.left_proximity_actual_y )  )
+			        self.generateObstacleSquarePointsC( self.roundToLowerMultiple(self.front_proximity_actual_x), self.front_proximity_actual_y - temp_front_proximity )
+			        self.generateObstacleSquarePointsB( self.roundToLowerMultiple(self.right_proximity_actual_x) - temp_right_proximity, self.roundToLowerMultiple( self.right_proximity_actual_y ) )
+			    elif self.actual_orientation.data == 'W':
+			        self.generateObstacleSquarePointsC( self.roundToLowerMultiple( self.left_proximity_actual_x ), self.roundToLowerMultiple( self.left_proximity_actual_y ) - temp_left_proximity )
+			        self.generateObstacleSquarePointsB( self.roundToLowerMultiple(self.front_proximity_actual_x) - temp_front_proximity, self.roundToLowerMultiple( self.front_proximity_actual_y ) )
+			        self.generateObstacleSquarePointsA( self.roundToLowerMultiple(self.right_proximity_actual_x), temp_right_proximity + self.roundToLowerMultiple( self.right_proximity_actual_y ) )
+			    elif self.actual_orientation.data == 'E':
+			        self.generateObstacleSquarePointsA( self.roundToLowerMultiple(self.left_proximity_actual_x), temp_left_proximity + self.roundToLowerMultiple( self.left_proximity_actual_y ) )
+			        self.generateObstacleSquarePointsA( self.roundToLowerMultiple(self.front_proximity_actual_x) + temp_front_proximity, self.roundToLowerMultiple( self.front_proximity_actual_y ) )
+			        self.generateObstacleSquarePointsC( self.roundToLowerMultiple(self.right_proximity_actual_x), self.roundToLowerMultiple( self.right_proximity_actual_y ) - temp_right_proximity )
+
+			    #print(str(temp_left_proximity) + ' ' + str(temp_front_proximity) + ' ' + str(temp_right_proximity) + ' ' + str(temp_bug_mode_last_move))
+
+			x = []
+			y = []
+
+			for point in self.points_list:
+				x.append(point.get('x'))
+				y.append(point.get('y'))
+
+			plt.scatter(x, y, color='red')
+			plt.scatter(self.robot_movements_x, self.robot_movements_y)
+			plt.savefig(self.map_files_dir_out + '/' + os.path.basename(filename).split('.')[0] + self.file_extension_out, dpi=200, bbox_inches='tight')
+			plt.clf()
+
+		except Exception, e:
+			raise mapAnalyzerPlotBuildException('MapAnalyzer: ' + str(e))

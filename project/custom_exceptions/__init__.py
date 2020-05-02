@@ -29,9 +29,16 @@ class configuratorGpioInitializationException( Error ):
 class motorsInitializationException( Error ):
     pass
 
-#Proximity Exception
+#Proximity Exceptions
 class proximityInitializationException( Error ):
     pass
 
 class proximityGetDistanceException( Error ):
+    pass
+
+#MapAnalyzer Exceptions
+class mapAnalyzerInitializationsException( Error ):
+    pass
+
+class mapAnalyzerPlotBuildException( Error ):
     pass
