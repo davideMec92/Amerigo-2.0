@@ -12,7 +12,6 @@ try:
 
     if len(sys.argv) > 1 and sys.argv[1].lower() == 'map':
         draw_map = True
-        map_analyzer = MapAnalyzer()
 
     print('Getting configuration..')
     configurator = Configurator()
@@ -29,7 +28,7 @@ try:
 
     raw_input("Press Enter to stop...")
 
-except KeyboardInterrupt:
+except KeyboardInterrupt, SystemExit:
     print("Threads STOP")
 except configuratorLoadConfException, e:
     print(e)
@@ -59,4 +58,5 @@ finally:
 
     if draw_map is True:
         print('Creating plots..')
+        map_analyzer = MapAnalyzer()
         map_analyzer.plotMaps()
