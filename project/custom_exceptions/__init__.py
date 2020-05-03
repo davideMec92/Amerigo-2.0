@@ -37,7 +37,7 @@ class proximityGetDistanceException( Error ):
     pass
 
 #MapAnalyzer Exceptions
-class mapAnalyzerInitializationsException( Error ):
+class mapAnalyzerInitializationException( Error ):
     pass
 
 class mapAnalyzerPlotBuildException( Error ):

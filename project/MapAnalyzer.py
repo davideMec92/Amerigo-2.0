@@ -51,7 +51,7 @@ class MapAnalyzer:
 
 		except OSError as e:
 			print('MapAnalyzer Exception: ' + str(e))
-			raise mapAnalyzerInitializationsException( 'MapAnalyzer Exception: ' + str(e) )
+			raise mapAnalyzerInitializationException( 'MapAnalyzer Exception: ' + str(e) )
 
 	def initValues(self):
 

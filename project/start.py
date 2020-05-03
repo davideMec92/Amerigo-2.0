@@ -36,7 +36,7 @@ except motorsInitializationException, e:
     print(e)
 except proximityInitializationException, e:
     print(e)
-except mapAnalyzerInitializationsException, e:
+except mapAnalyzerInitializationException, e:
     print(e)
 except mapAnalyzerPlotBuildException, e:
     print(e)
