@@ -5,6 +5,8 @@
 <b> Davide Nunzio Maccarrone Mat: 0000850912 davide.maccarrone@studio.unibo.it </b><br>
 <b> Bruno Quintero Panaro Mat: 0000843825 bruno.quinteropanaro@studio.unibo.it </b>
 
+<img src="images/amerigo_1.jpg">
+
 <h3>Il progetto</h3>
 
 Amerigo 2.0 è un robot in grado di perseguire una rotta definita gestendo eventuali ostacoli presenti sul suo cammino. La gestione degli ostacoli è stata implementata mediante una versione di algoritmo BUG realizzata ad hoc per l'hardware di cui Amerigo 2.0 dispone.
