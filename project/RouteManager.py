@@ -23,7 +23,7 @@ class RouteManager( Thread ):
     compass_object = None
 
     #Direzione obiettivo
-    goal_direction_degrees = 300
+    goal_direction_degrees = 105
 
     #Tolleranza magnetometro
     compass_tolerance = 5
@@ -129,7 +129,7 @@ class RouteManager( Thread ):
                 if self.map_file_manager is None:
                     print('Initialing MapFileManager..')
                     self.map_file_manager = MapFileManager()
-                    
+
                 self.motors_object.restoreMotorActualPowerToDefault()
                 return
 
