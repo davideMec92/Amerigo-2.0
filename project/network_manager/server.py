@@ -7,8 +7,9 @@ import uuid
 
 class FingerProtocol(basic.LineReceiver):
 
-    def lineReceived(self, user):
-        self.createCallback(self.factory.getUser(user))
+    def lineReceived(self, authenticationToken):
+        self.createCallback(self.peerSignup(authenticationToken))
+        #self.createCallback(self.factory.getUser(user))
 
     def onError(self, err):
         return 'Internal error in server'
@@ -24,6 +25,16 @@ class FingerProtocol(basic.LineReceiver):
         deferred.addCallback(self.writeResponse)
         deferred.addErrback(self.onError)
         return deferred
+
+    def peerSignup(self, authenticationToken):
+
+        if authenticationToken is None:
+            raise Exception('Authentication token cannot be null')
+
+        if authenticationToken == 'ciao':
+            return 'Siamo al top!'
+        else:
+            return 'Merda'
 
 class FingerFactory(protocol.ServerFactory):
     protocol = FingerProtocol
