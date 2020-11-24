@@ -14,10 +14,11 @@ class Peer:
     bluetooth_mac = None
     ip_address = None
     status = PeerStatus(0)
+    updatedTime = None
 
     database_manager = DatabaseManager()
 
-    def __init__(self, bluetooth_mac, ip_address, peerStatus, id = None):
+    def __init__(self, bluetooth_mac, ip_address, peerStatus, updatedTime = None, id = None):
 
         type(peerStatus)
         if bluetooth_mac is None:
@@ -36,17 +37,26 @@ class Peer:
         else:
             self.id = id
 
+        self.updatedTime = updatedTime
         self.bluetooth_mac = bluetooth_mac
         self.ip_address = ip_address
         self.status = peerStatus
 
     @staticmethod
-    def createFromDict(status, ip_address, bluetooth_mac, id):
-        return Peer(bluetooth_mac, ip_address, PeerStatus[status], id)
+    def createFromDict(status, updatedTime, ip_address, bluetooth_mac, id):
+        return Peer(bluetooth_mac, ip_address, PeerStatus[status], updatedTime, id)
 
     @staticmethod
     def get(peerId):
         result = Peer.database_manager.getObject('id', peerId)
+        if len(result) == 0:
+            return None
+        else:
+            return Peer.createFromDict(**result[0])
+
+    @staticmethod
+    def getFromBluetoothMac(bluetoothMac):
+        result = Peer.database_manager.getObject('bluetooth_mac', bluetoothMac)
         if len(result) == 0:
             return None
         else:
@@ -62,4 +72,4 @@ class Peer:
         self.database_manager.removeObject(self.toDict())
 
     def toDict(self):
-        return {'id':self.id, 'bluetooth_mac':self.bluetooth_mac, 'ip_address':self.ip_address, 'status':self.status.name}
+        return {'id':self.id, 'bluetooth_mac':self.bluetooth_mac, 'ip_address':self.ip_address, 'status':self.status.name, 'updatedTime':self.updatedTime}
