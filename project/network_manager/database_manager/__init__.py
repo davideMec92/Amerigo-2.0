@@ -12,12 +12,15 @@ class DatabaseManager:
 
     db = None
 
-    def __init__(self):
+    def __init__(self, databaseName = None):
         print('Initializing DB..')
-        self.db = TinyDB(self.DB_DEFAULT_PATH + self.DB_DEFAULT_NAME)
+        self.db = TinyDB(self.DB_DEFAULT_PATH + databaseName if databaseName is not None else self.DB_DEFAULT_NAME)
 
     def getObject(self, queryAttribute, attributeValue):
         return self.db.search(where(queryAttribute) == attributeValue)
+
+    def getAll(self):
+        return self.db.all()
 
     def upsertObject(self, objectDict):
         Peer = Query()

@@ -16,7 +16,7 @@ class Peer:
     status = PeerStatus(0)
     updatedTime = None
 
-    database_manager = DatabaseManager()
+    database_manager = DatabaseManager('peers_db')
 
     def __init__(self, bluetooth_mac, ip_address, peerStatus, updatedTime = None, id = None):
 
