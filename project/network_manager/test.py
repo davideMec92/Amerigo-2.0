@@ -1,12 +1,21 @@
 from peer import Peer, PeerStatus
 from database_manager import DatabaseManager
 from communication_message import CommunicationMessage, CommunicationMessageTypes
+from peer_controller import PeerController
 import json
 
-deserialized_message = {"type":"LOGIN","authToken":"asfhakjshfajkdfhajkdhs","macAddress":"ASKDHASDJGASJGAHS"}
+communication_message = CommunicationMessage()
+deserialized_message = {"type":"LOGIN","authToken":"Hs8GckGahlvzOTZBMpMLTa2gjMjEnRDf","macAddress":"macAddress_1"}
+encrypt_token = communication_message.setMessage(deserialized_message)
+print(communication_message.setMessage(deserialized_message))
+
+print(communication_message.getMessage(encrypt_token))
+
+#print 'PEERS_LIST: ' + str(peers_list)
+"""deserialized_message = {"type":"LOGIN","authToken":"Hs8GckGahlvzOTZBMpMLTa2gjMjEnRDf","macAddress":"macAddress_1"}
 test = CommunicationMessage.check(CommunicationMessage.LOGIN_CONF_SCHEMA, deserialized_message)
 print type(deserialized_message)
-print(test)
+print(test)"""
 #peer = Peer("MACK22", "192.168.1.5", PeerStatus.CONNECTED)
 #peer.save()
 

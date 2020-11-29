@@ -9,14 +9,15 @@ class PeerStatus(Enum):
 
 class Peer:
 
-    #DB default settings
     id = None
     bluetooth_mac = None
     ip_address = None
     status = PeerStatus(0)
     updatedTime = None
 
-    database_manager = DatabaseManager('peers_db')
+    DB_NAME = 'peers_db'
+
+    database_manager = DatabaseManager(DB_NAME)
 
     def __init__(self, bluetooth_mac, ip_address, peerStatus, updatedTime = None, id = None):
 

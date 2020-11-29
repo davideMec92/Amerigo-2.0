@@ -6,11 +6,17 @@ import json, ast
 
 class CommunicationMessageTypes(Enum):
     LOGIN = 0
-    PEER_ACCESS = 1
+    PEERS_LIST = 1
+    INFO = 2
 
 class CommunicationMessage:
 
     ENCRYPTION_KEY = 'Jli5assvwZKQBWxm0n3DYPqT27wWrpqcjWyOcXNUSAQ='
+
+    INFO_MESSAGE_CONF_SCHEMA = Schema({
+        'type': str,
+        'message': str
+    })
 
     LOGIN_CONF_SCHEMA = Schema({
         'type': str,
@@ -18,9 +24,8 @@ class CommunicationMessage:
         'macAddress':str
     })
 
-    PEER_ACCESS_SCHEMA = Schema({
+    PEERS_LIST_SCHEMA = Schema({
         'type': str,
-        'secretToken': str,
         'peers': [
             {
                 "status": str,
@@ -32,6 +37,8 @@ class CommunicationMessage:
         ]
     })
 
+    CommunicationMeesageTypesSchemaAssoc = {CommunicationMessageTypes.LOGIN.name:LOGIN_CONF_SCHEMA,CommunicationMessageTypes.PEERS_LIST.name:PEERS_LIST_SCHEMA,CommunicationMessageTypes.INFO.name:INFO_MESSAGE_CONF_SCHEMA}
+
     type = None
     message = None
     out_time = None
@@ -42,13 +49,34 @@ class CommunicationMessage:
         self.fernet_crypt = Fernet(self.ENCRYPTION_KEY)
 
     def getMessage(self, message, decrypt = True):
-        if(message is None):
+        if message is None:
             raise Exception('Message cannot be null')
-        return self.fernet_crypt.decrypt(message) if decrypt is True else message
+
+        #Message decrypt
+        if decrypt is True:
+            message = self.fernet_crypt.decrypt(message)
+
+        if isinstance(message, dict) is False:
+            message = json.loads(message)
+
+        #Message validation
+        if self.check(self.CommunicationMeesageTypesSchemaAssoc[message['type']],message) is False:
+            raise Exception('Login data validation failed')
+
+        return message
 
     def setMessage(self, message, encrypt = True):
-        if(message is None):
+        if message is None:
             raise Exception('Message cannot be null')
+
+        if isinstance(message, dict) is False:
+            message = json.loads(message)
+
+        #Message validation
+        self.check(self.CommunicationMeesageTypesSchemaAssoc[message['type']],message)
+
+        message = json.dumps(message)
+
         return self.fernet_crypt.encrypt(message) if encrypt is True else message
 
     @staticmethod
@@ -58,5 +86,5 @@ class CommunicationMessage:
             conf_schema.validate(conf)
             return True
         except SchemaError, e:
-            print str(e)
+            print 'Schema validation error:' + str(e)
             return False

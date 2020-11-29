@@ -1,6 +1,7 @@
 from twisted.internet import protocol, reactor, defer, endpoints
 from twisted.protocols import basic
 from peer import Peer, PeerStatus
+from peer_controller import PeerController
 from communication_message import CommunicationMessage, CommunicationMessageTypes
 import json
 
@@ -8,44 +9,60 @@ COMMUNICATION_PORT = '1079'
 COMMUNICATION_PROTOCOL = 'tcp'
 
 class FingerProtocol(basic.LineReceiver):
+
+    communication_message = CommunicationMessage()
+
     def lineReceived(self, message):
         print('message: ' + str(message))
         self.managePeerMessage(str(message))
 
     def managePeerMessage(self, message):
         try:
-            print('Message: ' + str(json.loads(message)['type']))
-            deserialized_message = json.loads(message)
-            print type(message)
-            print type(deserialized_message)
-            print str(deserialized_message)
+            #print('Message: ' + str(json.loads(message)['type']))
+            deserialized_message = self.communication_message.getMessage(message)
 
             if deserialized_message is None and 'type' not in deserialized_message:
-                print('Cannot deserialize message')
-                self.transport.loseConnection()
+                raise Exception('Cannot deserialize message')
 
             if deserialized_message['type'] == CommunicationMessageTypes.LOGIN.name:
-                if CommunicationMessage.check(CommunicationMessage.LOGIN_CONF_SCHEMA, deserialized_message) is False:
-                    print('Login data validation failed')
-                    self.transport.loseConnection()
 
                 if self.factory.isUserLogged() is False:
                     ip, port = self.transport.client
                     if self.factory.clientSignup(deserialized_message['authToken'], ip, port, deserialized_message['macAddress']) is True:
-                        self.writeResponse(CommunicationMessage.ENCRYPTION_KEY, False)
+                        out_message = {"type":CommunicationMessageTypes.INFO.name,"message":"Auth OK!"}
+                        self.writeResponse(out_message, False)
+                        #TODO: Close connection after this
                     else:
-                        self.writeResponse('AUTH_TOKEN not correct, by', False)
+                        self.writeResponse('AUTH_TOKEN not correct, bye', False)
                         self.transport.loseConnection()
                         return False
 
                     self.factory.addPeer()
+                    peers_list = PeerController.getPeers(PeerStatus.CONNECTED)
+                    peers_message = {"type":CommunicationMessageTypes.PEERS_LIST.name,"peers": peers_list}
+                    print 'PEERS_LIST: ' + str(peers_message)
+                    self.notifyToPeers(peers_list, json.dumps(peers_message))
         except Exception, e:
             print('Error: ' + str(e))
             self.transport.loseConnection()
 
+    def notifyToPeers(self, peers, message):
+
+        if len(peers) == 0:
+            raise Exception('Empty peers list provided')
+
+        if message is None or len(message) == 0:
+            raise Exception('Empyt or None message provided')
+
+        print 'Sending message to peers..'
+
+        for peer in peers:
+            #TODO: Change this with sending message to ip:port of clients
+            self.writeResponse(message, False)
+
     def writeResponse(self, message, encryption = True):
-        communication_message = CommunicationMessage()
-        self.transport.write(communication_message.setMessage(message, encryption) + b'\r\n')
+        self.communication_message = CommunicationMessage()
+        self.transport.write(self.communication_message.setMessage(message, encryption) + b'\r\n')
         return True
 
 
