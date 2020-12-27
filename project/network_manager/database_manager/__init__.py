@@ -14,6 +14,7 @@ class DatabaseManager:
 
     def __init__(self, databaseName = None):
         print('Initializing DB..')
+        TinyDB.DEFAULT_TABLE_KWARGS = {'cache_size': 0}
         self.db = TinyDB(self.DB_DEFAULT_PATH + databaseName if databaseName is not None else self.DB_DEFAULT_NAME)
 
     def getObject(self, queryAttribute, attributeValue):

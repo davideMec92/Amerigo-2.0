@@ -4,12 +4,21 @@ from communication_message import CommunicationMessage, CommunicationMessageType
 from peer_controller import PeerController
 import json
 
-communication_message = CommunicationMessage()
+
+peers_list = PeerController.getPeers(PeerStatus.CONNECTED)
+#print(str(peers_list))
+return_dict = {"type":CommunicationMessageTypes.PEERS_LIST.name, "peers": []}
+for peer in peers_list:
+    return_dict["peers"].append(peer)
+
+
+print(str(return_dict))
+"""communication_message = CommunicationMessage()
 deserialized_message = {"type":"LOGIN","authToken":"Hs8GckGahlvzOTZBMpMLTa2gjMjEnRDf","macAddress":"macAddress_1"}
 encrypt_token = communication_message.setMessage(deserialized_message)
 print(communication_message.setMessage(deserialized_message))
 
-print(communication_message.getMessage(encrypt_token))
+print(communication_message.getMessage(encrypt_token))"""
 
 #print 'PEERS_LIST: ' + str(peers_list)
 """deserialized_message = {"type":"LOGIN","authToken":"Hs8GckGahlvzOTZBMpMLTa2gjMjEnRDf","macAddress":"macAddress_1"}

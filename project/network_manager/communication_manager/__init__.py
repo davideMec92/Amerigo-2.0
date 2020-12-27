@@ -2,6 +2,7 @@ from communication_message import CommunicationMessage, CommunicationMessageType
 from peer_controller import PeerController
 from peer_connection_manager import PeerConnectionManager
 from peer import Peer, PeerStatus
+from tcp_client import TcpClient
 
 import json
 
@@ -10,9 +11,9 @@ class CommunicationManager():
     factory = None
     connectionSocket = None
     communication_message = CommunicationMessage()
+    factory = PeerConnectionManager()
 
     def __init__(self, connectionSocket):
-        self.factory = PeerConnectionManager()
         self.connectionSocket = connectionSocket
 
     def lineReceived(self, message):
@@ -21,7 +22,6 @@ class CommunicationManager():
 
     def managePeerMessage(self, message):
         try:
-            #print('Message: ' + str(json.loads(message)['type']))
             deserialized_message = self.communication_message.getMessage(message)
 
             if deserialized_message is None and 'type' not in deserialized_message:
@@ -29,25 +29,28 @@ class CommunicationManager():
 
             if deserialized_message['type'] == CommunicationMessageTypes.LOGIN.name:
 
-                if self.factory.isUserLogged() is False:
-                    ip, port = self.connectionSocket.getpeername()
-                    if self.factory.clientSignup(deserialized_message['authToken'], ip, port, deserialized_message['macAddress']) is True:
-                        out_message = {"type":CommunicationMessageTypes.INFO.name,"message":"Auth OK!"}
-                        self.writeResponse(out_message)
-                        #TODO: Close connection after this
-                    else:
-                        self.writeResponse('AUTH_TOKEN not correct, bye', False)
-                        self.connectionSocket.close()
-                        return False
+                ip, port = self.connectionSocket.getpeername()
 
-                    self.factory.addPeer()
-                    peers_list = PeerController.getPeers(PeerStatus.CONNECTED)
-                    peers_message = {"type":CommunicationMessageTypes.PEERS_LIST.name,"peers": peers_list}
-                    print 'PEERS_LIST: ' + str(peers_message)
-                    self.notifyToPeers(peers_list, json.dumps(peers_message))
+                if self.factory.clientSignup(deserialized_message['authToken'], ip, port, deserialized_message['macAddress']) is True:
+                    out_message = {"type":CommunicationMessageTypes.INFO.name,"message":"Auth OK!"}
+                    self.writeResponse(out_message)
+                    self.connectionSocket.close()
+                else:
+                    self.writeResponse('AUTH_TOKEN not correct, bye', False)
+                    self.connectionSocket.close()
+                    return False
+
+                self.factory.addPeer(self.peersListCallback)
         except Exception, e:
             print('Error: ' + str(e))
             self.connectionSocket.close()
+
+    def peersListCallback(self):
+        peers_list = PeerController.getPeers(PeerStatus.CONNECTED)
+        peers_message = {"type":CommunicationMessageTypes.PEERS_LIST.name, "peers": []}
+        for peer in peers_list:
+            peers_message["peers"].append(peer)
+        self.notifyToPeers(peers_list, peers_message)
 
     def notifyToPeers(self, peers, message):
 
@@ -59,11 +62,23 @@ class CommunicationManager():
 
         print 'Sending message to peers..'
 
+        message = self.buildResponseCommunicationMessage(message)
+
         for peer in peers:
-            #TODO: Change this with sending message to ip:port of clients
-            self.writeResponse(message, False)
+            print('Connecting to: ' + str(peer['ip_address']))
+            try:
+                tcpClient = TcpClient(peer['ip_address'])
+                tcpClient.sendMessage(message)
+                tcpClient.close()
+                tcpClient = None
+            except Exception, e:
+                print('Exception: ' + str(e))
 
     def writeResponse(self, message, encryption = True):
-        self.communication_message = CommunicationMessage()
-        self.connectionSocket.send(self.communication_message.setMessage(message, encryption) + "\n")
+        print("Write response: " + str(message) + ',' + str(encryption))
+        self.connectionSocket.send( self.buildResponseCommunicationMessage(message, encryption)+ "\r")
         return True
+
+    def buildResponseCommunicationMessage(self, message, encryption = True):
+        self.communication_message = CommunicationMessage()
+        return self.communication_message.setMessage(message, encryption)

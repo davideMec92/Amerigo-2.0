@@ -21,7 +21,6 @@ class Peer:
 
     def __init__(self, bluetooth_mac, ip_address, peerStatus, updatedTime = None, id = None):
 
-        type(peerStatus)
         if bluetooth_mac is None:
             raise Exception('bluetooth_mac cannot be null')
 
