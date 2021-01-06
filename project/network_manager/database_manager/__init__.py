@@ -25,14 +25,14 @@ class DatabaseManager:
 
     def upsertObject(self, objectDict):
         Peer = Query()
-        self.db.upsert(self.updateTime(objectDict), Peer.bluetooth_mac == objectDict['bluetooth_mac'])
+        self.db.upsert(self.updateTime(objectDict), Peer.deviceId == objectDict['deviceId'])
 
     def saveObject(self, objectDict):
         self.db.insert(self.updateTime(objectDict))
 
     def removeObject(self, objectDict):
         Peer = Query()
-        return self.db.remove(Peer.id == objectDict['id'])
+        return self.db.remove(Peer.deviceId == objectDict['deviceId'])
 
     def updateTime(self, objectDict):
         objectDict['updatedTime'] = str(time.time())

@@ -31,7 +31,7 @@ class CommunicationManager():
 
                 ip, port = self.connectionSocket.getpeername()
 
-                if self.factory.clientSignup(deserialized_message['authToken'], ip, port, deserialized_message['macAddress']) is True:
+                if self.factory.clientSignup(deserialized_message['authToken'], ip, port, deserialized_message['deviceId']) is True:
                     out_message = {"type":CommunicationMessageTypes.INFO.name,"message":"Auth OK!"}
                     self.writeResponse(out_message)
                     self.connectionSocket.close()
@@ -65,9 +65,9 @@ class CommunicationManager():
         message = self.buildResponseCommunicationMessage(message)
 
         for peer in peers:
-            print('Connecting to: ' + str(peer['ip_address']))
+            print('Connecting to: ' + str(peer['ipAddress']))
             try:
-                tcpClient = TcpClient(peer['ip_address'])
+                tcpClient = TcpClient(peer['ipAddress'])
                 tcpClient.sendMessage(message)
                 tcpClient.close()
                 tcpClient = None

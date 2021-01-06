@@ -32,7 +32,7 @@ print(test)"""
 #print(str(peer.toDict()))
 #database_manager = DatabaseManager()
 #database_manager.saveObject(peer.toDict())
-"""object = Peer.getFromBluetoothMac("MACK22")
+"""object = Peer.getFromDeviceId("MACK22")
 print(object.toDict())
 object.status = PeerStatus.WARNING"""
 #object.upsert()

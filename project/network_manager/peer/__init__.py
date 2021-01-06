@@ -1,6 +1,5 @@
 from aenum import Enum
 from database_manager import DatabaseManager
-import uuid
 
 class PeerStatus(Enum):
     CONNECTED = 0
@@ -9,9 +8,8 @@ class PeerStatus(Enum):
 
 class Peer:
 
-    id = None
-    bluetooth_mac = None
-    ip_address = None
+    deviceId = None
+    ipAddress = None
     status = PeerStatus(0)
     updatedTime = None
 
@@ -19,44 +17,29 @@ class Peer:
 
     database_manager = DatabaseManager(DB_NAME)
 
-    def __init__(self, bluetooth_mac, ip_address, peerStatus, updatedTime = None, id = None):
+    def __init__(self, deviceId, ipAddress, peerStatus, updatedTime = None):
 
-        if bluetooth_mac is None:
-            raise Exception('bluetooth_mac cannot be null')
+        if deviceId is None:
+            raise Exception('deviceId cannot be null')
 
-        if ip_address is None:
-            raise Exception('ip_address cannot be null')
+        if ipAddress is None:
+            raise Exception('ipAddress cannot be null')
 
         if isinstance(peerStatus, PeerStatus) is False:
             raise Exception(peerStatus + ' is not a valid PeerStatus value')
 
-        #TODO VALIDATE FIELDS IP AND MAC WITH REGEX
-
-        if id is None:
-            self.id = str(uuid.uuid4())
-        else:
-            self.id = id
-
         self.updatedTime = updatedTime
-        self.bluetooth_mac = bluetooth_mac
-        self.ip_address = ip_address
+        self.deviceId = deviceId
+        self.ipAddress = ipAddress
         self.status = peerStatus
 
     @staticmethod
-    def createFromDict(status, updatedTime, ip_address, bluetooth_mac, id):
-        return Peer(bluetooth_mac, ip_address, PeerStatus[status], updatedTime, id)
+    def createFromDict(status, updatedTime, ipAddress, deviceId):
+        return Peer(deviceId, ipAddress, PeerStatus[status], updatedTime)
 
     @staticmethod
-    def get(peerId):
-        result = Peer.database_manager.getObject('id', peerId)
-        if len(result) == 0:
-            return None
-        else:
-            return Peer.createFromDict(**result[0])
-
-    @staticmethod
-    def getFromBluetoothMac(bluetoothMac):
-        result = Peer.database_manager.getObject('bluetooth_mac', bluetoothMac)
+    def getFromDeviceId(deviceId):
+        result = Peer.database_manager.getObject('deviceId', deviceId)
         if len(result) == 0:
             return None
         else:
@@ -72,4 +55,4 @@ class Peer:
         self.database_manager.removeObject(self.toDict())
 
     def toDict(self):
-        return {'id':self.id, 'bluetooth_mac':self.bluetooth_mac, 'ip_address':self.ip_address, 'status':self.status.name, 'updatedTime':self.updatedTime}
+        return {'deviceId':self.deviceId, 'ipAddress':self.ipAddress, 'status':self.status.name, 'updatedTime':self.updatedTime}

@@ -21,7 +21,7 @@ class CommunicationMessage:
     LOGIN_CONF_SCHEMA = Schema({
         'type': str,
         'authToken': str,
-        'macAddress':str
+        'deviceId':str
     })
 
     PEERS_LIST_SCHEMA = Schema({
@@ -30,9 +30,8 @@ class CommunicationMessage:
             {
                 "status": str,
                 "updatedTime": str,
-                "bluetooth_mac": str,
-                "ip_address": str,
-                "id": str
+                "deviceId": str,
+                "ipAddress": str
             }
         ]
     })
