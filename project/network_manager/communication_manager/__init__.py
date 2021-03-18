@@ -41,6 +41,8 @@ class CommunicationManager():
                     return False
 
                 self.factory.addPeer(self.peersListCallback)
+            elif deserialized_message['type'] == CommunicationMessageTypes.BLOCK.name:
+                print 'Block message received'
         except Exception, e:
             print('Error: ' + str(e))
             self.connectionSocket.close()

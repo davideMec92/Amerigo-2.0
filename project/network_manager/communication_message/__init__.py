@@ -8,6 +8,8 @@ class CommunicationMessageTypes(Enum):
     LOGIN = 0
     PEERS_LIST = 1
     INFO = 2
+    HASHGRAPH = 3,
+    BLOCK = 4,
 
 class CommunicationMessage:
 
@@ -36,7 +38,25 @@ class CommunicationMessage:
         ]
     })
 
-    CommunicationMeesageTypesSchemaAssoc = {CommunicationMessageTypes.LOGIN.name:LOGIN_CONF_SCHEMA,CommunicationMessageTypes.PEERS_LIST.name:PEERS_LIST_SCHEMA,CommunicationMessageTypes.INFO.name:INFO_MESSAGE_CONF_SCHEMA}
+    BLOCK_SCHEMA = Schema({
+        'type': str,
+        'block': {
+            'roundCreated': int,
+            'events': [
+                {
+                    "consensusTimestamp": long,
+                    "transactions": str,
+                    "creatorAssociation": {
+                        "peerDeviceId": str,
+                        "eventCreatorIndex": int
+                    }
+                }
+            ]
+        }
+
+    })
+
+    CommunicationMeesageTypesSchemaAssoc = {CommunicationMessageTypes.LOGIN.name:LOGIN_CONF_SCHEMA,CommunicationMessageTypes.PEERS_LIST.name:PEERS_LIST_SCHEMA,CommunicationMessageTypes.INFO.name:INFO_MESSAGE_CONF_SCHEMA,CommunicationMessageTypes.BLOCK.name:BLOCK_SCHEMA}
 
     type = None
     message = None
