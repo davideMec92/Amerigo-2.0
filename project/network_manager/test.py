@@ -2,17 +2,25 @@ from peer import Peer, PeerStatus
 from database_manager import DatabaseManager
 from communication_message import CommunicationMessage, CommunicationMessageTypes
 from peer_controller import PeerController
+from block import Block
 import json
 
+block_json = '{"roundCreated": 1, "events": [{"consensusTimestamp": 2168712681.11, "transactions": "transactions", "creatorAssociation": {"peerDeviceId": "asdflkjfsa", "eventCreatorIndex": 1}}]}'
+block = Block(json.loads(block_json))
+print('BLOCKKKK: ' + str(block.toDict()))
+block.upsert()
 
-peers_list = PeerController.getPeers(PeerStatus.CONNECTED)
+print("Query result: " + str(Block.getFromRoundCreated(1).toDict()))
+block.remove()
+
+"""peers_list = PeerController.getPeers(PeerStatus.CONNECTED)
 #print(str(peers_list))
 return_dict = {"type":CommunicationMessageTypes.PEERS_LIST.name, "peers": []}
 for peer in peers_list:
     return_dict["peers"].append(peer)
 
 
-print(str(return_dict))
+print(str(return_dict))"""
 """communication_message = CommunicationMessage()
 deserialized_message = {"type":"LOGIN","authToken":"Hs8GckGahlvzOTZBMpMLTa2gjMjEnRDf","macAddress":"macAddress_1"}
 encrypt_token = communication_message.setMessage(deserialized_message)

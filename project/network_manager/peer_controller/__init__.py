@@ -4,7 +4,8 @@ from peer import PeerStatus, Peer
 
 class PeerController:
 
-    database_manager = DatabaseManager(Peer.DB_NAME)
+    #database_manager = DatabaseManager(Peer.DB_NAME)
+    database_manager = Peer.database_manager
 
     @staticmethod
     def getPeers(peerStatus = None):

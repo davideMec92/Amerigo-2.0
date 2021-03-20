@@ -13,9 +13,14 @@ class DatabaseManager:
     db = None
 
     def __init__(self, databaseName = None):
-        print('Initializing DB..')
         TinyDB.DEFAULT_TABLE_KWARGS = {'cache_size': 0}
-        self.db = TinyDB(self.DB_DEFAULT_PATH + databaseName if databaseName is not None else self.DB_DEFAULT_NAME)
+
+        if databaseName is not None:
+            self.DB_DEFAULT_NAME = databaseName
+
+        print('Initializing ' + str(self.DB_DEFAULT_NAME) + ' DB..')
+
+        self.db = TinyDB(self.DB_DEFAULT_PATH + self.DB_DEFAULT_NAME)
 
     def getObject(self, queryAttribute, attributeValue):
         return self.db.search(where(queryAttribute) == attributeValue)
@@ -23,16 +28,14 @@ class DatabaseManager:
     def getAll(self):
         return self.db.all()
 
-    def upsertObject(self, objectDict):
-        Peer = Query()
-        self.db.upsert(self.updateTime(objectDict), Peer.deviceId == objectDict['deviceId'])
+    def upsertObject(self, objectDict, primaryKey):
+        self.db.upsert(self.updateTime(objectDict), Query()[primaryKey] == objectDict[primaryKey])
 
     def saveObject(self, objectDict):
         self.db.insert(self.updateTime(objectDict))
 
-    def removeObject(self, objectDict):
-        Peer = Query()
-        return self.db.remove(Peer.deviceId == objectDict['deviceId'])
+    def removeObject(self, objectDict, primaryKey):
+        return self.db.remove(Query()[primaryKey] == objectDict[primaryKey])
 
     def updateTime(self, objectDict):
         objectDict['updatedTime'] = str(time.time())

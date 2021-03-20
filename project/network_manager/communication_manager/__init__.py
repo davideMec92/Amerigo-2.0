@@ -3,6 +3,7 @@ from peer_controller import PeerController
 from peer_connection_manager import PeerConnectionManager
 from peer import Peer, PeerStatus
 from tcp_client import TcpClient
+from block import Block
 
 import json
 
@@ -42,9 +43,16 @@ class CommunicationManager():
 
                 self.factory.addPeer(self.peersListCallback)
             elif deserialized_message['type'] == CommunicationMessageTypes.BLOCK.name:
-                print 'Block message received'
+                print 'Block message received: ' + str(deserialized_message)
+
+                #Check if block received missing in db
+                if Block.getFromRoundCreated(deserialized_message['block']['roundCreated']) is None:
+                    newBlock = Block(deserialized_message['block'])
+                    newBlock.upsert()
+                    print 'New block saved! (Round created: ' + str(newBlock.roundCreated) + ')'
+                    
         except Exception, e:
-            print('Error: ' + str(e))
+            print('Error: ' + str(e.message))
             self.connectionSocket.close()
 
     def peersListCallback(self):

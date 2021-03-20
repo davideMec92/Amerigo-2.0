@@ -2,3 +2,5 @@ project/network_manager/database_manager/peers_db
 *.pyc
 project/.DS_Store
 .DS_Store
+project/.idea
+project/venv

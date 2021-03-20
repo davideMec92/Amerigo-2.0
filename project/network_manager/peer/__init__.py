@@ -8,6 +8,7 @@ class PeerStatus(Enum):
 
 class Peer:
 
+    primaryKey = "deviceId"
     deviceId = None
     ipAddress = None
     status = PeerStatus(0)
@@ -49,10 +50,10 @@ class Peer:
         self.database_manager.saveObject(self.toDict())
 
     def upsert(self):
-        self.database_manager.upsertObject(self.toDict())
+        self.database_manager.upsertObject(self.toDict(), self.primaryKey)
 
     def remove(self):
-        self.database_manager.removeObject(self.toDict())
+        self.database_manager.removeObject(self.toDict(), self.primaryKey)
 
     def toDict(self):
         return {'deviceId':self.deviceId, 'ipAddress':self.ipAddress, 'status':self.status.name, 'updatedTime':self.updatedTime}
