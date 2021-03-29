@@ -50,7 +50,7 @@ class CommunicationManager():
                     newBlock = Block(deserialized_message['block'])
                     newBlock.upsert()
                     print 'New block saved! (Round created: ' + str(newBlock.roundCreated) + ')'
-                    
+
         except Exception, e:
             print('Error: ' + str(e.message))
             self.connectionSocket.close()
