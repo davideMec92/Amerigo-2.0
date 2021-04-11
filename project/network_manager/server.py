@@ -8,7 +8,7 @@ class ConnectionMode(Enum):
     TCP_CONNECTION = 'TCP_CONNECTION'
     BLUETOOTH_CONNECTION = 'BLUETOOTH_CONNECTION'
 
-class TcpServer():
+class Server():
 
     socket = None
     socketRun = False
@@ -22,7 +22,6 @@ class TcpServer():
 
     def start(self):
         self.socketRun = True
-        print "The server is ready to receive"
         # Loop forever
         while self.socketRun:
             try:
@@ -30,8 +29,14 @@ class TcpServer():
                 # for incoming requests, new socket created on return
                 connectionSocket, addr = self.socket.accept()
                 # receive sentence on newly established connectionSocket
-                sentence = connectionSocket.recv(1024)
-                print "Received: " + str(sentence)
+                sentence = str(connectionSocket.recv(1024))
+
+                print ("Received: " + str(sentence))
+
+                if self.connectionMode == ConnectionMode.BLUETOOTH_CONNECTION:
+                    sentence = sentence.replace("\\n", "")
+                    sentence = sentence.lstrip('b')
+
                 if sentence is not None:
                     CommunicationManager(connectionSocket).lineReceived(sentence)
             except OSError:
@@ -40,9 +45,9 @@ class TcpServer():
     def stop(self):
         self.socketRun = False
 
-tcpServer = TcpServer()
+server = Server()
 
 try:
-    tcpServer.start()
-except KeyboardInterrupt, SystemExit:
-    tcpServer.stop()
+    server.start()
+except (KeyboardInterrupt, SystemExit):
+    server.stop()

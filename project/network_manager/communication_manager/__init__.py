@@ -3,6 +3,7 @@ from peer_controller import PeerController
 from peer_connection_manager import PeerConnectionManager
 from peer import Peer, PeerStatus
 from tcp_client import TcpClient
+from bluetooth_client import BluetoothClient
 from block import Block
 
 import json
@@ -19,7 +20,7 @@ class CommunicationManager():
 
     def lineReceived(self, message):
         print('message: ' + str(message))
-        self.managePeerMessage(str(message))
+        self.managePeerMessage(message)
 
     def managePeerMessage(self, message):
         try:
@@ -35,7 +36,7 @@ class CommunicationManager():
                 if self.factory.clientSignup(deserialized_message['authToken'], ip, port, deserialized_message['deviceId']) is True:
                     out_message = {"type":CommunicationMessageTypes.INFO.name,"message":"Auth OK!"}
                     self.writeResponse(out_message)
-                    self.connectionSocket.close()
+                    #self.connectionSocket.close()
                 else:
                     self.writeResponse('AUTH_TOKEN not correct, bye', False)
                     self.connectionSocket.close()
@@ -43,16 +44,16 @@ class CommunicationManager():
 
                 self.factory.addPeer(self.peersListCallback)
             elif deserialized_message['type'] == CommunicationMessageTypes.BLOCK.name:
-                print 'Block message received: ' + str(deserialized_message)
+                print ('Block message received: ' + str(deserialized_message))
 
                 #Check if block received missing in db
                 if Block.getFromRoundCreated(deserialized_message['block']['roundCreated']) is None:
                     newBlock = Block(deserialized_message['block'])
                     newBlock.upsert()
-                    print 'New block saved! (Round created: ' + str(newBlock.roundCreated) + ')'
+                    print ('New block saved! (Round created: ' + str(newBlock.roundCreated) + ')')
 
-        except Exception, e:
-            print('Error: ' + str(e.message))
+        except(Exception, e):
+            print('Error: ' + str(e))
             self.connectionSocket.close()
 
     def peersListCallback(self):
@@ -70,23 +71,27 @@ class CommunicationManager():
         if message is None or len(message) == 0:
             raise Exception('Empyt or None message provided')
 
-        print 'Sending message to peers..'
+        print ('Sending message to peers..')
 
+        print('Peer list new: ' + str(message))
         message = self.buildResponseCommunicationMessage(message)
+
 
         for peer in peers:
             print('Connecting to: ' + str(peer['ipAddress']))
             try:
-                tcpClient = TcpClient(peer['ipAddress'])
+                #tcpClient = TcpClient(peer['ipAddress'])
+                tcpClient = BluetoothClient(peer['ipAddress'], peer['deviceId'])
                 tcpClient.sendMessage(message)
                 tcpClient.close()
                 tcpClient = None
-            except Exception, e:
+            except(Exception, e):
                 print('Exception: ' + str(e))
 
     def writeResponse(self, message, encryption = True):
         print("Write response: " + str(message) + ',' + str(encryption))
-        self.connectionSocket.send( self.buildResponseCommunicationMessage(message, encryption)+ "\r")
+        #self.connectionSocket.send( self.buildResponseCommunicationMessage(message, encryption))
+        self.connectionSocket.send( self.buildResponseCommunicationMessage(message, encryption))
         return True
 
     def buildResponseCommunicationMessage(self, message, encryption = True):

@@ -44,7 +44,7 @@ class CommunicationMessage:
             'roundCreated': int,
             'events': [
                 {
-                    "consensusTimestamp": long,
+                    "consensusTimestamp": int,
                     "transactions": str,
                     "creatorAssociation": {
                         "peerDeviceId": str,
@@ -71,6 +71,9 @@ class CommunicationMessage:
         if message is None:
             raise Exception('Message cannot be null')
 
+        if type(message) is str:
+            message = str.encode(message)
+
         #Message decrypt
         if decrypt is True:
             message = self.fernet_crypt.decrypt(message)
@@ -96,6 +99,9 @@ class CommunicationMessage:
 
         message = json.dumps(message)
 
+        if type(message) is str:
+            message = str.encode(message)
+
         return self.fernet_crypt.encrypt(message) if encrypt is True else message
 
     @staticmethod
@@ -104,6 +110,6 @@ class CommunicationMessage:
             conf = ast.literal_eval(json.dumps(conf))
             conf_schema.validate(conf)
             return True
-        except SchemaError, e:
-            print 'Schema validation error:' + str(e)
+        except (SchemaError, e):
+            print ('Schema validation error:' + str(e))
             return False

@@ -5,10 +5,8 @@ class BluetoothConnection():
     appName = 'Bluetooth_server_app'
     appUUID = '94f39d29-7d6d-437d-973b-fba39e49d4ee'
 
-    def __init__(self):
-
     @staticmethod
-    def initBluetoothConnection(self):
+    def initBluetoothConnection():
         server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
         server_sock.bind(("", bluetooth.PORT_ANY))
         server_sock.listen(1)
@@ -21,7 +19,4 @@ class BluetoothConnection():
                                     )
 
         print("Waiting for connection on RFCOMM channel", port)
-
-        client_sock, client_info = server_sock.accept()
-
-        return client_sock
+        return server_sock

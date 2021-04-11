@@ -4,14 +4,11 @@ from communication_message import CommunicationMessage, CommunicationMessageType
 from peer_controller import PeerController
 from block import Block
 import json
+import re
 
-block_json = '{"roundCreated": 1, "events": [{"consensusTimestamp": 2168712681.11, "transactions": "transactions", "creatorAssociation": {"peerDeviceId": "asdflkjfsa", "eventCreatorIndex": 1}}]}'
-block = Block(json.loads(block_json))
-print('BLOCKKKK: ' + str(block.toDict()))
-block.upsert()
+string = "b'gAAAAABgYiNFk275HhroUvl3dVxAO6eqVglG2tGB09UxVdQNvpM96ixuxLz17SDrPwrg8LBnZFk0rf7a2IzIEF_xLTeHq8wvUmrNxZwhgedDFiLumbNyaoE008U5StLofDcP4VPEZLJh-ZcSO4eJVOG8b56B7YIGiRHK3qIiLBiptTMfRKaxT5xOaPwd5Ro4_q3_rylMGKXrNBSHnHLgquc7YqzYWSH_cFwcmG0ESJgWA1l-GtA_P-U=\n'"
 
-print("Query result: " + str(Block.getFromRoundCreated(1).toDict()))
-block.remove()
+print("RESULT: " + str(re.sub('[\\n]', '', string)))
 
 """peers_list = PeerController.getPeers(PeerStatus.CONNECTED)
 #print(str(peers_list))
