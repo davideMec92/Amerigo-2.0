@@ -10,7 +10,7 @@ class Peer:
 
     primaryKey = "deviceId"
     deviceId = None
-    ipAddress = None
+    address = None
     status = PeerStatus(0)
     updatedTime = None
 
@@ -18,25 +18,25 @@ class Peer:
 
     database_manager = DatabaseManager(DB_NAME)
 
-    def __init__(self, deviceId, ipAddress, peerStatus, updatedTime = None):
+    def __init__(self, deviceId, address, peerStatus, updatedTime = None):
 
         if deviceId is None:
             raise Exception('deviceId cannot be null')
 
-        if ipAddress is None:
-            raise Exception('ipAddress cannot be null')
+        if address is None:
+            raise Exception('address cannot be null')
 
         if isinstance(peerStatus, PeerStatus) is False:
             raise Exception(peerStatus + ' is not a valid PeerStatus value')
 
         self.updatedTime = updatedTime
         self.deviceId = deviceId
-        self.ipAddress = ipAddress
+        self.address = address
         self.status = peerStatus
 
     @staticmethod
-    def createFromDict(status, updatedTime, ipAddress, deviceId):
-        return Peer(deviceId, ipAddress, PeerStatus[status], updatedTime)
+    def createFromDict(status, updatedTime, address, deviceId):
+        return Peer(deviceId, address, PeerStatus[status], updatedTime)
 
     @staticmethod
     def getFromDeviceId(deviceId):
@@ -56,4 +56,4 @@ class Peer:
         self.database_manager.removeObject(self.toDict(), self.primaryKey)
 
     def toDict(self):
-        return {'deviceId':self.deviceId, 'ipAddress':self.ipAddress, 'status':self.status.name, 'updatedTime':self.updatedTime}
+        return {'deviceId':self.deviceId, 'address':self.address, 'status':self.status.name, 'updatedTime':self.updatedTime}

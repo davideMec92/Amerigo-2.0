@@ -16,7 +16,7 @@ class BluetoothClient():
 
             if len(service_matches) == 0:
                 print("Couldn't find the SampleServer service.")
-                sys.exit(0)
+                return None;
 
             first_match = service_matches[0]
             port = first_match["port"]
@@ -31,7 +31,7 @@ class BluetoothClient():
 
             print("Connected. Type something...")
 
-        except(Exception, e):
+        except Exception as e:
             print("BluetoothClient error: " + str(e))
 
     def sendMessage(self, message):

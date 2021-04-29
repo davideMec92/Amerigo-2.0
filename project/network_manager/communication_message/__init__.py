@@ -33,7 +33,7 @@ class CommunicationMessage:
                 "status": str,
                 "updatedTime": str,
                 "deviceId": str,
-                "ipAddress": str
+                "address": str
             }
         ]
     })

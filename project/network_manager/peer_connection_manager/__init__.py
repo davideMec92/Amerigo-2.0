@@ -2,7 +2,7 @@ from peer import Peer, PeerStatus
 
 class PeerConnectionManager():
     #authenticated = False
-    ipAddress = None
+    address = None
     deviceId = None
     peer = None
     AUTH_TOKEN = 'Hs8GckGahlvzOTZBMpMLTa2gjMjEnRDf'
@@ -10,9 +10,9 @@ class PeerConnectionManager():
     #def isUserLogged(self):
         #return self.authenticated
 
-    def clientSignup(self, authentication_token, ipAddress, port, deviceId):
-        print('New Client IP_ADDRESS: ' + str(ipAddress) + ' PORT: ' + str(port))
-        self.ipAddress = ipAddress
+    def clientSignup(self, authentication_token, address, port, deviceId):
+        print('New Client IP_ADDRESS: ' + str(address) + ' PORT: ' + str(port))
+        self.address = address
 
         if authentication_token is None:
             raise Exception('Authentication token cannot be null')
@@ -41,7 +41,7 @@ class PeerConnectionManager():
 
     def addPeer(self, callback = None):
         print('Creating new peer')
-        peer = Peer(self.deviceId, self.ipAddress, PeerStatus.CONNECTED)
+        peer = Peer(self.deviceId, self.address, PeerStatus.CONNECTED)
         print('Saving peer..')
         peer.upsert()
         if callback is not None:

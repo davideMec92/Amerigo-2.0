@@ -52,7 +52,7 @@ class CommunicationManager():
                     newBlock.upsert()
                     print ('New block saved! (Round created: ' + str(newBlock.roundCreated) + ')')
 
-        except(Exception, e):
+        except Exception as e:
             print('Error: ' + str(e))
             self.connectionSocket.close()
 
@@ -78,14 +78,16 @@ class CommunicationManager():
 
 
         for peer in peers:
-            print('Connecting to: ' + str(peer['ipAddress']))
+            print('Connecting to: ' + str(peer['address']))
             try:
-                #tcpClient = TcpClient(peer['ipAddress'])
-                tcpClient = BluetoothClient(peer['ipAddress'], peer['deviceId'])
+                #tcpClient = TcpClient(peer['address'])
+                tcpClient = BluetoothClient(peer['address'], peer['deviceId'])
+                if tcpClient is None:
+                    continue
                 tcpClient.sendMessage(message)
                 tcpClient.close()
                 tcpClient = None
-            except(Exception, e):
+            except Exception as e:
                 print('Exception: ' + str(e))
 
     def writeResponse(self, message, encryption = True):
