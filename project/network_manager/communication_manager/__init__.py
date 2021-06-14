@@ -45,11 +45,15 @@ class CommunicationManager():
                 self.factory.addPeer(self.peersListCallback)
             elif deserialized_message['type'] == CommunicationMessageTypes.BLOCK.name:
                 print ('Block message received: ' + str(deserialized_message))
+                print ('Block round created: ' + str(deserialized_message['block']['roundCreated']))
 
                 #Check if block received missing in db
                 if Block.getFromRoundCreated(deserialized_message['block']['roundCreated']) is None:
                     newBlock = Block(deserialized_message['block'])
-                    newBlock.upsert()
+                    print ('Events: ' + str(newBlock.events))
+                    print ('Block to dict: ' + str(newBlock.toDict()))
+                    newBlock.save()
+                    print ('Block to dict: ' + str(newBlock.toDict()))
                     print ('New block saved! (Round created: ' + str(newBlock.roundCreated) + ')')
 
         except Exception as e:

@@ -14,7 +14,9 @@ class Block:
 
     def __init__( self, dict ):
         self.roundCreated = dict["roundCreated"]
+        self.events = []
         for eventData in dict["events"]:
+            print("Event to dict: " + str(Event(eventData).toDict()))
             self.events.append(Event(eventData).toDict())
 
     @staticmethod
@@ -35,4 +37,4 @@ class Block:
         self.database_manager.removeObject(self.toDict(), self.primaryKey)
 
     def toDict(self):
-        return {'roundCreated':self.roundCreated, 'events': self.events, 'updatedTime':self.updatedTime}
+        return {'roundCreated':self.roundCreated, 'events': self.events, 'updatedTime': self.updatedTime}

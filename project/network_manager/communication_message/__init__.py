@@ -48,6 +48,7 @@ class CommunicationMessage:
                     "transactions": str,
                     "creatorAssociation": {
                         "peerDeviceId": str,
+                        "key": str,
                         "eventCreatorIndex": int
                     }
                 }
@@ -56,7 +57,7 @@ class CommunicationMessage:
 
     })
 
-    CommunicationMeesageTypesSchemaAssoc = {CommunicationMessageTypes.LOGIN.name:LOGIN_CONF_SCHEMA,CommunicationMessageTypes.PEERS_LIST.name:PEERS_LIST_SCHEMA,CommunicationMessageTypes.INFO.name:INFO_MESSAGE_CONF_SCHEMA,CommunicationMessageTypes.BLOCK.name:BLOCK_SCHEMA}
+    CommunicationMessageTypesSchemaAssoc = {CommunicationMessageTypes.LOGIN.name:LOGIN_CONF_SCHEMA,CommunicationMessageTypes.PEERS_LIST.name:PEERS_LIST_SCHEMA,CommunicationMessageTypes.INFO.name:INFO_MESSAGE_CONF_SCHEMA,CommunicationMessageTypes.BLOCK.name:BLOCK_SCHEMA}
 
     type = None
     message = None
@@ -82,7 +83,7 @@ class CommunicationMessage:
             message = json.loads(message)
 
         #Message validation
-        if self.check(self.CommunicationMeesageTypesSchemaAssoc[message['type']],message) is False:
+        if self.check(self.CommunicationMessageTypesSchemaAssoc[message['type']],message) is False:
             raise Exception('Login data validation failed')
 
         return message
@@ -95,7 +96,7 @@ class CommunicationMessage:
             message = json.loads(message)
 
         #Message validation
-        self.check(self.CommunicationMeesageTypesSchemaAssoc[message['type']],message)
+        self.check(self.CommunicationMessageTypesSchemaAssoc[message['type']],message)
 
         message = json.dumps(message)
 
@@ -110,6 +111,6 @@ class CommunicationMessage:
             conf = ast.literal_eval(json.dumps(conf))
             conf_schema.validate(conf)
             return True
-        except (SchemaError, e):
+        except SchemaError as e:
             print ('Schema validation error:' + str(e))
             return False
