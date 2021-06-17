@@ -16,7 +16,6 @@ class Block:
         self.roundCreated = dict["roundCreated"]
         self.events = []
         for eventData in dict["events"]:
-            print("Event to dict: " + str(Event(eventData).toDict()))
             self.events.append(Event(eventData).toDict())
 
     @staticmethod

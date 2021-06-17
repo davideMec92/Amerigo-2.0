@@ -5,6 +5,7 @@ from peer import Peer, PeerStatus
 from tcp_client import TcpClient
 from bluetooth_client import BluetoothClient
 from block import Block
+from block_queue import BlockQueue
 
 import json
 
@@ -14,9 +15,11 @@ class CommunicationManager():
     connectionSocket = None
     communication_message = CommunicationMessage()
     factory = PeerConnectionManager()
+    blockQueue = BlockQueue()
 
-    def __init__(self, connectionSocket):
+    def __init__(self, connectionSocket, blockQueue):
         self.connectionSocket = connectionSocket
+        self.blockQueue = blockQueue
 
     def lineReceived(self, message):
         print('message: ' + str(message))
@@ -49,12 +52,14 @@ class CommunicationManager():
 
                 #Check if block received missing in db
                 if Block.getFromRoundCreated(deserialized_message['block']['roundCreated']) is None:
-                    newBlock = Block(deserialized_message['block'])
-                    print ('Events: ' + str(newBlock.events))
+                    #newBlock = Block(deserialized_message['block'])
+                    self.blockQueue.putBlock(deserialized_message['block'])
+                    print('######### PUT TASK IN QUEUE ########')
+                    """print ('Events: ' + str(newBlock.events))
                     print ('Block to dict: ' + str(newBlock.toDict()))
                     newBlock.save()
                     print ('Block to dict: ' + str(newBlock.toDict()))
-                    print ('New block saved! (Round created: ' + str(newBlock.roundCreated) + ')')
+                    print ('New block saved! (Round created: ' + str(newBlock.roundCreated) + ')')"""
 
         except Exception as e:
             print('Error: ' + str(e))

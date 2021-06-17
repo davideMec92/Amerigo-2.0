@@ -3,6 +3,7 @@ from communication_manager import CommunicationManager
 from enum import Enum
 from bluetooth_connection import BluetoothConnection
 from tcp_connection import TCPConnection
+from block_queue import BlockQueue
 
 class ConnectionMode(Enum):
     TCP_CONNECTION = 'TCP_CONNECTION'
@@ -13,12 +14,15 @@ class Server():
     socket = None
     socketRun = False
     connectionMode = ConnectionMode.BLUETOOTH_CONNECTION
+    blockQueue = BlockQueue()
 
     def __init__(self):
         if self.connectionMode == ConnectionMode.BLUETOOTH_CONNECTION:
             self.socket = BluetoothConnection.initBluetoothConnection()
         elif self.connectionMode == ConnectionMode.TCP_CONNECTION:
             self.socket == TCPConnection.initTCPConnection()
+        #Starting block queue
+        self.blockQueue.start()
 
     def start(self):
         self.socketRun = True
@@ -38,7 +42,7 @@ class Server():
                     sentence = sentence.lstrip('b')
 
                 if sentence is not None:
-                    CommunicationManager(connectionSocket).lineReceived(sentence)
+                    CommunicationManager(connectionSocket, self.blockQueue).lineReceived(sentence)
             except OSError:
                 pass
 
