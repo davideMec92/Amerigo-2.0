@@ -3,12 +3,13 @@ from database_manager import DatabaseManager
 from communication_message import CommunicationMessage, CommunicationMessageTypes
 from peer_controller import PeerController
 from block import Block
+from position_degrees import PositionDegrees
 import json
 import re
 
-string = "b'gAAAAABgYiNFk275HhroUvl3dVxAO6eqVglG2tGB09UxVdQNvpM96ixuxLz17SDrPwrg8LBnZFk0rf7a2IzIEF_xLTeHq8wvUmrNxZwhgedDFiLumbNyaoE008U5StLofDcP4VPEZLJh-ZcSO4eJVOG8b56B7YIGiRHK3qIiLBiptTMfRKaxT5xOaPwd5Ro4_q3_rylMGKXrNBSHnHLgquc7YqzYWSH_cFwcmG0ESJgWA1l-GtA_P-U=\n'"
-
-print("RESULT: " + str(re.sub('[\\n]', '', string)))
+positions = {"deviceId": "ORIGINAL_DEVICE_ID_2", "positions": [{"deviceId":"CIAO_A_TUTTI_1", "degrees": 100}, {"deviceId":"CIAO_A_TUTTI_2", "degrees": 110}, {"deviceId":"CIAO_A_TUTTI_3", "degrees": 120}]}
+positionDegrees = PositionDegrees(positions["deviceId"], positions["positions"])
+positionDegrees.upsert()
 
 """peers_list = PeerController.getPeers(PeerStatus.CONNECTED)
 #print(str(peers_list))

@@ -60,7 +60,7 @@ class CommunicationManager():
                     newBlock.save()
                     print ('Block to dict: ' + str(newBlock.toDict()))
                     print ('New block saved! (Round created: ' + str(newBlock.roundCreated) + ')')"""
-
+            #TODO ADD POSITIONS_DEGREES ELIF HANDLER
         except Exception as e:
             print('Error: ' + str(e))
             self.connectionSocket.close()
