@@ -5,6 +5,7 @@ from peer import Peer, PeerStatus
 from tcp_client import TcpClient
 from bluetooth_client import BluetoothClient
 from block import Block
+from position_degrees import PositionDegrees
 from block_queue import BlockQueue
 
 import json
@@ -52,17 +53,15 @@ class CommunicationManager():
 
                 #Check if block received missing in db
                 if Block.getFromRoundCreated(deserialized_message['block']['roundCreated']) is None:
-                    #newBlock = Block(deserialized_message['block'])
                     self.blockQueue.putBlock(deserialized_message['block'])
-                    print('######### PUT TASK IN QUEUE ########')
-                    """print ('Events: ' + str(newBlock.events))
-                    print ('Block to dict: ' + str(newBlock.toDict()))
-                    newBlock.save()
-                    print ('Block to dict: ' + str(newBlock.toDict()))
-                    print ('New block saved! (Round created: ' + str(newBlock.roundCreated) + ')')"""
-            #TODO ADD POSITIONS_DEGREES ELIF HANDLER
+            elif deserialized_message['type'] == CommunicationMessageTypes.POSITIONS_DEGREES.name:
+                print ('Position degrees message received: ' + str(deserialized_message))
+                positionDegrees = PositionDegrees(deserialized_message["deviceId"], deserialized_message["positions"])
+                positionDegrees.upsert()
+
         except Exception as e:
             print('Error: ' + str(e))
+        finally:
             self.connectionSocket.close()
 
     def peersListCallback(self):

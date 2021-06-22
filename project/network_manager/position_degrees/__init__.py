@@ -27,8 +27,8 @@ class PositionDegrees:
             self.positions.append(PeerPosition(peerPositionData).toDict())
 
     @staticmethod
-    def createFromDict(status, updatedTime, address, deviceId):
-        return Peer(deviceId, address, PeerStatus[status], updatedTime)
+    def createFromDict(deviceId, positions, updatedTime):
+        return PositionDegrees(deviceId, positions, updatedTime)
 
     @staticmethod
     def getFromDeviceId(deviceId):

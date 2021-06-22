@@ -10,7 +10,7 @@ class CommunicationMessageTypes(Enum):
     INFO = 2
     HASHGRAPH = 3,
     BLOCK = 4,
-    POSITION_DEGREES = 5,
+    POSITIONS_DEGREES = 5,
 
 class CommunicationMessage:
 
@@ -33,7 +33,7 @@ class CommunicationMessage:
         'positions': [
             {
                 "deviceId": str,
-                "degrees": int
+                "degrees": int,
             }
         ]
     })
@@ -69,7 +69,7 @@ class CommunicationMessage:
 
     })
 
-    CommunicationMessageTypesSchemaAssoc = {CommunicationMessageTypes.LOGIN.name:LOGIN_CONF_SCHEMA,CommunicationMessageTypes.PEERS_LIST.name:PEERS_LIST_SCHEMA,CommunicationMessageTypes.INFO.name:INFO_MESSAGE_CONF_SCHEMA,CommunicationMessageTypes.BLOCK.name:BLOCK_SCHEMA,CommunicationMessageTypes.POSITION_DEGREES.name:POSITIONS_DEGREES_SCHEMA}
+    CommunicationMessageTypesSchemaAssoc = {CommunicationMessageTypes.LOGIN.name:LOGIN_CONF_SCHEMA,CommunicationMessageTypes.PEERS_LIST.name:PEERS_LIST_SCHEMA,CommunicationMessageTypes.INFO.name:INFO_MESSAGE_CONF_SCHEMA,CommunicationMessageTypes.BLOCK.name:BLOCK_SCHEMA,CommunicationMessageTypes.POSITIONS_DEGREES.name:POSITIONS_DEGREES_SCHEMA}
 
     type = None
     message = None

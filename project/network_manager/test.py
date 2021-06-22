@@ -7,9 +7,7 @@ from position_degrees import PositionDegrees
 import json
 import re
 
-positions = {"deviceId": "ORIGINAL_DEVICE_ID_2", "positions": [{"deviceId":"CIAO_A_TUTTI_1", "degrees": 100}, {"deviceId":"CIAO_A_TUTTI_2", "degrees": 110}, {"deviceId":"CIAO_A_TUTTI_3", "degrees": 120}]}
-positionDegrees = PositionDegrees(positions["deviceId"], positions["positions"])
-positionDegrees.upsert()
+print("POSITIONS: " + str(PositionDegrees.getFromDeviceId("ORIGINAL_DEVICE_ID_2").positions))
 
 """peers_list = PeerController.getPeers(PeerStatus.CONNECTED)
 #print(str(peers_list))
