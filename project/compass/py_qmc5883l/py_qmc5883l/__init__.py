@@ -219,11 +219,11 @@ class QMC5883L(object):
         try:
             d = float(value)
             if d < -180.0 or d > 180.0:
-                logging.error('Declination must be >= -180 and <= 180.')
+                logging.error(u'Declination must be >= -180 and <= 180.')
             else:
                 self._declination = d
         except:
-            logging.error('Declination must be a float value.')
+            logging.error(u'Declination must be a float value.')
 
     def get_declination(self):
         """Return the current set value of magnetic declination."""
@@ -238,7 +238,7 @@ class QMC5883L(object):
                     c[i][j] = float(value[i][j])
             self._calibration = c
         except:
-            logging.error('Calibration must be a 3x3 float matrix.')
+            logging.error(u'Calibration must be a 3x3 float matrix.')
 
     def get_calibration(self):
         """Return the current set value of the calibration matrix."""
@@ -246,8 +246,8 @@ class QMC5883L(object):
 
     declination = property(fget=get_declination,
                            fset=set_declination,
-                           doc='Magnetic declination to adjust bearing.')
+                           doc=u'Magnetic declination to adjust bearing.')
 
     calibration = property(fget=get_calibration,
                            fset=set_calibration,
-                           doc='Transformation matrix to adjust (x, y) magnetic vector.')
+                           doc=u'Transformation matrix to adjust (x, y) magnetic vector.')

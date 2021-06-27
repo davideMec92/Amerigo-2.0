@@ -1,4 +1,4 @@
-from . import py_qmc5883l
+import py_qmc5883l
 
 from custom_exceptions import *
 
