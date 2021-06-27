@@ -23,7 +23,7 @@ class CommunicationManager():
         self.blockQueue = blockQueue
 
     def lineReceived(self, message):
-        print(('message: ' + str(message)))
+        print('message: ' + str(message))
         self.managePeerMessage(message)
 
     def managePeerMessage(self, message):
@@ -48,19 +48,19 @@ class CommunicationManager():
 
                 self.factory.addPeer(self.peersListCallback)
             elif deserialized_message['type'] == CommunicationMessageTypes.BLOCK.name:
-                print(('Block message received: ' + str(deserialized_message)))
-                print(('Block round created: ' + str(deserialized_message['block']['roundCreated'])))
+                print ('Block message received: ' + str(deserialized_message))
+                print ('Block round created: ' + str(deserialized_message['block']['roundCreated']))
 
                 #Check if block received missing in db
                 if Block.getFromRoundCreated(deserialized_message['block']['roundCreated']) is None:
                     self.blockQueue.putBlock(deserialized_message['block'])
             elif deserialized_message['type'] == CommunicationMessageTypes.POSITIONS_DEGREES.name:
-                print(('Position degrees message received: ' + str(deserialized_message)))
+                print ('Position degrees message received: ' + str(deserialized_message))
                 positionDegrees = PositionDegrees(deserialized_message["deviceId"], deserialized_message["positions"])
                 positionDegrees.upsert()
 
         except Exception as e:
-            print(('Error: ' + str(e)))
+            print('Error: ' + str(e))
         finally:
             self.connectionSocket.close()
 
@@ -81,12 +81,12 @@ class CommunicationManager():
 
         print ('Sending message to peers..')
 
-        print(('Peer list new: ' + str(message)))
+        print('Peer list new: ' + str(message))
         message = self.buildResponseCommunicationMessage(message)
 
 
         for peer in peers:
-            print(('Connecting to: ' + str(peer['address'])))
+            print('Connecting to: ' + str(peer['address']))
             try:
                 #tcpClient = TcpClient(peer['address'])
                 tcpClient = BluetoothClient(peer['address'], peer['deviceId'])
@@ -96,10 +96,10 @@ class CommunicationManager():
                 tcpClient.close()
                 tcpClient = None
             except Exception as e:
-                print(('Exception: ' + str(e)))
+                print('Exception: ' + str(e))
 
     def writeResponse(self, message, encryption = True):
-        print(("Write response: " + str(message) + ',' + str(encryption)))
+        print("Write response: " + str(message) + ',' + str(encryption))
         #self.connectionSocket.send( self.buildResponseCommunicationMessage(message, encryption))
         self.connectionSocket.send( self.buildResponseCommunicationMessage(message, encryption))
         return True

@@ -1,4 +1,4 @@
-from . import py_qmc5883l
+import py_qmc5883l
 
 from custom_exceptions import *
 
@@ -15,8 +15,8 @@ class Compass:
 
         try:
             degrees = self.sensor.get_bearing()
-        except Exception as e:
-            print(("Compass measurement Exception: " + str(e)))
+        except Exception, e:
+            print("Compass measurement Exception: " + str(e))
             return None
 
         return degrees

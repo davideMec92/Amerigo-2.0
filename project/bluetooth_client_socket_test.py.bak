@@ -15,7 +15,7 @@ port = first_match["port"]
 name = first_match["name"]
 host = first_match["host"]
 
-print(("Connecting to \"{}\" on {}".format(name, host)))
+print("Connecting to \"{}\" on {}".format(name, host))
 
 # Create the client socket
 sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
@@ -23,7 +23,7 @@ sock.connect((host, port))
 
 print("Connected. Type something...")
 while True:
-    data = eval(input())
+    data = input()
     if not data:
         break
     sock.send(data + "\r\n")

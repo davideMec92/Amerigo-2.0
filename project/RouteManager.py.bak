@@ -142,8 +142,8 @@ class RouteManager( Thread ):
             motor_right_actual_power = self.motors_object.getMotorRightActualPower()
 
             #print("Degrees: " + str( degrees ))
-            print(("$$$$$ NORMAL MODE: Motor left actual power: " + str( motor_left_actual_power ) + ' $$$$$'))
-            print(("$$$$$ NORMAL MODE: Motor right actual power: " + str( motor_right_actual_power ) + ' $$$$$'))
+            print("$$$$$ NORMAL MODE: Motor left actual power: " + str( motor_left_actual_power ) + ' $$$$$')
+            print("$$$$$ NORMAL MODE: Motor right actual power: " + str( motor_right_actual_power ) + ' $$$$$')
 
             #Caso in cui si è a sinistra dell'obiettivo
             if degrees + self.compass_tolerance < self.goal_direction_degrees:
@@ -164,12 +164,12 @@ class RouteManager( Thread ):
                 print("$$$$$ NORMAL MODE: Goal on the front $$$$$")
                 self.motors_object.forward( True )
 
-        except proximityMeasurementErrorException as e:
-            print(('$$$$$ NORMAL MODE: proximityMeasurementErrorException: ' + str(e) + ' $$$$$'))
-        except proximityGetDistanceException as e:
-            print(('$$$$$ NORMAL MODE: proximityGetDistanceException: ' + str(e) + ' $$$$$'))
-        except Exception as e:
-            print(('$$$$$ NORMAL MODE: Exception: ' + str(e) + ' $$$$$'))
+        except proximityMeasurementErrorException, e:
+            print('$$$$$ NORMAL MODE: proximityMeasurementErrorException: ' + str(e) + ' $$$$$')
+        except proximityGetDistanceException, e:
+            print('$$$$$ NORMAL MODE: proximityGetDistanceException: ' + str(e) + ' $$$$$')
+        except Exception, e:
+            print('$$$$$ NORMAL MODE: Exception: ' + str(e) + ' $$$$$')
         finally:
             return
 
@@ -194,12 +194,12 @@ class RouteManager( Thread ):
 
             if self.map_file_manager is not None:
                 data = self.proximity_manager_object.getStringifyMeasurements() + ', ' + str(self.bug_mode_last_move)
-                print(('Writing DATA: ' + str( data )))
+                print('Writing DATA: ' + str( data ))
                 self.map_file_manager.append( data )
 
             #print('goal_degrees: ' + str(goal_degrees))
             #print('parent_degrees: ' + str(parent_degrees))
-            print(('##### BUG MODE: Locked direction: ' + str(locked_direction) + ' #####'))
+            print('##### BUG MODE: Locked direction: ' + str(locked_direction) + ' #####')
 
             if locked_direction is not None:
             	if self.bug_mode_status == 'DISABLED':
@@ -239,9 +239,9 @@ class RouteManager( Thread ):
 
                     return self.bugMode(parent_degrees)
 
-            print(('##### BUG MODE: FRONT availability: ' + str(self.proximity_manager_object.getAvailability().get('FRONT')) + ' #####'))
-            print(('##### BUG MODE: LEFT availability: ' + str(self.proximity_manager_object.getAvailability().get('LEFT')) + ' #####'))
-            print(('##### BUG MODE: RIGHT availability: ' + str(self.proximity_manager_object.getAvailability().get('RIGHT')) + ' #####'))
+            print('##### BUG MODE: FRONT availability: ' + str(self.proximity_manager_object.getAvailability().get('FRONT')) + ' #####')
+            print('##### BUG MODE: LEFT availability: ' + str(self.proximity_manager_object.getAvailability().get('LEFT')) + ' #####')
+            print('##### BUG MODE: RIGHT availability: ' + str(self.proximity_manager_object.getAvailability().get('RIGHT')) + ' #####')
             #print('locked_direction (' + str(locked_direction) + ') availability: ' + str(self.proximity_manager_object.getAvailability().get(locked_direction)))
             #print('self u_turn: ' + str( self.u_turn ))
             #print('self u_turn_forward_steps: ' + str( self.u_turn_forward_steps ))
@@ -302,7 +302,7 @@ class RouteManager( Thread ):
 
                     #Check direzione libera dopo u_turn
                     if self.u_turn is True and self.u_turn_forward_steps == 0:
-                        print(('u_turn steps: ' + str(self.before_turn_steps)))
+                        print('u_turn steps: ' + str(self.before_turn_steps))
                         self.before_turn_steps = self.max_before_turn_steps - 1
                         self.u_turn_forward_steps = 1
                         return self.bugMode( goal_degrees, parent_degrees )
@@ -388,7 +388,7 @@ class RouteManager( Thread ):
 
                 random_dir = self.getRandomDirection()
 
-                print(('##### BUG MODE: random_dir: ' + str( random_dir ) + ' #####'))
+                print('##### BUG MODE: random_dir: ' + str( random_dir ) + ' #####')
 
                 if random_dir == 'LEFT':
 
@@ -434,22 +434,22 @@ class RouteManager( Thread ):
                     #print('BUG MODE: Recursive call 2')
                     return self.bugMode( self.compass_object.getDegress(), goal_degrees, opposite_dir )
 
-        except proximityMeasurementErrorException as e:
-            print(('##### BUG MODE: BugMode exception: ' + str(e) + ' #####'))
+        except proximityMeasurementErrorException, e:
+            print('##### BUG MODE: BugMode exception: ' + str(e) + ' #####')
             print('##### BUG MODE: Recall bugMode Method #####')
             self.bugMode( goal_degrees, parent_degrees, locked_direction )
-        except compassGetRotationDegreeCostsException as e:
-            print(('##### BUG MODE: compassGetRotationDegreeCostsException: ' + str(e) + ' #####'))
-            print('##### BUG MODE: Recall bugMode Method #####')
-            self.bug_mode_critical_exceptions_count = self.bug_mode_critical_exceptions_count + 1
-            self.bugMode( goal_degrees, parent_degrees, locked_direction )
-        except proximityGetDistanceException as e:
-            print(('##### BUG MODE: proximityGetDistanceException: ' + str(e) + ' #####'))
+        except compassGetRotationDegreeCostsException, e:
+            print('##### BUG MODE: compassGetRotationDegreeCostsException: ' + str(e) + ' #####')
             print('##### BUG MODE: Recall bugMode Method #####')
             self.bug_mode_critical_exceptions_count = self.bug_mode_critical_exceptions_count + 1
             self.bugMode( goal_degrees, parent_degrees, locked_direction )
-        except Exception as e:
-            print(('##### BUG MODE: Generic Exception: ' + str(e) + ', return #####'))
+        except proximityGetDistanceException, e:
+            print('##### BUG MODE: proximityGetDistanceException: ' + str(e) + ' #####')
+            print('##### BUG MODE: Recall bugMode Method #####')
+            self.bug_mode_critical_exceptions_count = self.bug_mode_critical_exceptions_count + 1
+            self.bugMode( goal_degrees, parent_degrees, locked_direction )
+        except Exception, e:
+            print('##### BUG MODE: Generic Exception: ' + str(e) + ', return #####')
             self.bug_mode_critical_exceptions_count = self.bug_mode_critical_exceptions_count + 1
             self.bugMode( goal_degrees, parent_degrees, locked_direction )
 

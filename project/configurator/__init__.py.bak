@@ -37,7 +37,7 @@ class Configurator:
             jsonData = None
             jsonData = json.loads(data)
             return jsonData
-        except Exception as e:
+        except Exception, e:
             raise configuratorLoadConfException('^^^^^ Configurator Exception: ' + str(e) + ' ^^^^^')
 
     def getConf(self):

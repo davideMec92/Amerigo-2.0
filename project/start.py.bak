@@ -26,22 +26,22 @@ try:
 
     route_manager = RouteManager( motors, proximity_manager )
 
-    input("Press Enter to stop...")
+    raw_input("Press Enter to stop...")
 
-except KeyboardInterrupt as SystemExit:
+except KeyboardInterrupt, SystemExit:
     print("Threads STOP")
-except configuratorLoadConfException as e:
+except configuratorLoadConfException, e:
     print(e)
-except motorsInitializationException as e:
+except motorsInitializationException, e:
     print(e)
-except proximityInitializationException as e:
+except proximityInitializationException, e:
     print(e)
-except mapAnalyzerInitializationException as e:
+except mapAnalyzerInitializationException, e:
     print(e)
-except mapAnalyzerPlotBuildException as e:
+except mapAnalyzerPlotBuildException, e:
     print(e)
-except Exception as e:
-    print(("start.py Exception: " + str(e)))
+except Exception, e:
+    print("start.py Exception: " + str(e))
 finally:
 
     if proximity_manager is not None:

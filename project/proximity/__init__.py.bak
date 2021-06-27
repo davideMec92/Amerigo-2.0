@@ -162,7 +162,7 @@ class Proximity:
                     elif i == 2:
                         data['RIGHT'] = distance
 
-        except Exception as e:
+        except Exception, e:
             raise proximityGetDistanceException('@@@@@ Proximity Exception: ' + str(e) + ' @@@@@')
             return None
 

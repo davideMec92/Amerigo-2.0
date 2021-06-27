@@ -101,7 +101,7 @@ class ProximityManager:
         print('Getting measurements for all directions..')
         self.measurements = self.proximity.getDistance()
 
-        print(('Measurements: ' + str(self.measurements)))
+        print('Measurements: ' + str(self.measurements))
 
         #Check caso di errore
         if self.measurements is None:

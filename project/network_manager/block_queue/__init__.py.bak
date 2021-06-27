@@ -16,7 +16,7 @@ class BlockQueue(Thread):
         while self.isWorkerRunning is True:
             block = Block(self.queue.get())
             block.save()
-            print(('New block saved! (Round created: ' + str(block.roundCreated) + ')'))
+            print ('New block saved! (Round created: ' + str(block.roundCreated) + ')')
             self.queue.task_done()
 
     def putBlock(self, blockData):

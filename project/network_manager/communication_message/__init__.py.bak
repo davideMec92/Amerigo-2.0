@@ -124,5 +124,5 @@ class CommunicationMessage:
             conf_schema.validate(conf)
             return True
         except SchemaError as e:
-            print(('Schema validation error:' + str(e)))
+            print ('Schema validation error:' + str(e))
             return False

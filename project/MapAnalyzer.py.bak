@@ -42,15 +42,15 @@ class MapAnalyzer:
 			print('MapAnalyzer init..')
 
 			if not os.path.exists(self.map_files_dir_out):
-				print(('Creation of ' + str(self.map_files_dir_out) + ' folder..'))
+				print('Creation of ' + str(self.map_files_dir_out) + ' folder..')
 				os.makedirs(self.map_files_dir_out)
 
 			for file in glob.glob('./' + self.map_files_dir_in + '/*' + self.file_extension_in):
-				print(('file: ' + str(file)))
+				print('file: ' + str(file))
 				self.input_files.append(file)
 
 		except OSError as e:
-			print(('MapAnalyzer Exception: ' + str(e)))
+			print('MapAnalyzer Exception: ' + str(e))
 			raise mapAnalyzerInitializationException( 'MapAnalyzer Exception: ' + str(e) )
 
 	def initValues(self):
@@ -200,12 +200,12 @@ class MapAnalyzer:
 			    if temp_bug_mode_last_move is not None:
 
 			        if temp_bug_mode_last_move == 'C':
-			            self.actual_orientation = self.actual_orientation.__next__
+			            self.actual_orientation = self.actual_orientation.next
 			        elif temp_bug_mode_last_move == 'CC':
 			            self.actual_orientation = self.actual_orientation.prev
 			        elif temp_bug_mode_last_move == '2C':
-			            self.actual_orientation = self.actual_orientation.__next__
-			            self.actual_orientation = self.actual_orientation.__next__
+			            self.actual_orientation = self.actual_orientation.next
+			            self.actual_orientation = self.actual_orientation.next
 			        elif temp_bug_mode_last_move == '2CC':
 			            self.actual_orientation = self.actual_orientation.prev
 			            self.actual_orientation = self.actual_orientation.prev
@@ -253,5 +253,5 @@ class MapAnalyzer:
 			plt.savefig(self.map_files_dir_out + '/' + os.path.basename(filename).split('.')[0] + self.file_extension_out, dpi=200, bbox_inches='tight')
 			plt.clf()
 
-		except Exception as e:
+		except Exception, e:
 			raise mapAnalyzerPlotBuildException('MapAnalyzer: ' + str(e))

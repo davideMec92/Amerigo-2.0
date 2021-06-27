@@ -35,7 +35,7 @@ class Server():
                 # receive sentence on newly established connectionSocket
                 sentence = str(connectionSocket.recv(1024))
 
-                print(("Received: " + str(sentence)))
+                print ("Received: " + str(sentence))
 
                 if self.connectionMode == ConnectionMode.BLUETOOTH_CONNECTION:
                     sentence = sentence.replace("\\n", "")
