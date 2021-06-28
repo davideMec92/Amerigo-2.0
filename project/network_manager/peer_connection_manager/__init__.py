@@ -33,7 +33,10 @@ class PeerConnectionManager():
             else:
                 print('AUTH_TOKEN not correct, by')"""
 
-        if authentication_token == self.AUTH_TOKEN:
+        return self.checkClientAuthToken(authentication_token)
+
+    def checkClientAuthToken(self, authenticationToken):
+        if authenticationToken == self.AUTH_TOKEN:
             return True
         else:
             print('AUTH_TOKEN not correct, by')

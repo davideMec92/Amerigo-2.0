@@ -4,10 +4,13 @@ from communication_message import CommunicationMessage, CommunicationMessageType
 from peer_controller import PeerController
 from block import Block
 from position_degrees import PositionDegrees
+from transaction import Transaction
 import json
 import re
 
-print(("POSITIONS: " + str(PositionDegrees.getFromDeviceId("ORIGINAL_DEVICE_ID_2").positions)))
+transaction = Transaction.getFirst()
+
+print("transaction: " + str(transaction.toDict()))
 
 """peers_list = PeerController.getPeers(PeerStatus.CONNECTED)
 #print(str(peers_list))

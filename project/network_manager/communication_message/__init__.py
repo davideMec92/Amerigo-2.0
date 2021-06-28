@@ -11,6 +11,7 @@ class CommunicationMessageTypes(Enum):
     HASHGRAPH = 3,
     BLOCK = 4,
     POSITIONS_DEGREES = 5,
+    TRANSACTION_GET = 6,
 
 class CommunicationMessage:
 
@@ -57,7 +58,13 @@ class CommunicationMessage:
             'events': [
                 {
                     "consensusTimestamp": int,
-                    "transactions": str,
+                    "transactions": [
+                        {
+                            "key": str,
+                            "goalPeerDeviceId": str,
+                            "creationTime": int,
+                        }
+                    ],
                     "creatorAssociation": {
                         "peerDeviceId": str,
                         "key": str,
@@ -69,7 +76,20 @@ class CommunicationMessage:
 
     })
 
-    CommunicationMessageTypesSchemaAssoc = {CommunicationMessageTypes.LOGIN.name:LOGIN_CONF_SCHEMA,CommunicationMessageTypes.PEERS_LIST.name:PEERS_LIST_SCHEMA,CommunicationMessageTypes.INFO.name:INFO_MESSAGE_CONF_SCHEMA,CommunicationMessageTypes.BLOCK.name:BLOCK_SCHEMA,CommunicationMessageTypes.POSITIONS_DEGREES.name:POSITIONS_DEGREES_SCHEMA}
+    TRANSACTION_GET_SCHEMA = Schema({
+        'type': str,
+        'authToken': str,
+        'lastGoalDeviceId': str
+    })
+
+    CommunicationMessageTypesSchemaAssoc = {
+        CommunicationMessageTypes.LOGIN.name:LOGIN_CONF_SCHEMA,
+        CommunicationMessageTypes.PEERS_LIST.name:PEERS_LIST_SCHEMA,
+        CommunicationMessageTypes.INFO.name:INFO_MESSAGE_CONF_SCHEMA,
+        CommunicationMessageTypes.BLOCK.name:BLOCK_SCHEMA,
+        CommunicationMessageTypes.POSITIONS_DEGREES.name:POSITIONS_DEGREES_SCHEMA,
+        CommunicationMessageTypes.TRANSACTION_GET.name:TRANSACTION_GET_SCHEMA,
+    }
 
     type = None
     message = None

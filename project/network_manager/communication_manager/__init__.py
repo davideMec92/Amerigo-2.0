@@ -58,6 +58,21 @@ class CommunicationManager():
                 print(('Position degrees message received: ' + str(deserialized_message)))
                 positionDegrees = PositionDegrees(deserialized_message["deviceId"], deserialized_message["positions"])
                 positionDegrees.upsert()
+            elif deserialized_message['type'] == CommunicationMessageTypes.TRANSACTION_GET.name:
+                print(('Transaction get message received: ' + str(deserialized_message)))
+                #Check if client auth token is authorized
+                if( self.factory.checkClientAuthToken(deserialized_message["authToken"]) is True ):
+                    transaction = Transaction.getFirst()
+                    if transaction is not None:
+                        positionDegrees = PositionDegrees.getFromDeviceId(transaction.goalPeerDeviceId)
+                        if positionDegrees is not None:
+                            peerGoalPosition = None
+                            for peerPosition in positionDegrees.positions:
+                                if peerPosition.deviceId == transaction.goalPeerDeviceId:
+                                    peerGoalPosition = PeerPosition(peerPosition)
+
+                            if peerGoalPosition is not None:
+                                self.writeResponse(peerPosition.toDict())
 
         except Exception as e:
             print(('Error: ' + str(e)))
@@ -100,7 +115,6 @@ class CommunicationManager():
 
     def writeResponse(self, message, encryption = True):
         print(("Write response: " + str(message) + ',' + str(encryption)))
-        #self.connectionSocket.send( self.buildResponseCommunicationMessage(message, encryption))
         self.connectionSocket.send( self.buildResponseCommunicationMessage(message, encryption))
         return True
 

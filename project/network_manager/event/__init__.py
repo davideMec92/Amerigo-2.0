@@ -13,4 +13,4 @@ class Event:
       self.creatorAssociation = CreatorAssociation(dict["creatorAssociation"])
 
     def toDict(self):
-        return {'consensusTimestamp':self.consensusTimestamp, 'transactions':self.transactions, 'creatorAssociation': self.creatorAssociation.toDict()}
+        return {'consensusTimestamp': self.consensusTimestamp, 'transactions': self.transactions, 'creatorAssociation': self.creatorAssociation.toDict()}
