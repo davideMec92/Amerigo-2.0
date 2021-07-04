@@ -4,6 +4,7 @@ from enum import Enum
 from bluetooth_connection import BluetoothConnection
 from tcp_connection import TCPConnection
 from block_queue import BlockQueue
+import time
 
 class ConnectionMode(Enum):
     TCP_CONNECTION = 'TCP_CONNECTION'
@@ -33,7 +34,7 @@ class Server():
                 # for incoming requests, new socket created on return
                 connectionSocket, addr = self.socket.accept()
                 # receive sentence on newly established connectionSocket
-                sentence = str(connectionSocket.recv(1024))
+                sentence = self.recv_timeout(connectionSocket)
 
                 print(("Received: " + str(sentence)))
 
@@ -45,6 +46,46 @@ class Server():
                     CommunicationManager(connectionSocket, self.blockQueue).lineReceived(sentence)
             except OSError:
                 pass
+
+    def parseReceivedString(self, receivedString):
+        receivedString = receivedString.replace("\\n", "")
+        receivedString = receivedString.lstrip('b')
+        return receivedString
+
+    def recv_timeout(self, socket, timeout=2):
+        # make socket non blocking
+        socket.setblocking(0)
+
+        # total data partwise in an array
+        total_data = [];
+        data = '';
+
+        # beginning time
+        begin = time.time()
+        while 1:
+            # if you got some data, then break after timeout
+            if total_data and time.time() - begin > timeout:
+                break
+
+            # if you got no data at all, wait a little longer, twice the timeout
+            elif time.time() - begin > timeout * 2:
+                break
+
+            # recv something
+            try:
+                data = socket.recv(8192)
+                if data:
+                    total_data.append(self.parseReceivedString(str(data)))
+                    # change the beginning time for measurement
+                    begin = time.time()
+                else:
+                    # sleep for sometime to indicate a gap
+                    time.sleep(0.1)
+            except:
+                pass
+
+        # join all parts to make final string
+        return ''.join(total_data)
 
     def stop(self):
         self.socketRun = False

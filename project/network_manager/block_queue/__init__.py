@@ -13,6 +13,7 @@ class BlockQueue(Thread):
         self.isWorkerRunning = True
 
     def run(self):
+        #TODO Add try catch in order to not stopping loop
         print('Starting Block queue..')
         while self.isWorkerRunning is True:
             block = Block(self.queue.get())

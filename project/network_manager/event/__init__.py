@@ -4,7 +4,7 @@ from creatorAssociation import CreatorAssociation
 class Event:
 
     consensusTimestamp = None,
-    transactions = None,
+    transactions = [],
     creatorAssociation = None;
 
     def __init__( self, dict ):
