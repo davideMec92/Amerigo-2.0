@@ -23,7 +23,7 @@ class TcpClient():
 
     def sendMessage(self, message):
         try:
-            print(("Sending message: " + str(message) + 'to: ' + str(self.host)))
+            print("Sending message: " + str(message) + 'to: ' + str(self.host))
             self.socket.send(message + "\n")
         except socket.timeout:
             print("Socket timeout")

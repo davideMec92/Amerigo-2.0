@@ -11,7 +11,7 @@ class PeerConnectionManager():
         #return self.authenticated
 
     def clientSignup(self, authentication_token, address, port, deviceId):
-        print(('New Client IP_ADDRESS: ' + str(address) + ' PORT: ' + str(port)))
+        print('New Client IP_ADDRESS: ' + str(address) + ' PORT: ' + str(port))
         self.address = address
 
         if authentication_token is None:
@@ -23,7 +23,7 @@ class PeerConnectionManager():
         #TODO VALIDATE BLUETOOTH MAC ADDRESS
         self.deviceId = deviceId
 
-        print(("Device id: " + str(deviceId)))
+        print("Device id: " + str(deviceId))
 
         #Check client authentication
         """if self.authenticated is False:
@@ -33,10 +33,7 @@ class PeerConnectionManager():
             else:
                 print('AUTH_TOKEN not correct, by')"""
 
-        return self.checkClientAuthToken(authentication_token)
-
-    def checkClientAuthToken(self, authenticationToken):
-        if authenticationToken == self.AUTH_TOKEN:
+        if authentication_token == self.AUTH_TOKEN:
             return True
         else:
             print('AUTH_TOKEN not correct, by')

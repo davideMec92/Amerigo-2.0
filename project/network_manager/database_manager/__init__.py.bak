@@ -18,7 +18,7 @@ class DatabaseManager:
         if databaseName is not None:
             self.DB_DEFAULT_NAME = databaseName
 
-        print(('Initializing ' + str(self.DB_DEFAULT_NAME) + ' DB..'))
+        print('Initializing ' + str(self.DB_DEFAULT_NAME) + ' DB..')
 
         self.db = TinyDB(self.DB_DEFAULT_PATH + self.DB_DEFAULT_NAME)
 

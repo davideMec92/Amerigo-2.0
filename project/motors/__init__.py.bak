@@ -100,9 +100,9 @@ class Motors:
         if ninetyDegreesRotation is True:
             time.sleep(0.425)
             self.stop()
-            print(('***** TURN ' + str(type) + ' 90 degrees *****'))
+            print('***** TURN ' + str(type) + ' 90 degrees *****')
         else:
-            print(('***** TURN ' + str(type) + ' *****'))
+            print('***** TURN ' + str(type) + ' *****')
 
     def compassRotation(self, type):
 

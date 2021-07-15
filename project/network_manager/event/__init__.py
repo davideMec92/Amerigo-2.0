@@ -4,7 +4,7 @@ from creatorAssociation import CreatorAssociation
 class Event:
 
     consensusTimestamp = None,
-    transactions = None,
+    transactions = [],
     creatorAssociation = None;
 
     def __init__( self, dict ):
@@ -13,4 +13,4 @@ class Event:
       self.creatorAssociation = CreatorAssociation(dict["creatorAssociation"])
 
     def toDict(self):
-        return {'consensusTimestamp':self.consensusTimestamp, 'transactions':self.transactions, 'creatorAssociation': self.creatorAssociation.toDict()}
+        return {'consensusTimestamp': self.consensusTimestamp, 'transactions': self.transactions, 'creatorAssociation': self.creatorAssociation.toDict()}

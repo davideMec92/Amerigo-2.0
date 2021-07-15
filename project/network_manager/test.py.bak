@@ -4,18 +4,19 @@ from communication_message import CommunicationMessage, CommunicationMessageType
 from peer_controller import PeerController
 from block import Block
 from position_degrees import PositionDegrees
-from transaction import Transaction
 import json
 import re
-from block_queue import BlockQueue
 
-"""blockQueue = BlockQueue()
-blockQueue.start()
-blockZeroDict = {'events': [{'consensusTimestamp': 1626381938, 'creatorAssociation': {'eventCreatorIndex': 2, 'key': '5400cf1fa28a4407338e84a8beb618f1084be964a345db74aaa453551740a443', 'peerDeviceId': '8756bf0c-0307-4da4-ab73-354e80d299f0'}, 'transactions': [{'creationTime': 1626381938, 'goalPeerDeviceId': '8756bf0c-0307-4da4-ab73-354e80d299f0', 'key': 'fe44c7b3378640ab993b8be1911e36d58e229fada4ee2dd1dfb3252ae9e7f9c3'}]}, {'consensusTimestamp': 1626381939, 'creatorAssociation': {'eventCreatorIndex': 3, 'key': '1187a87de1ab898dc7ac1565bc5ce7b053b4b6f82ed621c1866933411111c9ac', 'peerDeviceId': 'd2291975-ea30-46e6-b555-42578bcef41b'}, 'transactions': []}], 'roundCreated': 2}
-blockQueue.putBlock(blockZeroDict)"""
+print("POSITIONS: " + str(PositionDegrees.getFromDeviceId("ORIGINAL_DEVICE_ID_2").positions))
+
+"""peers_list = PeerController.getPeers(PeerStatus.CONNECTED)
+#print(str(peers_list))
+return_dict = {"type":CommunicationMessageTypes.PEERS_LIST.name, "peers": []}
+for peer in peers_list:
+    return_dict["peers"].append(peer)
 
 
-"""print(str(return_dict))"""
+print(str(return_dict))"""
 """communication_message = CommunicationMessage()
 deserialized_message = {"type":"LOGIN","authToken":"Hs8GckGahlvzOTZBMpMLTa2gjMjEnRDf","macAddress":"macAddress_1"}
 encrypt_token = communication_message.setMessage(deserialized_message)

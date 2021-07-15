@@ -18,5 +18,5 @@ class BluetoothConnection():
                                     # protocols=[bluetooth.OBEX_UUID]
                                     )
 
-        print(("Waiting for connection on RFCOMM channel", port))
+        print("Waiting for connection on RFCOMM channel", port)
         return server_sock

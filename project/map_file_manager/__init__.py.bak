@@ -21,7 +21,7 @@ class MapFileManager:
         try:
 
             if not os.path.exists(self.map_files_dir):
-                print(('Creation of ' + str(self.map_files_dir) + ' folder..'))
+                print('Creation of ' + str(self.map_files_dir) + ' folder..')
                 os.makedirs(self.map_files_dir)
 
             self.today_date = str(date.today().strftime("%d_%m_%Y"))
@@ -29,7 +29,7 @@ class MapFileManager:
             self.initFile()
 
         except OSError as e:
-            print(('MapFileManager Exception: ' + str(e)))
+            print('MapFileManager Exception: ' + str(e))
 
     def getFileName(self):
         return self.filename_prefix + self.today_date + '_' + str(self.file_counter) + self.file_extension
@@ -52,10 +52,10 @@ class MapFileManager:
                 print('Init File..')
                 self.initFile()
 
-            print(('Append data: ' + str(data)))
+            print('Append data: ' + str(data))
             self.file_object.write(data + "\n")
-        except Exception as e:
-            print(('MapFileManager Exception: ' + str(e)))
+        except Exception, e:
+            print('MapFileManager Exception: ' + str(e))
             self.close()
 
 

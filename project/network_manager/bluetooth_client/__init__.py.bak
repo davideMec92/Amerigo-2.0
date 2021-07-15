@@ -23,7 +23,7 @@ class BluetoothClient():
             name = first_match["name"]
             host = first_match["host"]
 
-            print(("Connecting to \"{}\" on {}".format(name, host)))
+            print("Connecting to \"{}\" on {}".format(name, host))
 
             # Create the client socket
             self.socket = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
@@ -32,11 +32,11 @@ class BluetoothClient():
             print("Connected. Type something...")
 
         except Exception as e:
-            print(("BluetoothClient error: " + str(e)))
+            print("BluetoothClient error: " + str(e))
 
     def sendMessage(self, message):
         try:
-            print(("Sending message: " + str(message) + 'to: ' + str(self.macAddress)))
+            print("Sending message: " + str(message) + 'to: ' + str(self.macAddress))
             if type(message) is not str:
                 message = str(message)
                 message = message.lstrip('b')

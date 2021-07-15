@@ -84,7 +84,7 @@ class QMC5883L(object):
                               [0.0, 0.0, 1.0]]
 
         chip_id = self._read_byte(REG_CHIP_ID)
-        
+
         if chip_id != 0xff:
             msg = "Chip ID returned 0x%x instead of 0xff; is the wrong chip?"
             logging.warning(msg, chip_id)
@@ -192,12 +192,14 @@ class QMC5883L(object):
             return b
 
     def get_bearing(self):
+        print("CALL")
         """Horizontal bearing, adjusted by calibration and declination."""
         [x, y] = self.get_magnet()
         if x is None or y is None:
             return None
         else:
             b = math.degrees(math.atan2(y, x))
+
             if b < 0:
                 b += 360.0
             b += self._declination
