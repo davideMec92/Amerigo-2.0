@@ -76,6 +76,7 @@ class CommunicationMessage:
 
     })
 
+    #TODO UNDERSTAND HOW TO MANAGE START POINT DEVICE ID
     TRANSACTION_GET_SCHEMA = Schema({
         'type': str,
         'authToken': str,

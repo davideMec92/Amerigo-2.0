@@ -7,18 +7,15 @@ from position_degrees import PositionDegrees
 from transaction import Transaction
 import json
 import re
+from block_queue import BlockQueue
 
-token = 'gAAAAABg4essM5LN7pugT2ZOnh32CdKaoy1JpBlbJM_Hw67yBXmNL-GTkRNLWLOD-0B6Go1qTx7geNsAzrDw7rcqE4VAsbxguwt2x3fSg1dXqssuHZaaZwmxi8F0ybpVUL5iW7WS2FxxkRBEizsanR1MnGCZtzhaPyHOw8ud4LANKa_X9yLFQeP7I4WBU1CQVrtToAFEK2P8UFR6MFByVEAiP9zmlQlkKEcmZY13Sofr77_CGTuWNk4ERYQ_2R8tlU2MKOZY0NF0b-YmgN96OCMuv9Krt6PhXWQE2eszExa09_h_LWgMnYZBC9Tw4iCC-l-fIJ4i6jbT8zEyxMSCIUdeFcInmfK5sx8n7JlLHzxxLw1_kXHH-9sy7LOj3UY7xuqQxD0Zu94zEhN6cZJhnGk7wukkPgGsDXBjBkJTWxsNSk_kvfZdrEyPMABsSlF81BcpRsTrWvrSc6BX8SEEFCYPN-2d9Bboxf35ME4c1zaseZCwbAfeUGO-AlFFIY702_Wy8Xx2_6L6YFFoAoVrQUZhZGkqwhyBbLZ3-7b0JV1qhd5qFC04aZI4VEO4xeknQpg_-axJ_CDaiR53Eq-gT96-WlXB4gsTjbcfJlwpe1qAyIXuzSrWRYjlqqSlNajW-V6XLzuea4qpN3nLHk1kQrQaIpn2GKuiDGHrT7pcUS3R5HoJPY66zj8NNAzbi68IBN_jeTMKouOH1Ldf7WYLMXdMvv7yMaqOqa4QjP1Jqqjk6KgzZlQ9ANRxDvQzfQoszrB4sM701RXwBJSy3Iy2O6pXZ8BtxwuYtgHjOZvOeZh_zKi--SP5xm-xs3SRGvY5KhH4t2isua6FF7QpNl7RsMQX_6UEcJgdsJu1c6ZfqbXfdetZv051gpNaXtqfS0Wkr9oh_w6OsEoxQQ9NS2IUNjAz5CUnHpoTBOxJZQE7_2kyAlu4TGmeY1sTfKFw2qhqwn04d0Ovw2EIUm-Eg86YMcXCLNIyEFL8WnaQjphueoOq3NUPQYvd4IzFV8o7Jzl4P-pxcRad0smCDQsqYl6DHlQC7jCv0bXRtQ=='
-print('MESSAGE: ' + str(CommunicationMessage().getMessage(token)))
-
-"""peers_list = PeerController.getPeers(PeerStatus.CONNECTED)
-#print(str(peers_list))
-return_dict = {"type":CommunicationMessageTypes.PEERS_LIST.name, "peers": []}
-for peer in peers_list:
-    return_dict["peers"].append(peer)
+"""blockQueue = BlockQueue()
+blockQueue.start()
+blockZeroDict = {'events': [{'consensusTimestamp': 1626381938, 'creatorAssociation': {'eventCreatorIndex': 2, 'key': '5400cf1fa28a4407338e84a8beb618f1084be964a345db74aaa453551740a443', 'peerDeviceId': '8756bf0c-0307-4da4-ab73-354e80d299f0'}, 'transactions': [{'creationTime': 1626381938, 'goalPeerDeviceId': '8756bf0c-0307-4da4-ab73-354e80d299f0', 'key': 'fe44c7b3378640ab993b8be1911e36d58e229fada4ee2dd1dfb3252ae9e7f9c3'}]}, {'consensusTimestamp': 1626381939, 'creatorAssociation': {'eventCreatorIndex': 3, 'key': '1187a87de1ab898dc7ac1565bc5ce7b053b4b6f82ed621c1866933411111c9ac', 'peerDeviceId': 'd2291975-ea30-46e6-b555-42578bcef41b'}, 'transactions': []}], 'roundCreated': 2}
+blockQueue.putBlock(blockZeroDict)"""
 
 
-print(str(return_dict))"""
+"""print(str(return_dict))"""
 """communication_message = CommunicationMessage()
 deserialized_message = {"type":"LOGIN","authToken":"Hs8GckGahlvzOTZBMpMLTa2gjMjEnRDf","macAddress":"macAddress_1"}
 encrypt_token = communication_message.setMessage(deserialized_message)

@@ -23,10 +23,10 @@ class BlockQueue(Thread):
 
             for event in block.events:
                 #Check if transaction list is empty
-                if not event.transactions:
+                if not event["transactions"]:
                     continue
 
-                transaction = Transaction(event.transactions[0])
+                transaction = Transaction(event["transactions"][0])
                 transaction.save()
 
             self.queue.task_done()

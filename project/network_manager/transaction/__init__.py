@@ -16,7 +16,7 @@ class Transaction:
         self.key = dict["key"]
         self.goalPeerDeviceId = dict["goalPeerDeviceId"]
         self.creationTime = dict["creationTime"]
-        if dict["updatedTime"] is not None:
+        if 'updatedTime' in dict:
             self.updatedTime = dict["updatedTime"]
 
     @staticmethod
