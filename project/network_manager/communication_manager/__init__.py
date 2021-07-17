@@ -84,7 +84,7 @@ class CommunicationManager():
                 peers = PeerController.getPeers()
                 peerPositionsDegrees = PositionDegreesController.getPositionsDegrees()
                 if len(peers) == len(peerPositionsDegrees):
-                    self.writeResponse(PositionsDegreesGetResponse.build(peerPositionsDegrees))
+                    self.writeResponse(PositionsDegreesGetResponse().build(peerPositionsDegrees))
                 else:
                     self.writeResponse(PositionsDegreesGetResponse.baseSchema)
 

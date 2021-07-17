@@ -11,6 +11,8 @@ class PositionsDegreesGetResponse:
     def build(self, responseData):
         print('responseData: ' + str(responseData))
 
+        self.baseSchema['positionsDegrees'] = []
+
         for positionDegrees in responseData:
             tempPositionDegrees = {
                 'deviceId': positionDegrees['deviceId'],
