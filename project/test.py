@@ -1,0 +1,3 @@
+from positions_degrees_manager import PositionsDegreesManager
+
+PositionsDegreesManager().getPositionsDegrees()
