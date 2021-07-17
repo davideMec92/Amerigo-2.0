@@ -4,10 +4,29 @@ from communication_message import CommunicationMessage, CommunicationMessageType
 from peer_controller import PeerController
 from block import Block
 from position_degrees import PositionDegrees
+from position_degrees_controller import PositionDegreesController
+from responses import PositionsDegreesGetResponse
 from transaction import Transaction
 import json
 import re
 from block_queue import BlockQueue
+
+positionsDegrees = PositionDegreesController.getPositionsDegrees()
+print('positions degrees GET ALL: ' + str(PositionsDegreesGetResponse().build(positionsDegrees)))
+
+
+"""positionDegrees = {
+        'type': 'POSITIONS_DEGREES',
+        'deviceId': 'DEVICE_ID_TEST_1',
+        'positions': [
+            {
+                "deviceId": 'DEVICE_ID_TEST_2',
+                "degrees": 186,
+            }
+        ]
+    }
+
+PositionDegrees(positionDegrees['deviceId'], positionDegrees['positions']).save()"""
 
 """blockQueue = BlockQueue()
 blockQueue.start()

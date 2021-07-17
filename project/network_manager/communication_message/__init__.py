@@ -12,6 +12,8 @@ class CommunicationMessageTypes(Enum):
     BLOCK = 4,
     POSITIONS_DEGREES = 5,
     TRANSACTION_GET = 6,
+    POSITIONS_DEGREES_GET = 7,
+    POSITIONS_DEGREES_GET_RESPONSE = 8,
 
 class CommunicationMessage:
 
@@ -76,11 +78,31 @@ class CommunicationMessage:
 
     })
 
+    POSITIONS_DEGREES_GET_RESPONSE_SCHEMA = Schema({
+        'type': str,
+        'positionsDegrees': [
+            {
+                'deviceId': str,
+                'positions': [
+                    {
+                        "deviceId": str,
+                        "degrees": int,
+                    }
+                ]
+            },
+        ]
+    })
+
     #TODO UNDERSTAND HOW TO MANAGE START POINT DEVICE ID
     TRANSACTION_GET_SCHEMA = Schema({
         'type': str,
         'authToken': str,
         'lastGoalDeviceId': str
+    })
+
+    POSITIONS_DEGREES_GET_SCHEMA = Schema({
+        'type': str,
+        'authToken': str
     })
 
     CommunicationMessageTypesSchemaAssoc = {
@@ -90,6 +112,8 @@ class CommunicationMessage:
         CommunicationMessageTypes.BLOCK.name:BLOCK_SCHEMA,
         CommunicationMessageTypes.POSITIONS_DEGREES.name:POSITIONS_DEGREES_SCHEMA,
         CommunicationMessageTypes.TRANSACTION_GET.name:TRANSACTION_GET_SCHEMA,
+        CommunicationMessageTypes.POSITIONS_DEGREES_GET.name:POSITIONS_DEGREES_GET_SCHEMA,
+        CommunicationMessageTypes.POSITIONS_DEGREES_GET_RESPONSE.name:POSITIONS_DEGREES_GET_RESPONSE_SCHEMA,
     }
 
     type = None

@@ -7,8 +7,14 @@ from bluetooth_client import BluetoothClient
 from block import Block
 from position_degrees import PositionDegrees
 from block_queue import BlockQueue
+from peer_position import PeerPosition
+from position_degrees_controller import PositionDegreesController
+from transaction import Transaction
 
 import json
+
+from network_manager.responses import PositionsDegreesGetResponse
+
 
 class CommunicationManager():
 
@@ -73,6 +79,15 @@ class CommunicationManager():
 
                             if peerGoalPosition is not None:
                                 self.writeResponse(peerPosition.toDict())
+            elif deserialized_message['type'] == CommunicationMessageTypes.POSITIONS_DEGREES_GET.name:
+                print(('Position degrees GET message received: ' + str(deserialized_message)))
+                peers = PeerController.getPeers()
+                peerPositionsDegrees = PositionDegreesController.getPositionsDegrees()
+                if len(peers) == len(peerPositionsDegrees):
+                    self.writeResponse(PositionsDegreesGetResponse.build(peerPositionsDegrees))
+                else:
+                    self.writeResponse(PositionsDegreesGetResponse.baseSchema)
+
 
         except Exception as e:
             print(('Error: ' + str(e)))
