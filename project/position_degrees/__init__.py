@@ -11,20 +11,9 @@ class PositionDegrees:
 
     database_manager = DatabaseManager(DB_NAME)
 
-    def __init__(self, deviceId, positions, updatedTime = None):
-
-        if deviceId is None:
-            raise Exception('deviceId cannot be null')
-
-        if positions is None:
-            raise Exception('positions cannot be null')
-
-        self.updatedTime = updatedTime
-        self.deviceId = deviceId
-        self.positions = []
-
-        for peerPositionData in positions:
-            self.positions.append(PeerPosition(peerPositionData).toDict())
+    def __init__(self, data_dict):
+        for key in data_dict:
+            setattr(self, key, data_dict[key])
 
     @staticmethod
     def createFromDict(deviceId, positions, updatedTime):

@@ -1,5 +1,6 @@
 import bluetooth
 import sys
+import time
 
 class BluetoothClient():
 
@@ -50,6 +51,11 @@ class BluetoothClient():
             print("Socket timeout")
             return
 
+    def parseReceivedString(self, receivedString):
+        receivedString = receivedString.replace("\\n", "")
+        receivedString = receivedString.lstrip('b')
+        return receivedString
+
     def sendMessageWithResponse(self, message):
         try:
             print(("Sending message: " + str(message) + 'to: ' + str(self.macAddress)))
@@ -57,7 +63,7 @@ class BluetoothClient():
                 message = str(message)
                 message = message.lstrip('b')
                 message = message.replace("'", "")
-            self.socket.send(str(message) + "\r\n")
+            self.socket.send(str(message) + "\n")
 
             self.socketRun = True
 
@@ -68,18 +74,13 @@ class BluetoothClient():
 
                 print(("Received: " + str(sentence)))
 
-                if self.connectionMode == ConnectionMode.BLUETOOTH_CONNECTION:
-                    sentence = sentence.replace("\\n", "")
-                    sentence = sentence.lstrip('b')
+                sentence = sentence.replace("\\n", "")
+                sentence = sentence.lstrip('b')
 
                 if sentence is not None:
                     return sentence
-        except socket.timeout:
-            print("Socket timeout")
-            self.socketRun = False
-            return
-        except socket.error:
-            print("Socket timeout")
+        except Exception as e:
+            print("Socket error: " + str(e))
             self.socketRun = False
             return
 
@@ -112,7 +113,7 @@ class BluetoothClient():
                 else:
                     # sleep for sometime to indicate a gap
                     time.sleep(0.1)
-            except:
+            except Exception as e:
                 pass
 
         # join all parts to make final string
