@@ -13,7 +13,7 @@ from transaction import Transaction
 
 import json
 
-from network_manager.responses import PositionsDegreesGetResponse
+from responses import PositionsDegreesGetResponse
 
 
 class CommunicationManager():
