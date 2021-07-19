@@ -4,7 +4,10 @@ from configurator import Configurator
 from motors import Motors
 from MapAnalyzer import MapAnalyzer
 from custom_exceptions import *
+from positions_degrees_manager import PositionsDegreesManager
+from wifi_rssi_manager import WifiRssiManager
 import sys
+import time
 
 try:
 
@@ -22,8 +25,21 @@ try:
     print('Starting and configuring Motors..')
     motors = Motors( configurator )
 
+    print('Asking to server the positions degrees list..')
+    positionsDegreesManager = PositionsDegreesManager()
+
+    startingSsidPosition = None
+    while positionsDegreesManager.getPositionsDegrees() is False or startingSsidPosition is None:
+        startingSsidPosition = WifiRssiManager(positionsDegreesManager.getPositionDegreesDevicesIds()).getSsidNearToMe()
+        time.sleep(5)
+
+    print('startingSsidPosition: ' + str(startingSsidPosition))
+    print('Positions degrees list found!')
+    sys.exit()
     proximity_manager = ProximityManager( configurator, motors )
 
+    #TODO ASK SERVER FOR A TRANSACTION
+    #TODO SET TRANSACTION TO ROUTE MANAGER GOAL DIRECTION
     route_manager = RouteManager( motors, proximity_manager )
 
     input("Press Enter to stop...")

@@ -1,3 +1,4 @@
-from positions_degrees_manager import PositionsDegreesManager
+from wifi_rssi_manager import WifiRssiManager
 
-PositionsDegreesManager().getPositionsDegrees()
+wifiRssiManager = WifiRssiManager(['Cacca', 'BruceNet'])
+wifiRssiManager.getSsidNearToMe()

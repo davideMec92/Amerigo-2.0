@@ -4,7 +4,7 @@ import time
 interface = 'wlan0'
 rssi_scanner = rssi.RSSI_Scan(interface)
 
-ssids = ['Honor', 'FASTWEB-Sj2uaz']
+ssids = ['Cacca', 'BruceNet']
 
 # sudo argument automatixally gets set for 'false', if the 'true' is not set manually.
 # python file will have to be run with sudo privileges.
