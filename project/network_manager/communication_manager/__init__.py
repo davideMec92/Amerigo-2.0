@@ -69,16 +69,17 @@ class CommunicationManager():
                 #Check if client auth token is authorized
                 if( self.factory.checkClientAuthToken(deserialized_message["authToken"]) is True ):
                     transaction = Transaction.getFirst()
-                    if transaction is not None:
-                        positionDegrees = PositionDegrees.getFromDeviceId(transaction.goalPeerDeviceId)
-                        if positionDegrees is not None:
-                            peerGoalPosition = None
-                            for peerPosition in positionDegrees.positions:
-                                if peerPosition.deviceId == transaction.goalPeerDeviceId:
-                                    peerGoalPosition = PeerPosition(peerPosition)
 
-                            if peerGoalPosition is not None:
-                                self.writeResponse(peerPosition.toDict())
+                    response = {
+                                'type': CommunicationMessageTypes.TRANSACTION_GET_RESPONSE.name,
+                            }
+
+                    if transaction is not None:
+                        response['key'] = transaction.key
+                        response['goalPeerDeviceId'] = transaction.goalPeerDeviceId
+
+                    self.writeResponse(response)
+
             elif deserialized_message['type'] == CommunicationMessageTypes.POSITIONS_DEGREES_GET.name:
                 print(('Position degrees GET message received: ' + str(deserialized_message)))
                 peers = PeerController.getPeers()

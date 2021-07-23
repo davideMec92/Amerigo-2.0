@@ -1,6 +1,6 @@
 from cryptography.fernet import Fernet
 from aenum import Enum
-from schema import Schema, And, Use, Optional, SchemaError
+from schema import Schema, And, Use, Optional, SchemaError, Or
 import json, ast
 
 
@@ -14,6 +14,7 @@ class CommunicationMessageTypes(Enum):
     TRANSACTION_GET = 6,
     POSITIONS_DEGREES_GET = 7,
     POSITIONS_DEGREES_GET_RESPONSE = 8,
+    TRANSACTION_GET_RESPONSE = 9,
 
 class CommunicationMessage:
 
@@ -93,11 +94,16 @@ class CommunicationMessage:
         ]
     })
 
-    #TODO UNDERSTAND HOW TO MANAGE START POINT DEVICE ID
     TRANSACTION_GET_SCHEMA = Schema({
         'type': str,
         'authToken': str,
-        'lastGoalDeviceId': str
+        Optional('lastTransactionKey'): str
+    })
+
+    TRANSACTION_GET_RESPONSE_SCHEMA = Schema({
+        'type': str,
+        Optional('key'): str,
+        Optional('goalPeerDeviceId'): str,
     })
 
     POSITIONS_DEGREES_GET_SCHEMA = Schema({
@@ -114,6 +120,7 @@ class CommunicationMessage:
         CommunicationMessageTypes.TRANSACTION_GET.name:TRANSACTION_GET_SCHEMA,
         CommunicationMessageTypes.POSITIONS_DEGREES_GET.name:POSITIONS_DEGREES_GET_SCHEMA,
         CommunicationMessageTypes.POSITIONS_DEGREES_GET_RESPONSE.name:POSITIONS_DEGREES_GET_RESPONSE_SCHEMA,
+        CommunicationMessageTypes.TRANSACTION_GET_RESPONSE.name:TRANSACTION_GET_RESPONSE_SCHEMA,
     }
 
     type = None
