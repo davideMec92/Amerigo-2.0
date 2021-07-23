@@ -12,6 +12,9 @@ class WifiRssiManager:
 
     def getSsidsPowers(self):
 
+        if len(self.ssids) == 0:
+            return None
+
         ssidPowers = []
         for x in 'necri':
             for ssidPowersMeasurements in self.rssi_scanner.getAPinfo(networks=self.ssids, sudo=True):
@@ -63,14 +66,15 @@ class WifiRssiManager:
         ssidNearToMe = None
         ssidNearToMeSignalPower = None
 
-        for ssid, ssidPowerSignal in ssidsPowers.items():
-            if ssidPowerSignal is not None and ssidPowerSignal <= self.nearSignalThreshold:
-                if ssidNearToMeSignalPower is None:
-                    ssidNearToMe = ssid
-                    ssidNearToMeSignalPower = ssidPowerSignal
-                elif ssidPowerSignal < ssidNearToMeSignalPower:
-                    ssidNearToMe = ssid
-                    ssidNearToMeSignalPower = ssidPowerSignal
+        if ssidsPowers is not None:
+            for ssid, ssidPowerSignal in ssidsPowers.items():
+                if ssidPowerSignal is not None and ssidPowerSignal <= self.nearSignalThreshold:
+                    if ssidNearToMeSignalPower is None:
+                        ssidNearToMe = ssid
+                        ssidNearToMeSignalPower = ssidPowerSignal
+                    elif ssidPowerSignal < ssidNearToMeSignalPower:
+                        ssidNearToMe = ssid
+                        ssidNearToMeSignalPower = ssidPowerSignal
 
         print ('ssidNearToMe: ' + str(ssidNearToMe))
         return ssidNearToMe

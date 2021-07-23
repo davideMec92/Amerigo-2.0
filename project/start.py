@@ -5,6 +5,7 @@ from motors import Motors
 from MapAnalyzer import MapAnalyzer
 from custom_exceptions import *
 from positions_degrees_manager import PositionsDegreesManager
+from transaction_manager import TransactionManager
 from wifi_rssi_manager import WifiRssiManager
 import sys
 import time
@@ -28,6 +29,9 @@ try:
     print('Asking to server the positions degrees list..')
     positionsDegreesManager = PositionsDegreesManager()
 
+    TransactionManager().getTransaction()
+    sys.exit()
+
     startingSsidPosition = None
     while positionsDegreesManager.getPositionsDegrees() is False or startingSsidPosition is None:
         startingSsidPosition = WifiRssiManager(positionsDegreesManager.getPositionDegreesDevicesIds()).getSsidNearToMe()
@@ -35,7 +39,9 @@ try:
 
     print('startingSsidPosition: ' + str(startingSsidPosition))
     print('Positions degrees list found!')
-    sys.exit()
+
+
+
     proximity_manager = ProximityManager( configurator, motors )
 
     #TODO ASK SERVER FOR A TRANSACTION
