@@ -3,6 +3,9 @@
 from compass import Compass
 from threading import Thread
 from map_file_manager import MapFileManager
+from transaction_manager import TransactionManager
+from position_degrees import PositionDegrees
+from wifi_rssi_manager import WifiRssiManager
 from custom_exceptions import *
 
 import time
@@ -23,7 +26,7 @@ class RouteManager(Thread):
     compass_object = None
 
     # Direzione obiettivo
-    goal_direction_degrees = 105
+    goal_direction_degrees = None
 
     # Tolleranza magnetometro
     compass_tolerance = 5
@@ -32,7 +35,7 @@ class RouteManager(Thread):
     motors_deceleration_step = 15
 
     normal_mode_status = 'ENABLED'
-
+    waiting_for_active_transaction = 'WAITING_FOR_NEW_TRANSACTION'
     bug_mode_status = 'DISABLED'
 
     directions = {0: 'LEFT', 1: 'RIGHT'}
@@ -55,6 +58,16 @@ class RouteManager(Thread):
 
     map_file_manager = None
 
+    positionsDegreesManager = None
+
+    transactionManager = None
+
+    activeTransaction = None
+
+    actualPositionDeviceId = None
+
+    wifiRssiManager = None
+
     def getGoalDirectionDegrees(self):
         return self.goal_direction_degrees
 
@@ -67,7 +80,7 @@ class RouteManager(Thread):
     def setCompassTolerance(self, value):
         self.compass_tolerance = value
 
-    def __init__(self, motors_object, proximity_manager_object):
+    def __init__(self, motors_object, proximity_manager_object, wifiRssiManager, positionsDegreesManager, startingSsidPosition):
 
         # Check oggetto classe Motors
         if motors_object is None:
@@ -79,11 +92,43 @@ class RouteManager(Thread):
             raise Exception('ProximityManager object cannot be null')
             return
 
+        # Check istanza classe PositionsDegreesManager
+        if positionsDegreesManager is None:
+            raise Exception('PositionsDegreesManager object cannot be null')
+            return
+
+        # Check istanza classe PositionsDegreesManager
+        if startingSsidPosition is None:
+            raise Exception('startingSsidPosition value cannot be null')
+            return
+
+        # Check istanza classe WifiRssiManager
+        if wifiRssiManager is None:
+            raise Exception('WifiRssiManager object cannot be null')
+            return
+
         # Reference istanza oggetto classe Motors
         self.motors_object = motors_object
 
+        # Reference istanza oggetto classe PositionsDegreesManager
+        self.positionsDegreesManager = positionsDegreesManager
+
         # Reference istanza oggetto classe ProximityManager
         self.proximity_manager_object = proximity_manager_object
+
+        # Reference istanza oggetto classe WifiManager
+        self.wifiRssiManager = wifiRssiManager
+
+        #Inizializzazione classe TransactionManager
+        self.transactionManager = TransactionManager()
+
+        #Inzializzazione della posizione attuale con quella di partenza al device più vicino
+        self.actualPositionDeviceId = startingSsidPosition
+
+        #Check for a new transaction
+        self.getNextActiveTransaction()
+
+        print('GOAL DIRECTION: ' + str(self.goal_direction_degrees))
 
         # Reference istanza oggetto classe Compass
         print('Starting Compass..')
@@ -94,14 +139,41 @@ class RouteManager(Thread):
         self.name = self.__class__.__name__
         self.start()
 
+    def getNextActiveTransaction(self):
+        print('Asking server for the next active transaction..')
+        while self.goal_direction_degrees is None:
+
+            #Asking server for a new transaction and check if last transaction is done
+            if self.activeTransaction is None or self.actualPositionDeviceId == self.activeTransaction['goalPeerDeviceId']:
+                time.sleep(0.5)
+                self.activeTransaction = self.transactionManager.getTransaction(None if self.activeTransaction is None else self.activeTransaction['key'])
+
+            #Check if a new transaction is returned from server
+            if self.activeTransaction is not None:
+                self.goal_direction_degrees = PositionDegrees.getDeviceToDegrees(self.actualPositionDeviceId, self.activeTransaction['goalPeerDeviceId'])
+
+            #Ask to server for new version of positions Degrees
+            if self.goal_direction_degrees is None:
+                time.sleep(0.5)
+                self.positionsDegreesManager.getPositionsDegrees()
+
+
     def run(self):
 
-        # print('Rotating to goal..')
-        # self.rotationToDegrees( self.goal_direction_degrees )
-
         while self.status != self.STOPPED:
+            wifiRssiCheck = self.wifiRssiManager.checkIfSsidIsNearToMe(self.activeTransaction['goalPeerDeviceId'])
 
-            time.sleep(0.05)
+            print('wifiRssiCheck: ' + str(wifiRssiCheck))
+
+            if self.activeTransaction is not None and wifiRssiCheck is True:
+                print('Near to ' + str(self.activeTransaction['goalPeerDeviceId']) + 'stopping..')
+                self.motors_object.stop()
+                self.goal_direction_degrees = None
+                self.normal_mode_status = 'DISABLED'
+                self.bug_mode_status = 'DISABLED'
+                self.actualPositionDeviceId = self.activeTransaction['goalPeerDeviceId']
+
+            time.sleep(0.03)
 
             if self.normal_mode_status == 'ENABLED':
                 print('Starting normalMode..')

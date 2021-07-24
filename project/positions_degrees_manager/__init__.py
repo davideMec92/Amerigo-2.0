@@ -26,6 +26,7 @@ class PositionsDegreesManager():
         decryptedMessage = communication_message.getMessage(message)
         print('Message from server decrypted: ' + str(decryptedMessage))
 
+        bluetoothClientSocket.close()
         self.clearPositionsDegrees()
 
         #Check if server has some positionDegrees

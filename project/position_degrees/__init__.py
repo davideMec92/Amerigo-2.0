@@ -27,6 +27,20 @@ class PositionDegrees:
         else:
             return PositionDegrees.createFromDict(**result[0])
 
+    @staticmethod
+    def getDeviceToDegrees(deviceIdFrom, deviceIdTo):
+        result = PositionDegrees.database_manager.getObject('deviceId', deviceIdFrom)
+        if len(result) == 0:
+            return None
+        else:
+            positionDegrees = PositionDegrees(result[0])
+            deviceToDegrees = None
+            for peerPosition in positionDegrees.positions:
+                if peerPosition['deviceId'] == deviceIdTo:
+                    deviceToDegrees = peerPosition['degrees']
+
+            return deviceToDegrees
+
     def save(self):
         self.database_manager.saveObject(self.toDict())
 

@@ -4,19 +4,25 @@ from communication_message import CommunicationMessage, CommunicationMessageType
 from bluetooth_settings import BluetoothSettings
 
 class TransactionManager():
-    def getTransaction(self, lastTransaction = None):
+    def getTransaction(self, lastTransactionKey = None):
+        print('serverBluetoothMAC: ' + str(BluetoothSettings.serverBluetoothMAC))
+        print('serverAppUUID: ' + str(BluetoothSettings.serverAppUUID))
         bluetoothClientSocket = BluetoothClient(BluetoothSettings.serverBluetoothMAC, BluetoothSettings.serverAppUUID)
         transactionGetCommunicationMessage = {
             'type': CommunicationMessageTypes.TRANSACTION_GET.name,
             'authToken': BluetoothSettings.serverAuthToken
         }
 
-        if lastTransaction is not None:
-            transactionGetCommunicationMessage['lastTransactionKey'] = lastTransaction
+        if lastTransactionKey is not None:
+            transactionGetCommunicationMessage['lastTransactionKey'] = lastTransactionKey
 
         communication_message = CommunicationMessage()
         message = bluetoothClientSocket.sendMessageWithResponse(communication_message.setMessage(transactionGetCommunicationMessage, True))
-        decryptedMessage = communication_message.getMessage(message)
-        print('Message from server decrypted: ' + str(decryptedMessage))
+        transaction = communication_message.getMessage(message)
+        print('Message from server decrypted: ' + str(transaction))
+        bluetoothClientSocket.close()
 
-        return True
+        if 'key' not in transaction and 'goalPeerDeviceId' not in transaction:
+            return None
+
+        return transaction

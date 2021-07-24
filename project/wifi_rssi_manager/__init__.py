@@ -1,34 +1,75 @@
+from threading import Thread
 import rssi
 import time
 
-class WifiRssiManager:
+class WifiRssiManager(Thread):
     ssids = []
+    wifiSsids = []
+    wifiSsidsToNormalAssoc = {}
+    wifiSsidsMeasurements = {}
     interface = 'wlan0'
     rssi_scanner = rssi.RSSI_Scan(interface)
-    nearSignalThreshold = 40
+    nearSignalThreshold = 33
+    continuoslyScanStatus = 'ENABLED'
 
-    def __init__(self, ssids):
+    def __init__(self):
+        Thread.__init__(self)
+        self.name = self.__class__.__name__
+
+    def run(self):
+        while self.continuoslyScanStatus == 'ENABLED':
+            if len(self.wifiSsids) == 0:
+                continue
+            for ssidPowersMeasurements in self.rssi_scanner.getAPinfo(networks=self.wifiSsids, sudo=True):
+                self.wifiSsidsMeasurements[ssidPowersMeasurements['ssid']] = abs(ssidPowersMeasurements['signal'])
+
+    def parseSsidToWifiSyntax(self, ssid):
+        return ssid if len(ssid) <= 30 else ssid[0:30]
+
+    def stopContinuoslyScanStatus(self):
+        self.continuoslyScanStatus = 'DISABLED'
+
+    def getWifiSsidsMeasurements(self):
+        return self.wifiSsidsMeasurements
+
+    def getWifiSsidMeasurements(self, ssid):
+        ssid = self.parseSsidToWifiSyntax(ssid)
+        if ssid in self.wifiSsidsMeasurements:
+            return self.wifiSsidsMeasurements[ssid]
+        return None
+
+    def setSsids(self, ssids):
         self.ssids = ssids
+        self.wifiSsids = []
+        self.wifiSsidsToNormalAssoc = {}
+        for ssid in self.ssids:
+            wifiSsid = self.parseSsidToWifiSyntax(ssid)
+            self.wifiSsids.append(wifiSsid)
+            self.wifiSsidsToNormalAssoc[wifiSsid] = ssid
+        print('wifiSsidsToNormalAssoc: ' + str(self.wifiSsidsToNormalAssoc))
+        print('wifiSsids: ' + str(self.wifiSsids))
 
     def getSsidsPowers(self):
 
-        if len(self.ssids) == 0:
+        if len(self.wifiSsids) == 0:
             return None
 
         ssidPowers = []
         for x in 'necri':
-            for ssidPowersMeasurements in self.rssi_scanner.getAPinfo(networks=self.ssids, sudo=True):
+            for ssidPowersMeasurements in self.rssi_scanner.getAPinfo(networks=self.wifiSsids, sudo=True):
                 ssidPowers.append(ssidPowersMeasurements)
                 time.sleep(0.15)
 
         print("ssidPowers: " + str(ssidPowers))
 
-        return self.getAvgSsidsPowers(ssidPowers, self.ssids)
+        return self.getAvgSsidsPowers(ssidPowers, self.wifiSsids)
 
-    def getSsidPower(self, ssid):
+    def getSsidPower(self, ssid, convertSsidsToNormal = False):
 
-        if ssid not in self.ssids:
-            raise Exception('SSID not declared')
+        ssid = self.parseSsidToWifiSyntax(ssid)
+
+        if ssid not in self.wifiSsids:
+            raise Exception('SSID not declared in wifi ssids')
 
         ssidPowers = []
         for x in 'necri':
@@ -38,10 +79,10 @@ class WifiRssiManager:
 
         print("ssidPowers: " + str(ssidPowers))
 
-        return self.getAvgSsidsPowers(ssidPowers, [ssid])
+        return self.getAvgSsidsPowers(ssidPowers, [ssid], convertSsidsToNormal)
 
 
-    def getAvgSsidsPowers(self, ssidPowers, ssids):
+    def getAvgSsidsPowers(self, ssidPowers, ssids, convertSsidsToNormal = False):
 
         avgSsidPowers = {}
 
@@ -52,9 +93,9 @@ class WifiRssiManager:
                     ssidPowerSum = ssidPowerSum + abs(ssidPower['signal'])
 
             if ssidPowerSum <= 0:
-                avgSsidPowers[ssid] = None
+                avgSsidPowers[self.wifiSsidsToNormalAssoc[ssid] if convertSsidsToNormal is True else ssid] = None
             else:
-                avgSsidPowers[ssid] = ssidPowerSum / 5
+                avgSsidPowers[self.wifiSsidsToNormalAssoc[ssid] if convertSsidsToNormal is True else ssid] = ssidPowerSum / 5
 
         print("avgSsidPowers: " + str(avgSsidPowers))
 
@@ -77,4 +118,21 @@ class WifiRssiManager:
                         ssidNearToMeSignalPower = ssidPowerSignal
 
         print ('ssidNearToMe: ' + str(ssidNearToMe))
-        return ssidNearToMe
+
+        if ssidNearToMe is None:
+            return None
+
+        return self.wifiSsidsToNormalAssoc[ssidNearToMe]
+
+    def checkIfSsidIsNearToMe(self, ssid):
+        ssidPower = self.getWifiSsidMeasurements(self.parseSsidToWifiSyntax(ssid))
+
+        if ssidPower is None:
+            return False
+
+        print('ssidPower: ' + str(ssidPower))
+
+        if 0 < ssidPower <= self.nearSignalThreshold:
+            return True
+
+        return False
