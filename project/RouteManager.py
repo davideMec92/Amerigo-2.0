@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from compass import Compass
 from threading import Thread
 from map_file_manager import MapFileManager
 from transaction_manager import TransactionManager
@@ -68,6 +67,8 @@ class RouteManager(Thread):
 
     wifiRssiManager = None
 
+    inertia_degrees_delta = 20
+
     def getGoalDirectionDegrees(self):
         return self.goal_direction_degrees
 
@@ -80,7 +81,12 @@ class RouteManager(Thread):
     def setCompassTolerance(self, value):
         self.compass_tolerance = value
 
-    def __init__(self, motors_object, proximity_manager_object, wifiRssiManager, positionsDegreesManager, startingSsidPosition):
+    def __init__(self, compass_object, motors_object, proximity_manager_object, wifiRssiManager, positionsDegreesManager, startingSsidPosition):
+
+        # Check oggetto classe Compass
+        if compass_object is None:
+            raise Exception('Compass object cannot be null')
+            return
 
         # Check oggetto classe Motors
         if motors_object is None:
@@ -107,6 +113,9 @@ class RouteManager(Thread):
             raise Exception('WifiRssiManager object cannot be null')
             return
 
+        # Reference istanza oggetto classe Compass
+        self.compass_object = compass_object
+
         # Reference istanza oggetto classe Motors
         self.motors_object = motors_object
 
@@ -130,14 +139,9 @@ class RouteManager(Thread):
 
         print('GOAL DIRECTION: ' + str(self.goal_direction_degrees))
 
-        # Reference istanza oggetto classe Compass
-        print('Starting Compass..')
-        self.compass_object = Compass()
-
         Thread.__init__(self)
         self.status = self.RUNNING
         self.name = self.__class__.__name__
-        self.start()
 
     def getNextActiveTransaction(self):
         print('Asking server for the next active transaction..')
@@ -150,6 +154,8 @@ class RouteManager(Thread):
 
             #Check if a new transaction is returned from server
             if self.activeTransaction is not None:
+                print('self.actualPositionDeviceId: ' + str(self.actualPositionDeviceId))
+                print('self.activeTransaction[goalPeerDeviceId]: ' + str(self.activeTransaction['goalPeerDeviceId']))
                 self.goal_direction_degrees = PositionDegrees.getDeviceToDegrees(self.actualPositionDeviceId, self.activeTransaction['goalPeerDeviceId'])
 
             #Ask to server for new version of positions Degrees
@@ -157,6 +163,18 @@ class RouteManager(Thread):
                 time.sleep(0.5)
                 self.positionsDegreesManager.getPositionsDegrees()
 
+        self.rotateToDegrees(self.goal_direction_degrees)
+
+    def rotateToDegrees(self, toDegrees):
+        self.motors_object.rotation('COUNTERCLOCKWISE')
+        while True:
+            degrees = self.compass_object.getDegress()
+            print('Degrees: ' + str(degrees))
+
+            if toDegrees + self.inertia_degrees_delta - self.compass_tolerance <= degrees + self.inertia_degrees_delta <= toDegrees + self.inertia_degrees_delta + self.compass_tolerance:
+                print('Found stopRotationDegrees: ' + str(degrees))
+                self.motors_object.stop()
+                break
 
     def run(self):
 
@@ -169,18 +187,19 @@ class RouteManager(Thread):
                 print('Near to ' + str(self.activeTransaction['goalPeerDeviceId']) + 'stopping..')
                 self.motors_object.stop()
                 self.goal_direction_degrees = None
-                self.normal_mode_status = 'DISABLED'
+                self.normal_mode_status = 'ENABLED'
                 self.bug_mode_status = 'DISABLED'
                 self.actualPositionDeviceId = self.activeTransaction['goalPeerDeviceId']
+                self.getNextActiveTransaction()
+            else:
+                time.sleep(0.05)
 
-            time.sleep(0.03)
-
-            if self.normal_mode_status == 'ENABLED':
-                print('Starting normalMode..')
-                self.normalMode()
-            elif self.bug_mode_status == 'ENABLED':
-                print('Starting bugMode..')
-                self.bugMode(self.goal_direction_degrees)
+                if self.normal_mode_status == 'ENABLED':
+                    print('Starting normalMode..')
+                    self.normalMode()
+                elif self.bug_mode_status == 'ENABLED':
+                    print('Starting bugMode..')
+                    self.bugMode(self.goal_direction_degrees)
 
     def normalMode(self):
 
@@ -213,7 +232,7 @@ class RouteManager(Thread):
             motor_left_actual_power = self.motors_object.getMotorLeftActualPower()
             motor_right_actual_power = self.motors_object.getMotorRightActualPower()
 
-            # print("Degrees: " + str( degrees ))
+            print("Degrees: " + str( degrees ))
             print(("$$$$$ NORMAL MODE: Motor left actual power: " + str(motor_left_actual_power) + ' $$$$$'))
             print(("$$$$$ NORMAL MODE: Motor right actual power: " + str(motor_right_actual_power) + ' $$$$$'))
 

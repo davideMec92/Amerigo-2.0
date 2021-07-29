@@ -1,9 +1,31 @@
-from wifi_rssi_manager import WifiRssiManager
+from motors import Motors
+from compass import Compass
+from configurator import Configurator
 import time
 
-wifiRssiManager = WifiRssiManager()
-wifiRssiManager.setSsids(['2e97ca47-9741-44eb-9099-f5682b', 'e5551ca3-a3a3-4288-870d-ddab6d'])
-wifiRssiManager.start()
+print('Getting configuration..')
+configurator = Configurator()
+
+print('Setting GPIO..')
+configurator.setGpio()
+
+print('Starting and configuring Motors..')
+motors = Motors(configurator)
+
+# Reference istanza oggetto classe Compass
+print('Starting Compass..')
+compass = Compass()
+
+stopRotationDegrees = 315
+
+motors.rotation('COUNTERCLOCKWISE')
 
 while True:
-    print('LEVEL: ' + str(wifiRssiManager.checkIfSsidIsNearToMe('2e97ca47-9741-44eb-9099-f5682b')))
+    degrees = compass.getDegress()
+    print('Degrees: ' + str(degrees))
+
+    if stopRotationDegrees - 5 <= degrees <= stopRotationDegrees + 5:
+        print('Found stopRotationDegrees: ' + str(degrees))
+        motors.stop()
+        break
+

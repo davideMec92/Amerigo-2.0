@@ -1,3 +1,4 @@
+from compass import Compass
 from ProximityManager import ProximityManager
 from RouteManager import RouteManager
 from configurator import Configurator
@@ -10,7 +11,6 @@ import sys
 import time
 
 try:
-
     draw_map = False
 
     if len(sys.argv) > 1 and sys.argv[1].lower() == 'map':
@@ -28,6 +28,9 @@ try:
     print('Asking to server the positions degrees list..')
     positionsDegreesManager = PositionsDegreesManager()
 
+    print('Starting Compass..')
+    compass = Compass()
+
     startingSsidPosition = None
     wifiRssiManager = WifiRssiManager()
     while positionsDegreesManager.getPositionsDegrees() is False or startingSsidPosition is None:
@@ -42,7 +45,8 @@ try:
     print('Positions degrees list found!')
 
     proximity_manager = ProximityManager( configurator, motors )
-    route_manager = RouteManager( motors, proximity_manager, wifiRssiManager, positionsDegreesManager, startingSsidPosition)
+    route_manager = RouteManager( compass, motors, proximity_manager, wifiRssiManager, positionsDegreesManager, startingSsidPosition)
+    route_manager.start()
 
     input("Press Enter to stop...")
 

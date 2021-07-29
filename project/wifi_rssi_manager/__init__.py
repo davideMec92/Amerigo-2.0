@@ -130,7 +130,7 @@ class WifiRssiManager(Thread):
         if ssidPower is None:
             return False
 
-        print('ssidPower: ' + str(ssidPower))
+        print(str(ssid) + ' Power: ' + str(ssidPower))
 
         if 0 < ssidPower <= self.nearSignalThreshold:
             return True

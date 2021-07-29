@@ -104,28 +104,6 @@ class Motors:
         else:
             print(('***** TURN ' + str(type) + ' *****'))
 
-    def compassRotation(self, type):
-
-        if type == "COUNTERCLOCKWISE":
-
-            self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorForwardsPin(), int(255))
-            self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorForwardsPin(), int(140))
-
-            self.motors_status = self.COMPASS_COUNTERCLOCKWISE_ROTATION
-
-            time.sleep(1.3)
-
-        elif type == "CLOCKWISE":
-
-            self.gpio.set_PWM_dutycycle(self.configurator.getLeftMotorForwardsPin(), int(255))
-            self.gpio.set_PWM_dutycycle(self.configurator.getRightMotorForwardsPin(), int(130))
-
-            self.motors_status = self.COMPASS_CLOCKWISE_ROTATION
-
-            time.sleep(1.2)
-
-        self.stop()
-
     def forward(self, restoreToDefaultPower = False):
 
             if restoreToDefaultPower is False:
