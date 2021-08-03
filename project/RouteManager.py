@@ -67,7 +67,7 @@ class RouteManager(Thread):
 
     wifiRssiManager = None
 
-    inertia_degrees_delta = 20
+    inertia_degrees_delta = 15
 
     def getGoalDirectionDegrees(self):
         return self.goal_direction_degrees
@@ -231,25 +231,35 @@ class RouteManager(Thread):
             degrees = self.compass_object.getDegress()
             motor_left_actual_power = self.motors_object.getMotorLeftActualPower()
             motor_right_actual_power = self.motors_object.getMotorRightActualPower()
+            to_delta_degrees = self.compass_object.getRotationDegreeCosts(degrees, self.goal_direction_degrees)
 
             print("Degrees: " + str( degrees ))
+            print("Delta degrees: " + str( to_delta_degrees ))
             print(("$$$$$ NORMAL MODE: Motor left actual power: " + str(motor_left_actual_power) + ' $$$$$'))
             print(("$$$$$ NORMAL MODE: Motor right actual power: " + str(motor_right_actual_power) + ' $$$$$'))
 
             # Caso in cui si è a sinistra dell'obiettivo
             if degrees + self.compass_tolerance < self.goal_direction_degrees:
+            #if to_delta_degrees['clockwise_cost'] < to_delta_degrees['counterclockwise_cost']:
                 print("$$$$$ NORMAL MODE: Goal on the right $$$$$")
+                deceleration_power_value = self.motors_object.calculateMotorPowerMaximumDegreesProportion(to_delta_degrees['clockwise_cost'])
+                print("deceleration_power_value: " + str(deceleration_power_value))
 
                 if motor_right_actual_power - self.motors_deceleration_step >= 140:
                     motor_right_actual_power = motor_right_actual_power - self.motors_deceleration_step
+                    #motor_right_actual_power = motor_right_actual_power - deceleration_power_value
                     self.motors_object.updateMotorPower('RIGHT', motor_right_actual_power)
+                    self.motors_object.updateMotorPower('LEFT', self.motors_object.motors_default_power)
 
-            elif degrees - self.compass_tolerance > self.goal_direction_degrees:
+            #elif degrees - self.compass_tolerance > self.goal_direction_degrees:
+            elif to_delta_degrees['counterclockwise_cost'] < to_delta_degrees['clockwise_cost']:
                 print("$$$$$ NORMAL MODE: Goal on the left $$$$$")
 
                 if motor_left_actual_power - self.motors_deceleration_step >= 140:
                     motor_left_actual_power = motor_left_actual_power - self.motors_deceleration_step
+                    #motor_left_actual_power = motor_left_actual_power - deceleration_power_value
                     self.motors_object.updateMotorPower('LEFT', motor_left_actual_power)
+                    self.motors_object.updateMotorPower('RIGHT', self.motors_object.motors_default_power)
 
             else:  # Caso in cui obiettivo in posizione frontale
                 print("$$$$$ NORMAL MODE: Goal on the front $$$$$")

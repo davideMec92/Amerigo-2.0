@@ -45,6 +45,10 @@ class Motors:
     def getMotorRightActualPower(self):
         return self.motor_right_actual_power
 
+    def calculateMotorPowerMaximumDegreesProportion(self, minimumToDeltaDegrees):
+        maximum_power_degrees = 60
+        return int((maximum_power_degrees * minimumToDeltaDegrees)/180)
+
     def restoreMotorActualPowerToDefault(self, type = None):
 
         if type is None:

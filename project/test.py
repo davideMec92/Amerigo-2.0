@@ -1,6 +1,6 @@
-from motors import Motors
-from compass import Compass
+from ProximityManager import ProximityManager
 from configurator import Configurator
+from motors import Motors
 import time
 
 print('Getting configuration..')
@@ -12,20 +12,10 @@ configurator.setGpio()
 print('Starting and configuring Motors..')
 motors = Motors(configurator)
 
-# Reference istanza oggetto classe Compass
-print('Starting Compass..')
-compass = Compass()
-
-stopRotationDegrees = 315
-
-motors.rotation('COUNTERCLOCKWISE')
+# Reference istanza oggetto classe ProximityManager
+print('Starting ProximityManager..')
+proximity_manager = ProximityManager(configurator, motors)
 
 while True:
-    degrees = compass.getDegress()
-    print('Degrees: ' + str(degrees))
-
-    if stopRotationDegrees - 5 <= degrees <= stopRotationDegrees + 5:
-        print('Found stopRotationDegrees: ' + str(degrees))
-        motors.stop()
-        break
+    print('Measurements: ' + str(proximity_manager.retrieveProximityData()))
 
