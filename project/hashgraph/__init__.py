@@ -1,7 +1,7 @@
 from collections import deque
 
 from project.hashgraph.interfaces.StoreCallback import StoreCallback
-from project.hashgraph.store import Store
+from project.hashgraph import Store
 
 
 class Hashgraph(StoreCallback):
@@ -25,4 +25,3 @@ class Hashgraph(StoreCallback):
         self.peers = peers
         self.myPeer = myPeer
         self.store = Store(self)
-        
