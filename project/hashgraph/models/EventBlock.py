@@ -1,7 +1,7 @@
 from typing import List
 
-from project.hashgraph.EventPeerAssociation import EventPeerAssociation
-from project.hashgraph.Transaction import Transaction
+from project.hashgraph.models.EventPeerAssociation import EventPeerAssociation
+from project.hashgraph.models.Transaction import Transaction
 
 
 class EventBlock:

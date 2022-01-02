@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import Dict
 
-from project.hashgraph.TableVote import TableVote
+from project.hashgraph.models.TableVote import TableVote
 from project.hashgraph.helpers.Hash import Hash
 
 

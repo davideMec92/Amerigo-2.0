@@ -1,6 +1,6 @@
 import unittest
 
-from project.hashgraph.VotesTable import VotesTable
+from project.hashgraph.models.VotesTable import VotesTable
 
 
 class VotesTableTest(unittest.TestCase):

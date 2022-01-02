@@ -1,10 +1,10 @@
 from typing import List
 
-from project.hashgraph.Event import Event
-from project.hashgraph.EventBlock import EventBlock
-from project.hashgraph.Round import Round
-from project.hashgraph.Store import Store
-from project.hashgraph.Transaction import Transaction
+from project.hashgraph.models.Event import Event
+from project.hashgraph.models.EventBlock import EventBlock
+from project.hashgraph.models.Round import Round
+from project.hashgraph.models.Store import Store
+from project.hashgraph.models.Transaction import Transaction
 from project.network_manager.block import Block
 
 

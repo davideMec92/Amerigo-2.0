@@ -1,14 +1,14 @@
-from abc import ABC
 from collections import deque
 from typing import List
 
-from project.hashgraph.Peer import Peer
-from project.hashgraph.Store import Store
+from project.hashgraph.models.Peer import Peer
+from project.hashgraph.models.Store import Store
 from project.hashgraph.interfaces.StoreCallback import StoreCallback
 
 
 class Hashgraph(StoreCallback):
 
+    # TODO DEFINE LOGIC
     def eventStoredCallback(self):
         pass
 

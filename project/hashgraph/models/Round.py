@@ -1,6 +1,6 @@
 from typing import List
 
-from project.hashgraph.Event import Event
+from project.hashgraph.models.Event import Event
 from project.hashgraph.helpers.ListHelper import ListHelper
 
 

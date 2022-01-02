@@ -1,6 +1,6 @@
 from typing import TypedDict
 
-from project.hashgraph.Event import Event
+from project.hashgraph.models.Event import Event
 
 
 class StoreEvent(TypedDict):

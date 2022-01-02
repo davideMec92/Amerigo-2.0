@@ -1,5 +1,5 @@
-from project.hashgraph.EventBody import EventBody
-from project.hashgraph.Event import Event
+from project.hashgraph.models.EventBody import EventBody
+from project.hashgraph.models.Event import Event
 from project.hashgraph.enums.PeerStatus import PeerStatus
 
 

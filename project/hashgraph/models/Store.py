@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from multiprocessing.sharedctypes import synchronized
 from typing import List, Dict
 
-from project.hashgraph.Event import Event
-from project.hashgraph.Round import Round
+from project.hashgraph.models.Event import Event
+from project.hashgraph.models.Round import Round
 from project.hashgraph.dictTypes.StoreEvent import StoreEvent
 from project.hashgraph.dictTypes.StoreRound import StoreRound
 from project.hashgraph.helpers.Hash import Hash

@@ -1,9 +1,8 @@
-import json
 import unittest
 
-from project.hashgraph.Peer import Peer
-from project.hashgraph.Round import Round
-from project.hashgraph.Hashgraph import Hashgraph
+from project.hashgraph.models.Peer import Peer
+from project.hashgraph.models.Round import Round
+from project.hashgraph.models.Hashgraph import Hashgraph
 
 
 class StoreTest(unittest.TestCase):

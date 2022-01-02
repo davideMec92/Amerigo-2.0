@@ -5,11 +5,11 @@ import time
 
 
 if TYPE_CHECKING:
-    from project.hashgraph.Event import Event
-    from project.hashgraph.Peer import Peer
+    from project.hashgraph.models.Event import Event
+    from project.hashgraph.models.Peer import Peer
 
-from project.hashgraph.EventPeerAssociation import EventPeerAssociation
-from project.hashgraph.Transaction import Transaction
+from project.hashgraph.models.EventPeerAssociation import EventPeerAssociation
+from project.hashgraph.models.Transaction import Transaction
 from project.hashgraph.helpers.Hash import Hash
 
 

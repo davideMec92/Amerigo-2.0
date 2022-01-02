@@ -1,6 +1,6 @@
 import copy
 
-from project.hashgraph.EventBody import EventBody
+from project.hashgraph.models.EventBody import EventBody
 from project.hashgraph.dictTypes import LastAncestor
 from project.hashgraph.dictTypes.FamousVote import FamousVote
 from project.hashgraph.dictTypes.FisrtDescendant import FirstDiscendant

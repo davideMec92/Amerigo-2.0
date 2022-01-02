@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from typing import TypedDict
 
 if TYPE_CHECKING:
-    from project.hashgraph.Round import Round
+    from project.hashgraph.models.Round import Round
 
 
 class StoreRound(TypedDict):
