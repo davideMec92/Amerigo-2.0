@@ -63,7 +63,7 @@ class Store:
     def deleteEventFromKey(self, eventKey):
         self.events.pop(eventKey, None)
 
-    # @synchronized
+    # TODO NEED TO BE @synchronized
     def deleteRoundFromRoundCreatedIndex(self, roundCreated):
         self.rounds.pop(roundCreated, None)
 
@@ -95,7 +95,7 @@ class Store:
         hashKey = Hash.stringToHash(peerDeviceId + peerCreatorIndex)
         return self.getEventFromEventPeerAssociationKey(hashKey)
 
-    def getEventFromEventPeerAssociationKey(self, eventPeerAssociationKey):
+    def getEventFromEventPeerAssociationKey(self, eventPeerAssociationKey) -> Event:
         return self.events.get(eventPeerAssociationKey) if eventPeerAssociationKey in self.events else None
 
     def getRoundFromRoundCreated(self, roundCreated):
