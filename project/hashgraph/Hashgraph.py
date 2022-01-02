@@ -1,10 +1,16 @@
+from abc import ABC
 from collections import deque
+from typing import List
 
+from project.hashgraph.Peer import Peer
+from project.hashgraph.Store import Store
 from project.hashgraph.interfaces.StoreCallback import StoreCallback
-from project.hashgraph import Store
 
 
 class Hashgraph(StoreCallback):
+
+    def eventStoredCallback(self):
+        pass
 
     peers = {}
     lastConsensusRound = -1
@@ -21,7 +27,7 @@ class Hashgraph(StoreCallback):
     isHashgraphGossipLocked = None
     isHashgraphReceiveLocked = None
 
-    def __init__(self, peers, myPeer):
+    def __init__(self, peers: List[Peer], myPeer: Peer):
         self.peers = peers
         self.myPeer = myPeer
         self.store = Store(self)

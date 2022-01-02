@@ -1,6 +1,9 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
 from typing import TypedDict
 
-from project.hashgraph.Round import Round
+if TYPE_CHECKING:
+    from project.hashgraph.Round import Round
 
 
 class StoreRound(TypedDict):

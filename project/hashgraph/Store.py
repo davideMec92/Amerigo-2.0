@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections import defaultdict
 from multiprocessing.sharedctypes import synchronized
-from typing import List
+from typing import List, Dict
 
 from project.hashgraph.Event import Event
 from project.hashgraph.Round import Round
@@ -13,8 +14,10 @@ from project.hashgraph.interfaces.StoreCallback import StoreCallback
 
 
 class Store:
-    events: StoreEvent
-    rounds: StoreRound
+    events: StoreEvent = {}
+    rounds: Dict[int, Round] = defaultdict(set)
+    #rounds: StoreRound = StoreRound()
+    rounds: StoreRound = StoreRound()
     lastMissingEvents: List[Event]
     storeCallback: StoreCallback
 
@@ -29,7 +32,7 @@ class Store:
     def getEvents(self):
         return self.events
 
-    def getRounds(self):
+    def getRounds(self) -> StoreRound:
         return self.rounds
 
     def getLastMissingEvents(self):
@@ -44,35 +47,23 @@ class Store:
     def setRounds(self, rounds):
         self.rounds = rounds
 
-    # TODO ADD putRound METHOD
-    def putRound(self, round: Round):
-
+    def putRound(self, newRound: Round):
         # Check if round exists in order to add a single missing event
-        if  round.roundCreated in self.rounds:
+        if newRound.roundCreated in self.rounds:
+            # TODO TO TEST
+            for eventKey in ListHelper.getListDiff(self.rounds.get(newRound.roundCreated).events, newRound.events):
+                self.rounds.get(newRound.roundCreated).witnesses.append(eventKey)
 
             # TODO TO TEST
-            for eventKey in ListHelper.getListDiff(self.rounds.get(round.roundCreated).events, round.events):
-                self.rounds.get(round.roundCreated).witnesses.append(eventKey)
-
-            # for(String eventKey: ListHelper.getListDiff(this.rounds.get(round.getRoundCreated()).getEvents(), round.getEvents())){
-            #     this.rounds.get(round.getRoundCreated()).getEvents().add(eventKey);
-            # }
-
-            # TODO TO TEST
-            for witnessEventKey in ListHelper.getListDiff(self.rounds.get(round.roundCreated).witnesses, round.witnesses):
-                self.rounds.get(round.roundCreated).witnesses.append(witnessEventKey)
-
-            # for(String witnessEventKey: ListHelper.getListDiff(this.rounds.get(round.getRoundCreated()).getWitnesses(), round.getWitnesses())){
-            #     this.rounds.get(round.getRoundCreated()).getWitnesses().add(witnessEventKey);
-            # }
-
+            for witnessEventKey in ListHelper.getListDiff(self.rounds.get(newRound.roundCreated).witnesses, newRound.witnesses):
+                self.rounds.get(newRound.roundCreated).witnesses.append(witnessEventKey)
         else:
-            self.rounds.append(round.roundCreated, round)
+            self.rounds[newRound.roundCreated] = newRound
 
     def deleteEventFromKey(self, eventKey):
         self.events.pop(eventKey, None)
 
-    @synchronized
+    # @synchronized
     def deleteRoundFromRoundCreatedIndex(self, roundCreated):
         self.rounds.pop(roundCreated, None)
 
@@ -97,7 +88,8 @@ class Store:
             missingEvent = otherHashgraph.getEventFromPeerAndCreatorIndex(peerDeviceId, missingCreatorEventIndex)
 
             if missingEvent is None:
-                self.lastMissingEvents.append(self.getEventFromPeerAndCreatorIndex(peerDeviceId, missingCreatorEventIndex - 1))
+                self.lastMissingEvents.append(
+                    self.getEventFromPeerAndCreatorIndex(peerDeviceId, missingCreatorEventIndex - 1))
 
     def getEventFromPeerAndCreatorIndex(self, peerDeviceId, peerCreatorIndex) -> Event | None:
         hashKey = Hash.stringToHash(peerDeviceId + peerCreatorIndex)

@@ -1,6 +1,6 @@
-from project.hashgraph.Event import Event
 from project.hashgraph.EventBody import EventBody
-from project.network_manager.peer import PeerStatus
+from project.hashgraph.Event import Event
+from project.hashgraph.enums.PeerStatus import PeerStatus
 
 
 class Peer:
@@ -15,7 +15,7 @@ class Peer:
     def incrementCreatorIndex(self):
         self.creatorIndex = self.creatorIndex + 1
 
-    def createFirstEvent(self):
+    def createFirstEvent(self) -> Event:
         self.incrementCreatorIndex()
 
         if self.creatorIndex == 0:

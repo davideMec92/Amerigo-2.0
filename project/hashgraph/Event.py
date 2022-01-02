@@ -23,7 +23,9 @@ class Event:
     def __init__(self, eventBody: EventBody):
         self.eventBody = eventBody
         # TODO ADD TO JSON METHOD
-        self.bodySignature = Hash.stringToHash(eventBody.toJson())
+        # self.bodySignature = Hash.stringToHash(eventBody.toJson())
+        # ATTENTION FOR TEST ONLY !!!!!!!
+        self.bodySignature = Hash.stringToHash('test body payload')
 
     def copyLastAncestors(self, lastAncestors: LastAncestor):
         self.lastAncestors = copy.deepcopy(lastAncestors)
