@@ -2,8 +2,8 @@ import bluetooth
 import sys
 import time
 
-class BluetoothClient():
 
+class BluetoothClient():
     macAddress = None
     uuid = None
     socket = None
@@ -18,7 +18,7 @@ class BluetoothClient():
 
             if len(service_matches) == 0:
                 print("Couldn't find the SampleServer service.")
-                return None;
+                return None
 
             first_match = service_matches[0]
             port = first_match["port"]
