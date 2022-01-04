@@ -5,3 +5,4 @@ project/.DS_Store
 project/.idea
 project/venv
 .idea
+*.log
