@@ -43,3 +43,8 @@ class EventBody:
         # TODO ADD TO JSON METHOD
         eventBody.otherParentHash = Hash.stringToHash(otherParent.getEventBody().toJson())
 
+    def getCreator(self) -> str:
+        return self.creatorAssociation.peerDeviceId
+
+    def getCreatorIndex(self) -> int:
+        return self.creatorAssociation.eventCreatorIndex
