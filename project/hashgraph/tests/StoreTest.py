@@ -17,7 +17,7 @@ class StoreTest(unittest.TestCase):
         eventRound = Round(event, 1)
         hashgraph = Hashgraph(self.peerList, self.peer1)
         hashgraph.store.putRound(eventRound)
-        self.assertIsNotNone(hashgraph.store.rounds.get(eventRound.roundCreated))
+        self.assertIsNotNone(hashgraph.store.rounds.pop(eventRound.roundCreated))
 
 if __name__ == '__main__':
     unittest.main()
