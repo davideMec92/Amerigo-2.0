@@ -6,6 +6,6 @@ from project.hashgraph.models.Transaction import Transaction
 
 class EventBlock:
     consensusTimestamp: float
-    transactions: List[Transaction]
+    transactions: list[Transaction] = []
     creatorAssociation: EventPeerAssociation
     

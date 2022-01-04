@@ -7,11 +7,11 @@ from project.hashgraph.helpers.ListHelper import ListHelper
 class Round:
     roundCreated: int = -1
     roundReceived: int = -1
-    events: List[str] = []
-    determinedEvents: List[str] = []
-    inRoundDeterminedEvents: List[str] = []
-    witnesses: List[str] = []
-    decidedWitnesses: List[str] = []
+    events: list[str] = []
+    determinedEvents: list[str] = []
+    inRoundDeterminedEvents: list[str] = []
+    witnesses: list[str] = []
+    decidedWitnesses: list[str] = []
     peersInRound: int = None
     committed: bool = False
 

@@ -14,4 +14,3 @@ class LockInitHelper:
                     hashgraph.isHashgraphGossipLocked = True
                     hashgraph.isHashgraphReceiveLocked = False
             count = count + 1
-            

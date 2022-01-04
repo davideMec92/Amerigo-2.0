@@ -1,5 +1,3 @@
-from typing import List
-
 from project.hashgraph.models.Event import Event
 from project.hashgraph.models.EventBlock import EventBlock
 from project.hashgraph.models.Round import Round
@@ -11,7 +9,7 @@ from project.network_manager.block import Block
 class Block:
 
     roundCreated: int = -1
-    events: List[Event]
+    events: list[Event] = []
     store: Store
     eventRound: Round
     TAG = "Block"
