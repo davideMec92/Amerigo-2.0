@@ -11,6 +11,10 @@ class CommunicationMessageSchemaValidatorTest(unittest.TestCase):
         communicationMessageACK = CommunicationMessageACK()
         self.assertTrue(CommunicationMessageSchemaValidator.validate(communicationMessageACK.toJson()))
 
+    def testACKMessageValidationOK(self):
+        wrongCommunicationMessageACK = '{"type": "ACK", "wrongProperty": "wrong property value"}'
+        self.assertFalse(CommunicationMessageSchemaValidator.validate(wrongCommunicationMessageACK))
+
 
 if __name__ == '__main__':
     unittest.main()
