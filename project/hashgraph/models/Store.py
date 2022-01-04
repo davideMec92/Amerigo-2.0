@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from threading import Lock
 from typing import List, Dict
 
 from project.hashgraph.models.Event import Event
@@ -15,12 +16,13 @@ from project.hashgraph.interfaces.StoreCallback import StoreCallback
 class Store:
     events: StoreEvent = {}
     rounds: Dict[int, Round] = defaultdict(set)
-    #rounds: StoreRound = StoreRound()
     rounds: StoreRound = StoreRound()
-    lastMissingEvents: List[Event]
+    lastMissingEvents: list[Event] = []
     storeCallback: StoreCallback
 
     ROUND_DELETE_MARGIN = 1
+
+    lock = Lock()
 
     # TODO ADD CALLBACK FOR storeCallback
     def __init__(self, storeCallback: StoreCallback):
@@ -62,9 +64,12 @@ class Store:
     def deleteEventFromKey(self, eventKey):
         self.events.pop(eventKey, None)
 
-    # TODO NEED TO BE @synchronized
     def deleteRoundFromRoundCreatedIndex(self, roundCreated):
-        self.rounds.pop(roundCreated, None)
+        try:
+            self.lock.acquire()
+            self.rounds.pop(roundCreated, None)
+        finally:
+            self.lock.release()
 
     def storeEvent(self, event):
         self.events[event.getEventBody().getCreatorAssociation().getKey()] = event
