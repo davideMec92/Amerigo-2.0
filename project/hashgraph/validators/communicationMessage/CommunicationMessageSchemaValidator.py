@@ -136,6 +136,7 @@ class CommunicationMessageSchemaValidator:
 
             conf = ast.literal_eval(json.dumps(message))
             CommunicationMessageSchemaValidator.CommunicationMessageTypesSchemaAssoc[message['type']].validate(conf)
+            Logger.createLog(LogLevels.DEBUG, __file__, 'Successfully validated message type: ' + str(message['type']))
             return True
         except SchemaError as e:
             Logger.createLog(LogLevels.ERROR, __file__, 'Schema validation error: ' + str(e))
