@@ -22,3 +22,7 @@ class FifoQueue(Generic[T]):
 
     def size(self) -> int:
         return len(self.elementsList)
+
+    def remove(self) -> None:
+        if self.isEmpty() is False:
+            self.elementsList.pop(0)
