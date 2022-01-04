@@ -7,6 +7,7 @@ from project.Logger.Logger import Logger, LogLevels
 
 load_dotenv()
 
+
 class CommunicationMessageDecrypter:
     fernet_crypt = Fernet(os.getenv('ENCRYPTION_KEY'))
 
@@ -19,7 +20,10 @@ class CommunicationMessageDecrypter:
         try:
             if type(message) is str:
                 message = str.encode(message)
-            return CommunicationMessageDecrypter.fernet_crypt.decrypt(message).decode('utf-8')
+
+            decryptedMessage = CommunicationMessageDecrypter.fernet_crypt.decrypt(message).decode('utf-8')
+            Logger.createLog(LogLevels.DEBUG, __file__, 'Decrypted message: ' + str(decryptedMessage))
+            return decryptedMessage
         except Exception as e:
             Logger.createLog(LogLevels.ERROR, __file__, 'Communication encryption error: ' + str(e))
             return None
