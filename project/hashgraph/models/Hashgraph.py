@@ -1,6 +1,7 @@
+from __future__ import annotations
 from random import random
 from threading import Lock
-from typing import List
+from typing import List, Dict
 
 from project.hashgraph.dictTypes import HashgraphPeerList
 from project.hashgraph.dictTypes.HashgraphLastPeerCreatorIndex import HashgraphLastPeerCreatorIndex
@@ -19,29 +20,24 @@ from project.hashgraph.models.VotesTable import VotesTable
 
 
 class Hashgraph(StoreCallback):
-
-    peers: HashgraphPeerList = {}
-    lastConsensusRound = -1
-    lastDecidedRound = -1
-    lastPeersCreatorIndex: HashgraphLastPeerCreatorIndex = {}
-    myPeer: Peer
-    myPeerLastEvent: Event = None
-    store: Store = None
     COIN_ROUND_FREQ = 10
-    __instance: 'Hashgraph' = None
-    blockManager: BlockManager = None
-    toSendTransactions: FifoQueue[Transaction] = []
-
-    isHashgraphGossipLocked = None
-    isHashgraphReceiveLocked = None
+    # TODO CHECK IF IT WORKS, IF IS NOT IN __init__ IT'S SHARED BETWEEN ALL INSTANCES OF THIS CLASS
+    __instance: Hashgraph | None = None
     lock = Lock()
 
     def __init__(self, peers: List[Peer], myPeer: Peer) -> None:
-        self.peers = peers
-        self.myPeer = myPeer
-        self.store = Store(self)
-        self.blockManager = BlockManager()
+        self.peers: Dict[str, Peer] = peers
+        self.lastConsensusRound = -1
+        self.lastDecidedRound = -1
+        self.lastPeersCreatorIndex: HashgraphLastPeerCreatorIndex = {}
+        self.myPeer: Peer = myPeer
+        self.myPeerLastEvent: Event | None = None
+        self.store: Store = Store(self)
+        self.blockManager: BlockManager = BlockManager()
         self.blockManager.start()
+        self.toSendTransactions: FifoQueue[Transaction] = []
+        self.isHashgraphGossipLocked = None
+        self.isHashgraphReceiveLocked = None
 
         # Init locks at first creation
         if self.isHashgraphReceiveLocked is None and self.isHashgraphGossipLocked is None:
@@ -49,7 +45,7 @@ class Hashgraph(StoreCallback):
 
     # TODO CHECK IF INSTANCE IS RETURNED
     @staticmethod
-    def getInstance(peers: HashgraphPeerList, myPeer: Peer) -> 'Hashgraph':
+    def getInstance(peers: HashgraphPeerList, myPeer: Peer) -> Hashgraph:
         if Hashgraph.__instance is None:
             Hashgraph.__instance = Hashgraph(peers, myPeer)
         return Hashgraph.__instance
@@ -124,8 +120,7 @@ class Hashgraph(StoreCallback):
         self.store.updateEvent(event)
         if event.isWitness is True:
             newRound: Round = Round(event, len(self.peers))
-            # TODO TEST IF WORKS
-            self.store.rounds.update(newRound)
+            self.store.rounds[newRound.roundCreated] = newRound
         else:
             self.store.addEventInRound(event)
 
@@ -188,7 +183,7 @@ class Hashgraph(StoreCallback):
             event.copyLastAncestors(selfParentEvent.lastAncestors)
             otherParentEvent: Event = self.store.getEventFromEventPeerAssociationKey(event.eventBody.otherParent.key)
 
-            for peerDeviceId, peer in self.peers:
+            for peerDeviceId, peer in self.peers.items():
 
                 if peerDeviceId not in event.lastAncestors and peerDeviceId in otherParentEvent.lastAncestors:
                     event.lastAncestors[peerDeviceId] = otherParentEvent.lastAncestors.get(peerDeviceId)
@@ -202,9 +197,9 @@ class Hashgraph(StoreCallback):
     def updateAncestorFirstDescendant(self, event: Event):
         isWitness: bool = False
 
-        for peerDeviceId, creatorIndex in event.lastAncestors:
+        for peerDeviceId, creatorIndex in event.lastAncestors.items():
             isWitness = False
-            lastAncestorEvent: Event = self.store.getEventFromEventPeerAssociationKey(peerDeviceId, creatorIndex)
+            lastAncestorEvent: Event = self.store.getEventFromPeerAndCreatorIndex(peerDeviceId, creatorIndex)
 
             while isWitness is False:
                 if lastAncestorEvent is None:
@@ -268,7 +263,7 @@ class Hashgraph(StoreCallback):
         c: int = 0
         supermajority: float = (len(self.peers)*2)/3.00
 
-        for peerDeviceId, peer in self.peers:
+        for peerDeviceId, peer in self.peers.items():
             try:
                 if peerDeviceId in x.lastAncestors and peerDeviceId in y.firstDiscendants:
                     xLastAncestorCreatorIndex: int = x.lastAncestors.get(peerDeviceId)
