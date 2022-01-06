@@ -1,6 +1,9 @@
+from typing import List
+
 from project.hashgraph.models.EventBody import EventBody
 from project.hashgraph.models.Event import Event
 from project.hashgraph.enums.PeerStatus import PeerStatus
+from project.hashgraph.models.Transaction import Transaction
 
 
 class Peer:
@@ -15,7 +18,7 @@ class Peer:
     def incrementCreatorIndex(self):
         self.creatorIndex = self.creatorIndex + 1
 
-    def createFirstEvent(self) -> Event:
+    def createFirstEvent(self) -> Event | None:
         self.incrementCreatorIndex()
 
         if self.creatorIndex == 0:
@@ -26,3 +29,9 @@ class Peer:
             return firstEvent
 
         return None
+
+    def createEvent(self, transactions: List[Transaction], myPeerLastEvent: Event, otherPeerLastEvent: Event) -> Event:
+        self.incrementCreatorIndex()
+        eventBody: EventBody = EventBody(transactions, myPeerLastEvent, otherPeerLastEvent, self)
+        event: Event = Event(eventBody)
+        return event

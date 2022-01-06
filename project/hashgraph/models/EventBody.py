@@ -3,6 +3,7 @@ from typing import List
 from typing import TYPE_CHECKING
 import time
 
+from project.hashgraph.tests.helpers.DatetimeHelper import DatetimeHelper
 
 if TYPE_CHECKING:
     from project.hashgraph.models.Event import Event
@@ -21,13 +22,13 @@ class EventBody:
     transactions: List[Transaction]
     selfParent: EventPeerAssociation
     otherParent: EventPeerAssociation
-    timestamp: float
+    timestamp: int
 
     @staticmethod
     def createFirstPeerEventBody(creator: Peer):
         eventBody = EventBody()
         eventBody.creatorAssociation = EventPeerAssociation(creator.deviceId, creator.creatorIndex)
-        eventBody.timestamp = time.time()
+        eventBody.timestamp = DatetimeHelper.getNowTimestamp()
         return eventBody
 
     @staticmethod
@@ -37,7 +38,7 @@ class EventBody:
         eventBody.selfParent = EventPeerAssociation(selfParent.eventBody.creatorAssociation.peerDeviceId, selfParent.eventBody.creatorAssociation.eventCreatorIndex)
         eventBody.otherParent = EventPeerAssociation(otherParent.eventBody.creatorAssociation.peerDeviceId, otherParent.eventBody.creatorAssociation.eventCreatorIndex)
         eventBody.creatorAssociation = EventPeerAssociation(creator.deviceId, creator.creatorIndex)
-        eventBody.timestamp = time.time()
+        eventBody.timestamp = DatetimeHelper.getNowTimestamp()
         # TODO ADD TO JSON METHOD
         eventBody.selfParentHash = Hash.stringToHash(selfParent.getEventBody().toJson())
         # TODO ADD TO JSON METHOD

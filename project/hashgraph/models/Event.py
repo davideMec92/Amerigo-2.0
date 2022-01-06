@@ -1,5 +1,7 @@
 import copy
 
+from typing import Dict
+
 from project.hashgraph.models.EventBody import EventBody
 from project.hashgraph.dictTypes import LastAncestor
 from project.hashgraph.dictTypes.FamousVote import FamousVote
@@ -16,7 +18,8 @@ class Event:
     consensusTimestamp: float
     famousVote: FamousVote
     eventBody: EventBody
-    lastAncestors: LastAncestor
+    """Dict[Peer device ID, Creator Index]"""
+    lastAncestors: Dict[str, int] = {}
     firstDiscendants: FirstDiscendant
     bodySignature: str
 

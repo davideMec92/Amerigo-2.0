@@ -1,6 +1,6 @@
 from typing import TypedDict
 
 
-class FamousVote(TypedDict):
+class LastAncestor(TypedDict):
     peerDeviceId: str
     creatorIndex: int

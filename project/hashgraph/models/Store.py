@@ -14,7 +14,7 @@ from project.hashgraph.interfaces.StoreCallback import StoreCallback
 
 
 class Store:
-    events: StoreEvent = {}
+    events: Dict[str, Event] = {}
     rounds: Dict[int, Round] = defaultdict(set)
     rounds: StoreRound = StoreRound()
     lastMissingEvents: list[Event] = []
