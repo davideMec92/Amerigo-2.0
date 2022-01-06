@@ -3,25 +3,20 @@ from project.hashgraph.models.EventBlock import EventBlock
 from project.hashgraph.models.Round import Round
 from project.hashgraph.models.Store import Store
 from project.hashgraph.models.Transaction import Transaction
-from project.network_manager.block import Block
 
 
 class Block:
-
-    roundCreated: int = -1
-    events: list[Event] = []
-    store: Store
-    eventRound: Round
     TAG = "Block"
-    isBlockBuilt: bool = False
-    isCommitted: bool = False
 
     def __init__(self, store: Store, eventRound: Round):
-        self.store = store
-        self.eventRound = eventRound
-        self.roundCreated = self.eventRound.roundCreated
+        self.store: Store = store
+        self.eventRound: Round = eventRound
+        self.roundCreated: int = self.eventRound.roundCreated
+        self.events: list[Event] = []
+        self.isBlockBuilt: bool = False
+        self.isCommitted: bool = False
 
-    def build(self) -> Block:
+    def build(self) -> 'Block':
 
         if self.isBlockBuilt is True:
             return self

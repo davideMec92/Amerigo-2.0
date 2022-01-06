@@ -6,7 +6,9 @@ from project.hashgraph.helpers.Hash import Hash
 
 
 class VotesTable:
-    table: Dict[str, TableVote] = defaultdict(set)
+
+    def __init__(self):
+        self.table: Dict[str, TableVote] = defaultdict(set)
 
     def setVote(self, x: str, y: str, vote: bool):
         vote = TableVote(x, y, vote)

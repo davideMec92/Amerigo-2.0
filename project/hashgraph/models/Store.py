@@ -1,32 +1,30 @@
 from __future__ import annotations
 
-from collections import defaultdict
+import json
+from functools import reduce
+from lib2to3.pgen2.grammar import op
 from threading import Lock
-from typing import List, Dict
+from typing import Dict
 
-from project.hashgraph.models.Event import Event
-from project.hashgraph.models.Round import Round
-from project.hashgraph.dictTypes.StoreEvent import StoreEvent
+from project.Logger.Logger import LogLevels, Logger
 from project.hashgraph.dictTypes.StoreRound import StoreRound
 from project.hashgraph.helpers.Hash import Hash
 from project.hashgraph.helpers.ListHelper import ListHelper
+from project.hashgraph.helpers.models.JSONEncoders.StoreJSONEncoder import StoreJSONEncoder
 from project.hashgraph.interfaces.StoreCallback import StoreCallback
+from project.hashgraph.models.Event import Event
+from project.hashgraph.models.Round import Round
 
 
 class Store:
-    events: Dict[str, Event] = {}
-    rounds: Dict[int, Round] = defaultdict(set)
-    rounds: StoreRound = StoreRound()
-    lastMissingEvents: list[Event] = []
-    storeCallback: StoreCallback
-
     ROUND_DELETE_MARGIN = 1
-
     lock = Lock()
 
-    # TODO ADD CALLBACK FOR storeCallback
     def __init__(self, storeCallback: StoreCallback):
-        self.storeCallback = storeCallback
+        self.events: Dict[str, Event] = {}
+        self.rounds: Dict[int, Round] = {}
+        self.lastMissingEvents: list[Event] = []
+        self.storeCallback: StoreCallback = storeCallback
 
     # TODO ADD STORE CLONE FUNCTION
 
@@ -72,14 +70,15 @@ class Store:
             self.lock.release()
 
     def storeEvent(self, event):
-        self.events[event.getEventBody().getCreatorAssociation().getKey()] = event
-        self.storeCallback.eventStoredCallback(self.events.get((event.getEventBody().getCreatorAssociation().getKey())))
+        self.events[event.eventBody.creatorAssociation.key] = event
+        Logger.createLog(LogLevels.DEBUG, __file__, 'Added event with key: ' + event.eventBody.creatorAssociation.key)
+        self.storeCallback.eventStoredCallback(self.events.get(event.eventBody.creatorAssociation.key))
 
     def updateEvent(self, event):
-        self.events[event.getEventBody().getCreatorAssociation().getKey()] = event
+        self.events[event.eventBody.creatorAssociation.key] = event
 
     def addEventInRound(self, event):
-        self.rounds.get(event.getRoundCreated()).addEvent(event.getEventBody().getCreatorAssociation().getKey())
+        self.rounds.get(event.roundCreated).addEvent(event.eventBody.creatorAssociation.key)
 
     # TODO TO TEST
     def storeMissingEvents(self, otherHashgraph: "Store", peerDeviceId: str, firstMissingEventCreatorIndex: int):
@@ -96,7 +95,7 @@ class Store:
                     self.getEventFromPeerAndCreatorIndex(peerDeviceId, missingCreatorEventIndex - 1))
 
     def getEventFromPeerAndCreatorIndex(self, peerDeviceId, peerCreatorIndex) -> Event | None:
-        hashKey = Hash.stringToHash(peerDeviceId + peerCreatorIndex)
+        hashKey = Hash.stringToHash(peerDeviceId + str(peerCreatorIndex))
         return self.getEventFromEventPeerAssociationKey(hashKey)
 
     def getEventFromEventPeerAssociationKey(self, eventPeerAssociationKey) -> Event:
@@ -113,7 +112,7 @@ class Store:
             return
 
         # TODO TO TEST!
-        for k, v in self.rounds:
+        for k, v in self.rounds.items():
             if k < toRemoveRoundCreatedIndex:
                 # Remove all events in round
                 for eventKey in v.getEvents():
@@ -126,3 +125,6 @@ class Store:
 
             # Delete round
             self.deleteRoundFromRoundCreatedIndex(i)
+
+    def toJson(self) -> str:
+        return json.dumps(self, cls=StoreJSONEncoder, indent=4, sort_keys=True)

@@ -1,7 +1,7 @@
 from __future__ import annotations
+
 from typing import List
 from typing import TYPE_CHECKING
-import time
 
 from project.hashgraph.tests.helpers.DatetimeHelper import DatetimeHelper
 
@@ -15,14 +15,14 @@ from project.hashgraph.helpers.Hash import Hash
 
 
 class EventBody:
-
-    creatorAssociation: EventPeerAssociation
-    selfParentHash: str
-    otherParentHash: str
-    transactions: List[Transaction]
-    selfParent: EventPeerAssociation
-    otherParent: EventPeerAssociation
-    timestamp: int
+    def __init__(self):
+        self.creatorAssociation: EventPeerAssociation | None = None
+        self.selfParentHash: str | None = None
+        self.otherParentHash: str | None = None
+        self.transactions: List[Transaction] = []
+        self.selfParent: EventPeerAssociation | None = None
+        self.otherParent: EventPeerAssociation | None = None
+        self.timestamp: int | None = None
 
     @staticmethod
     def createFirstPeerEventBody(creator: Peer):
@@ -35,8 +35,10 @@ class EventBody:
     def createEventBody(transactions: List[Transaction], selfParent: Event, otherParent: Event, creator: Peer):
         eventBody = EventBody()
         eventBody.transactions = transactions
-        eventBody.selfParent = EventPeerAssociation(selfParent.eventBody.creatorAssociation.peerDeviceId, selfParent.eventBody.creatorAssociation.eventCreatorIndex)
-        eventBody.otherParent = EventPeerAssociation(otherParent.eventBody.creatorAssociation.peerDeviceId, otherParent.eventBody.creatorAssociation.eventCreatorIndex)
+        eventBody.selfParent = EventPeerAssociation(selfParent.eventBody.creatorAssociation.peerDeviceId,
+                                                    selfParent.eventBody.creatorAssociation.eventCreatorIndex)
+        eventBody.otherParent = EventPeerAssociation(otherParent.eventBody.creatorAssociation.peerDeviceId,
+                                                     otherParent.eventBody.creatorAssociation.eventCreatorIndex)
         eventBody.creatorAssociation = EventPeerAssociation(creator.deviceId, creator.creatorIndex)
         eventBody.timestamp = DatetimeHelper.getNowTimestamp()
         # TODO ADD TO JSON METHOD

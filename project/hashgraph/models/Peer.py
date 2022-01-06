@@ -7,13 +7,14 @@ from project.hashgraph.models.Transaction import Transaction
 
 
 class Peer:
-    # TODO IF NOT USED, REMOVE IT
-    id: int
-    deviceId: str
-    address: str
-    status: PeerStatus
-    updatedTime: float
-    creatorIndex: int = -1
+    def __init__(self):
+        # TODO IF NOT USED, REMOVE IT
+        self.id: int | None = None
+        self.deviceId: str | None = None
+        self.address: str | None = None
+        self.status: PeerStatus | None = None
+        self.updatedTime: float | None = None
+        self.creatorIndex: int = -1
 
     def incrementCreatorIndex(self):
         self.creatorIndex = self.creatorIndex + 1

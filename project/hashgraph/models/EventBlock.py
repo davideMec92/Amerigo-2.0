@@ -1,11 +1,9 @@
-from typing import List
-
 from project.hashgraph.models.EventPeerAssociation import EventPeerAssociation
 from project.hashgraph.models.Transaction import Transaction
 
 
 class EventBlock:
-    consensusTimestamp: float
-    transactions: list[Transaction] = []
-    creatorAssociation: EventPeerAssociation
-    
+    def __init__(self):
+        self.consensusTimestamp: int
+        self.transactions: list[Transaction] = []
+        self.creatorAssociation: EventPeerAssociation | None = None

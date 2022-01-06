@@ -1,19 +1,19 @@
 import time
 
 from project.hashgraph.helpers.Hash import Hash
+from project.hashgraph.tests.helpers.DatetimeHelper import DatetimeHelper
 
 
 class Transaction:
 
-    key: str
-    goalPeerDeviceId: str
-    creationTime: float
-
     def __init__(self, goalPeerDeviceId: str):
-        self.goalPeerDeviceId = goalPeerDeviceId
+        self.key: str | None = None
+        self.goalPeerDeviceId: str = goalPeerDeviceId
+        self.creationTime: int | None = None
+
 
     def setKey(self):
         self.key = Hash.stringToHash(self.goalPeerDeviceId + str(self.creationTime))
 
     def setCreationTimeAtNow(self):
-        self.creationTime = time.time()
+        self.creationTime = DatetimeHelper.getNowTimestamp()

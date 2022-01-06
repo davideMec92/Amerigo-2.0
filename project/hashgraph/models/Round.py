@@ -5,15 +5,6 @@ from project.hashgraph.helpers.ListHelper import ListHelper
 
 
 class Round:
-    roundCreated: int = -1
-    roundReceived: int = -1
-    events: list[str] = []
-    determinedEvents: list[str] = []
-    inRoundDeterminedEvents: list[str] = []
-    witnesses: list[str] = []
-    decidedWitnesses: list[str] = []
-    peersInRound: int = None
-    committed: bool = False
 
     def __init__(self, event: Event, peersInRound: int):
         if event is None:
@@ -22,36 +13,19 @@ class Round:
         if peersInRound is None:
             raise Exception('"peersInRound" parameter cannot be null')
 
-        self.roundCreated = event.roundCreated
+        self.roundCreated: int = event.roundCreated
+        self.roundReceived: int = -1
+        self.events: list[str] = []
         self.events.append(event.eventBody.creatorAssociation.key)
-        self.peersInRound = peersInRound
+        self.determinedEvents: list[str] = []
+        self.inRoundDeterminedEvents: list[str] = []
+        self.witnesses: list[str] = []
+        self.decidedWitnesses: list[str] = []
+        self.peersInRound: int = peersInRound
+        self.committed: bool = False
 
         if event.isWitness is True:
             self.witnesses.append(event.eventBody.creatorAssociation.key)
-
-    # def getEvents(self):
-    #     return self.events
-    #
-    # def getWitnesses(self):
-    #     return self.witnesses
-    #
-    # def getDeterminedEvents(self):
-    #     return self.determinedEvents
-    #
-    # def getInRoundDeterminedEvents(self):
-    #     return self.inRoundDeterminedEvents
-    #
-    # def getRoundCreated(self):
-    #     return self.roundCreated
-    #
-    # def getRoundReceived(self):
-    #     return self.roundReceived
-    #
-    # def isCommitted(self):
-    #     return self.committed
-    #
-    # def getPeersInRound(self):
-    #     return self.peersInRound
 
     def addEvent(self, eventKey: str):
         return self.events.append(eventKey)
@@ -83,7 +57,7 @@ class Round:
         return (self.peersInRound * 2) / 3.00
 
     def isDecided(self):
-        return ListHelper.getListDiff(self.decidedWitnesses, self.witnesses).size() == 0
+        return len(ListHelper.getListDiff(self.decidedWitnesses, self.witnesses)) == 0
 
     def isDetermined(self):
-        return ListHelper.getListDiff(self.determinedEvents, self.events).size() == 0
+        return len(ListHelper.getListDiff(self.determinedEvents, self.events)) == 0
