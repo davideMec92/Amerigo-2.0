@@ -1,16 +1,20 @@
 from threading import Thread
 
 from project.Logger.Logger import Logger, LogLevels
-from project.bluetooth_client import BluetoothClient
-from project.bluetooth_settings import BluetoothSettings
+# from project.bluetooth_client import BluetoothClient
+# from project.bluetooth_settings import BluetoothSettings
 from project.hashgraph.helpers.FifoQueue import FifoQueue  # type: ignore
 from project.hashgraph.models.Block import Block
 from project.hashgraph.models.communication.CommunicationMessageBlock import CommunicationMessageBlock
 
 
 class BlockManager(Thread):
-    toCommitBlocks: FifoQueue[Block] = []
+    toCommitBlocks: FifoQueue[Block]
     isSendEnabled: bool = True
+
+    def __init__(self):
+        self.toCommitBlocks = FifoQueue[Block]()
+        Thread.__init__(self)
 
     def stopSending(self) -> None:
         self.isSendEnabled = False
@@ -25,8 +29,9 @@ class BlockManager(Thread):
             if self.toCommitBlocks.isEmpty() is False:
                 isBlockSent = True
                 try:
-                    bluetoothClient: BluetoothClient = BluetoothClient(BluetoothSettings.BluetoothServerBluetoothMAC, BluetoothSettings.BluetoothServerUUID)
-                    bluetoothClient.sendMessage(CommunicationMessageBlock(self.toCommitBlocks.peek().build()))
+                    print('Sending round trough bluetooth..')
+                    # bluetoothClient: BluetoothClient = BluetoothClient(BluetoothSettings.BluetoothServerBluetoothMAC, BluetoothSettings.BluetoothServerUUID)
+                    # bluetoothClient.sendMessage(CommunicationMessageBlock(self.toCommitBlocks.peek().build()))
                 except Exception as e:
                     Logger.createLog(LogLevels.ERROR, __file__, 'Error during building and sending block: ' + str(e))
                     isBlockSent = False
