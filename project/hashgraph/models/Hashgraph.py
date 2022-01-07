@@ -119,7 +119,7 @@ class Hashgraph(StoreCallback):
         event.roundCreated = self.roundCreated(event)
         self.store.updateEvent(event)
         if event.isWitness is True:
-            newRound: Round = Round(event, len(self.peers))
+            newRound: Round = Round.create(event, len(self.peers))
             self.store.rounds[newRound.roundCreated] = newRound
         else:
             self.store.addEventInRound(event)

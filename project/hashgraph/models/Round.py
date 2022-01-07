@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import List
 
 from project.hashgraph.models.Event import Event
@@ -6,26 +7,35 @@ from project.hashgraph.helpers.ListHelper import ListHelper
 
 class Round:
 
-    def __init__(self, event: Event, peersInRound: int):
+    def __init__(self):
+        self.roundCreated: int = -1
+        self.roundReceived: int = -1
+        self.events: list[str] = []
+        self.determinedEvents: list[str] = []
+        self.inRoundDeterminedEvents: list[str] = []
+        self.witnesses: list[str] = []
+        self.decidedWitnesses: list[str] = []
+        self.peersInRound: int | None = None
+        self.committed: bool = False
+
+    @staticmethod
+    def create(event: Event, peersInRound: int) -> Round:
+
         if event is None:
             raise Exception('"event" parameter cannot be null')
 
         if peersInRound is None:
             raise Exception('"peersInRound" parameter cannot be null')
 
-        self.roundCreated: int = event.roundCreated
-        self.roundReceived: int = -1
-        self.events: list[str] = []
-        self.events.append(event.eventBody.creatorAssociation.key)
-        self.determinedEvents: list[str] = []
-        self.inRoundDeterminedEvents: list[str] = []
-        self.witnesses: list[str] = []
-        self.decidedWitnesses: list[str] = []
-        self.peersInRound: int = peersInRound
-        self.committed: bool = False
+        newRound = Round()
+        newRound.roundCreated: int = event.roundCreated
+        newRound.events.append(event.eventBody.creatorAssociation.key)
+        newRound.peersInRound: int = peersInRound
 
         if event.isWitness is True:
-            self.witnesses.append(event.eventBody.creatorAssociation.key)
+            newRound.witnesses.append(event.eventBody.creatorAssociation.key)
+
+        return newRound
 
     def addEvent(self, eventKey: str):
         return self.events.append(eventKey)
