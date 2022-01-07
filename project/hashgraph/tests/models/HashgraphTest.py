@@ -1,15 +1,17 @@
+import json
 import unittest
 
 from typing import List, Dict
 
 from project.hashgraph.enums.PeerStatus import PeerStatus
+from project.hashgraph.helpers.models.JSONDecoders.StoreJSONDecoder import StoreJSONDecoder
 from project.hashgraph.models.Hashgraph import Hashgraph
 from project.hashgraph.models.Peer import Peer
+from project.hashgraph.models.Store import Store
 from project.hashgraph.models.Transaction import Transaction
 
 
 class HashgraphTest(unittest.TestCase):
-
     transactions: List[Transaction] = []
 
     peerA: Peer = Peer()
@@ -26,7 +28,6 @@ class HashgraphTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-
         print('Init Hashgraph tests..')
 
         cls.peerA.address = "192.168.1.1"
@@ -63,27 +64,10 @@ class HashgraphTest(unittest.TestCase):
         cls.hashgraph_peerD = Hashgraph(cls.peersList, cls.peerD)
         cls.hashgraph_peerD.addUndeterminedEvents(cls.peerD.createFirstEvent())"""
 
-    def testSimple(self):
-        print('MY PEER A: ' + str(self.hashgraph_peerA.myPeer.deviceId))
-        print('MY PEER B: ' + str(self.hashgraph_peerB.myPeer.deviceId))
-        print('TO JSON: ' + self.hashgraph_peerA.store.toJson())
-        self.assertTrue(True)
-
-    """def talksWith(selfHashGraph: Hashgraph, otherHashgraph: Hashgraph, otherPeer: Peer){
-        Store deserializedOtherStore = gson.fromJson(otherHashgraph.getStore().toJson(), Store.class);
-        selfHashGraph.getNewOtherRounds(deserializedOtherStore);
-        selfHashGraph.getNewOtherUndeterminedEvents(deserializedOtherStore);
-        try {
-            sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        selfHashGraph.createEvent(otherPeer, transactions);
-    }"""
-
-
-    def test_something(self):
-        self.assertTrue(True)
+    def testEncodeDecodeOK(self):
+        toJson = self.hashgraph_peerA.store.toJson()
+        decodedStore = StoreJSONDecoder().decode(toJson)
+        self.assertTrue(toJson == decodedStore.toJson())
 
 
 if __name__ == '__main__':
