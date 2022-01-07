@@ -48,6 +48,15 @@ class StoreJSONEncoder(json.JSONEncoder):
                     toReturnObjectDict[toAddObjectProperty] = self.buildClassObjectDict(objectAttribute,
                                                                                         TO_ENCODE_EVENTPEERASSOCIATION_PROPERTIES)
                 else:
+                    if isinstance(objectAttribute, dict):
+                        if bool(objectAttribute) is False:
+                            continue
+                    elif objectAttribute is None:
+                        continue
+                    """elif isinstance(objectAttribute, list):
+                        if len(objectAttribute) == 0:
+                            continue"""
+
                     toReturnObjectDict[toAddObjectProperty] = objectAttribute
 
         return toReturnObjectDict
