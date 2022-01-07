@@ -11,16 +11,17 @@ from project.hashgraph.dictTypes.StoreRound import StoreRound
 from project.hashgraph.helpers.Hash import Hash
 from project.hashgraph.helpers.ListHelper import ListHelper
 from project.hashgraph.helpers.models.JSONEncoders.StoreJSONEncoder import StoreJSONEncoder
+from project.hashgraph.interfaces.JsonPrintable import JsonPrintable
 from project.hashgraph.interfaces.StoreCallback import StoreCallback
 from project.hashgraph.models.Event import Event
 from project.hashgraph.models.Round import Round
 
 
-class Store:
+class Store(JsonPrintable):
     ROUND_DELETE_MARGIN = 1
     lock = Lock()
 
-    def __init__(self, storeCallback: StoreCallback):
+    def __init__(self, storeCallback: StoreCallback | None):
         self.events: Dict[str, Event] = {}
         self.rounds: Dict[int, Round] = {}
         self.lastMissingEvents: list[Event] = []
@@ -72,7 +73,9 @@ class Store:
     def storeEvent(self, event):
         self.events[event.eventBody.creatorAssociation.key] = event
         Logger.createLog(LogLevels.DEBUG, __file__, 'Added event with key: ' + event.eventBody.creatorAssociation.key)
-        self.storeCallback.eventStoredCallback(self.events.get(event.eventBody.creatorAssociation.key))
+
+        if self.storeCallback is not None:
+            self.storeCallback.eventStoredCallback(self.events.get(event.eventBody.creatorAssociation.key))
 
     def updateEvent(self, event):
         self.events[event.eventBody.creatorAssociation.key] = event
@@ -126,5 +129,8 @@ class Store:
             # Delete round
             self.deleteRoundFromRoundCreatedIndex(i)
 
-    def toJson(self) -> str:
+    def toPrettyJson(self) -> str:
         return json.dumps(self, cls=StoreJSONEncoder, indent=4, sort_keys=True)
+
+    def toJson(self) -> str:
+        return json.dumps(self, cls=StoreJSONEncoder)

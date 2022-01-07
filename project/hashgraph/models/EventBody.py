@@ -1,8 +1,7 @@
 from __future__ import annotations
-
 from typing import List
 from typing import TYPE_CHECKING
-
+from project.hashgraph.interfaces.JsonPrintable import JsonPrintable
 from project.hashgraph.tests.helpers.DatetimeHelper import DatetimeHelper
 
 if TYPE_CHECKING:
@@ -14,7 +13,7 @@ from project.hashgraph.models.Transaction import Transaction
 from project.hashgraph.helpers.Hash import Hash
 
 
-class EventBody:
+class EventBody(JsonPrintable):
     def __init__(self):
         self.creatorAssociation: EventPeerAssociation | None = None
         self.selfParentHash: str | None = None
@@ -41,10 +40,8 @@ class EventBody:
                                                      otherParent.eventBody.creatorAssociation.eventCreatorIndex)
         eventBody.creatorAssociation = EventPeerAssociation(creator.deviceId, creator.creatorIndex)
         eventBody.timestamp = DatetimeHelper.getNowTimestamp()
-        # TODO ADD TO JSON METHOD
-        eventBody.selfParentHash = Hash.stringToHash(selfParent.getEventBody().toJson())
-        # TODO ADD TO JSON METHOD
-        eventBody.otherParentHash = Hash.stringToHash(otherParent.getEventBody().toJson())
+        eventBody.selfParentHash = Hash.stringToHash(selfParent.eventBody.toJson())
+        eventBody.otherParentHash = Hash.stringToHash(otherParent.eventBody.toJson())
 
     def getCreator(self) -> str:
         return self.creatorAssociation.peerDeviceId

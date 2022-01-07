@@ -22,10 +22,7 @@ class Event:
         """Dict[Peer device ID, Creator Index]"""
         self.lastAncestors: Dict[str, int] = {}
         self.firstDiscendants: Dict[str, int] = {}
-        # TODO ADD TO JSON METHOD
-        # self.bodySignature = Hash.stringToHash(eventBody.toJson())
-        # ATTENTION FOR TEST ONLY !!!!!!!
-        self.bodySignature: str = Hash.stringToHash('test body payload')
+        self.bodySignature: str = Hash.stringToHash(eventBody.toJson())
 
     def copyLastAncestors(self, lastAncestors: LastAncestor):
         self.lastAncestors = copy.deepcopy(lastAncestors)
