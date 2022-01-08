@@ -133,7 +133,7 @@ class Hashgraph(StoreCallback):
         self.addUndeterminedEvents(newEvent)
 
     def getNewOtherUndeterminedEvents(self, otherHashgraphStore: Store) -> None:
-        for deviceId, event in otherHashgraphStore.events:
+        for deviceId, event in otherHashgraphStore.events.items():
             if event.roundCreated < self.lastConsensusRound - 1:
                 continue
 
@@ -150,7 +150,7 @@ class Hashgraph(StoreCallback):
         self.store.clearLastMissingEvents()
 
     def getNewOtherRounds(self, otherHashgraphStore: Store) -> None:
-        for roundCreated, otherStoreRound in otherHashgraphStore.rounds:
+        for roundCreated, otherStoreRound in otherHashgraphStore.rounds.items():
 
             if otherStoreRound.roundCreated < self.lastConsensusRound - 1:
                 continue
@@ -160,7 +160,7 @@ class Hashgraph(StoreCallback):
 
             if myStoreRound is None:
                 # Saving other peer event round's
-                self.store.putRound(myStoreRound)
+                self.store.putRound(otherStoreRound)
             else:
 
                 if otherStoreRound.roundReceived != myStoreRound.roundReceived and myStoreRound.roundReceived == -1:
@@ -430,14 +430,15 @@ class Hashgraph(StoreCallback):
                         if len(ListHelper.getListDiff(round.determinedEvents, round.events)) == 0:
                             self.lastConsensusRound = roundIndex
                             block: Block = Block(self.store, round)
-                            self.blockManager.sendBlock(block)
+                            # TODO UNCOMMENT WHEN READY
+                            # self.blockManager.sendBlock(block)
                             round.committed = True
                             lastDecidedRoundCreatedIndex = roundIndex
 
                         break
 
-                nextRoundIndex = nextRoundIndex + 1
-                nextRoundEvent = self.store.getRoundFromRoundCreated(nextRoundIndex)
+                    nextRoundIndex = nextRoundIndex + 1
+                    nextRoundEvent = self.store.getRoundFromRoundCreated(nextRoundIndex)
 
             roundIndex = roundIndex + 1
             round = self.store.getRoundFromRoundCreated(roundIndex)
