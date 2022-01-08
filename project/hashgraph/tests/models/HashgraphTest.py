@@ -1,6 +1,4 @@
-import json
 import unittest
-
 from typing import List, Dict
 
 from project.hashgraph.enums.PeerStatus import PeerStatus
@@ -58,11 +56,309 @@ class HashgraphTest(unittest.TestCase):
         cls.hashgraph_peerB = Hashgraph(cls.peersList, cls.peerB)
         cls.hashgraph_peerB.addUndeterminedEvents(cls.peerB.createFirstEvent())
 
-        """cls.hashgraph_peerC = Hashgraph(cls.peersList, cls.peerC)
+        cls.hashgraph_peerC = Hashgraph(cls.peersList, cls.peerC)
         cls.hashgraph_peerC.addUndeterminedEvents(cls.peerC.createFirstEvent())
 
         cls.hashgraph_peerD = Hashgraph(cls.peersList, cls.peerD)
-        cls.hashgraph_peerD.addUndeterminedEvents(cls.peerD.createFirstEvent())"""
+        cls.hashgraph_peerD.addUndeterminedEvents(cls.peerD.createFirstEvent())
+
+        # PeerB talkswith PeerD
+        cls.talksWith(cls.hashgraph_peerD, cls.hashgraph_peerB, cls.peerB)
+
+        # PeerD talks with PeerB
+        cls.talksWith(cls.hashgraph_peerB, cls.hashgraph_peerD, cls.peerD)
+
+        # PeerB talks with PeerD
+        cls.talksWith(cls.hashgraph_peerD, cls.hashgraph_peerB, cls.peerB)
+
+        # PeerB talks with PeerA
+        cls.talksWith(cls.hashgraph_peerA, cls.hashgraph_peerB, cls.peerB)
+
+        # PeerC talks with PeerB
+        cls.talksWith(cls.hashgraph_peerB, cls.hashgraph_peerC, cls.peerC)
+
+        # PeerB talks with PeerD
+        cls.talksWith(cls.hashgraph_peerD, cls.hashgraph_peerB, cls.peerB)
+
+        # PeerB talks with PeerC
+        cls.talksWith(cls.hashgraph_peerC, cls.hashgraph_peerB, cls.peerB)
+
+        # PeerD talks with PeerB
+        cls.talksWith(cls.hashgraph_peerB, cls.hashgraph_peerD, cls.peerD)
+
+        # Starts Round 1
+
+        # PeerA talks with PeerD
+        cls.talksWith(cls.hashgraph_peerD, cls.hashgraph_peerA, cls.peerA)
+
+        # PeerD talks with PeerA
+        cls.talksWith(cls.hashgraph_peerA, cls.hashgraph_peerD, cls.peerD)
+
+        # PeerC talks with PeerA
+        cls.talksWith(cls.hashgraph_peerA, cls.hashgraph_peerC, cls.peerC)
+
+        # PeerD talks with PeerB
+        cls.talksWith(cls.hashgraph_peerB, cls.hashgraph_peerD, cls.peerD)
+
+        # PeerA talks with PeerC
+        cls.talksWith(cls.hashgraph_peerC, cls.hashgraph_peerA, cls.peerA)
+
+        # PeerB talks with PeerD
+        cls.talksWith(cls.hashgraph_peerD, cls.hashgraph_peerB, cls.peerB)
+
+        # PeerB talks with PeerA
+        cls.talksWith(cls.hashgraph_peerA, cls.hashgraph_peerB, cls.peerB)
+
+        # PeerA talks with PeerD
+        cls.talksWith(cls.hashgraph_peerD, cls.hashgraph_peerA, cls.peerA)
+
+        # PeerA talks with PeerB
+        cls.talksWith(cls.hashgraph_peerB, cls.hashgraph_peerA, cls.peerA)
+
+        # Starts round 2
+
+        # PeerD talks with PeerB
+        cls.talksWith(cls.hashgraph_peerB, cls.hashgraph_peerD, cls.peerD)
+
+        # PeerB talks with PeerD
+        cls.talksWith(cls.hashgraph_peerD, cls.hashgraph_peerB, cls.peerB)
+
+        # PeerB talks with PeerA
+        cls.talksWith(cls.hashgraph_peerA, cls.hashgraph_peerB, cls.peerB)
+
+        # PeerA talks with PeerB
+        cls.talksWith(cls.hashgraph_peerB, cls.hashgraph_peerA, cls.peerA)
+
+        # PeerA talks with PeerB
+        cls.talksWith(cls.hashgraph_peerB, cls.hashgraph_peerA, cls.peerA)
+
+        # PeerC talks with PeerD
+        cls.talksWith(cls.hashgraph_peerD, cls.hashgraph_peerC, cls.peerC)
+
+        # PeerD talks with PeerC
+        cls.talksWith(cls.hashgraph_peerC, cls.hashgraph_peerD, cls.peerD)
+
+        # PeerB talks with PeerA
+        cls.talksWith(cls.hashgraph_peerA, cls.hashgraph_peerB, cls.peerB)
+
+        # PeerC talks with PeerB
+        cls.talksWith(cls.hashgraph_peerB, cls.hashgraph_peerC, cls.peerC)
+
+        # PeerB talks with PeerA
+        cls.talksWith(cls.hashgraph_peerA, cls.hashgraph_peerB, cls.peerB)
+
+        # PeerB talks with PeerD
+        cls.talksWith(cls.hashgraph_peerD, cls.hashgraph_peerB, cls.peerB)
+
+        # PeerA talks with PeerB
+        cls.talksWith(cls.hashgraph_peerB, cls.hashgraph_peerA, cls.peerA)
+
+        # Starts round 3
+
+        # PeerC talks with PeerD
+        cls.talksWith(cls.hashgraph_peerD, cls.hashgraph_peerC, cls.peerC)
+
+        # PeerD talks with PeerB
+        cls.talksWith(cls.hashgraph_peerB, cls.hashgraph_peerD, cls.peerD)
+
+        # PeerB talks with PeerC
+        cls.talksWith(cls.hashgraph_peerC, cls.hashgraph_peerB, cls.peerB)
+
+        # TEST
+        # PeerD talks with PeerB
+        cls.talksWith(cls.hashgraph_peerB, cls.hashgraph_peerD, cls.peerD)
+
+        # PeerB talks with PeerD
+        cls.talksWith(cls.hashgraph_peerD, cls.hashgraph_peerB, cls.peerB)
+
+        # PeerB talks with PeerA
+        cls.talksWith(cls.hashgraph_peerA, cls.hashgraph_peerB, cls.peerB)
+
+        # PeerA talks with PeerB
+        cls.talksWith(cls.hashgraph_peerB, cls.hashgraph_peerA, cls.peerA)
+
+        # PeerA talks with PeerB
+        cls.talksWith(cls.hashgraph_peerB, cls.hashgraph_peerA, cls.peerA)
+
+        # PeerC talks with PeerD
+        cls.talksWith(cls.hashgraph_peerD, cls.hashgraph_peerC, cls.peerC)
+
+        # PeerD talks with PeerC
+        cls.talksWith(cls.hashgraph_peerC, cls.hashgraph_peerD, cls.peerD)
+
+        # PeerB talks with PeerA
+        cls.talksWith(cls.hashgraph_peerA, cls.hashgraph_peerB, cls.peerB)
+
+        # PeerC talks with PeerB
+        cls.talksWith(cls.hashgraph_peerB, cls.hashgraph_peerC, cls.peerC)
+
+        # PeerB talks with PeerA
+        cls.talksWith(cls.hashgraph_peerA, cls.hashgraph_peerB, cls.peerB)
+
+        # PeerB talks with PeerD
+        cls.talksWith(cls.hashgraph_peerD, cls.hashgraph_peerB, cls.peerB)
+
+        # PeerA talks with PeerB
+        cls.talksWith(cls.hashgraph_peerB, cls.hashgraph_peerA, cls.peerA)
+
+        # PeerD talks with PeerB
+        cls.talksWith(cls.hashgraph_peerB, cls.hashgraph_peerD, cls.peerD)
+
+        # PeerB talks with PeerD
+        cls.talksWith(cls.hashgraph_peerD, cls.hashgraph_peerB, cls.peerB)
+
+        # PeerB talks with PeerA
+        cls.talksWith(cls.hashgraph_peerA, cls.hashgraph_peerB, cls.peerB)
+
+        # PeerA talks with PeerB
+        cls.talksWith(cls.hashgraph_peerB, cls.hashgraph_peerA, cls.peerA)
+
+        # PeerA talks with PeerB
+        cls.talksWith(cls.hashgraph_peerB, cls.hashgraph_peerA, cls.peerA)
+
+        # PeerC talks with PeerD
+        cls.talksWith(cls.hashgraph_peerD, cls.hashgraph_peerC, cls.peerC)
+
+        # PeerD talks with PeerC
+        cls.talksWith(cls.hashgraph_peerC, cls.hashgraph_peerD, cls.peerD)
+
+        # PeerB talks with PeerA
+        cls.talksWith(cls.hashgraph_peerA, cls.hashgraph_peerB, cls.peerB)
+
+        # PeerC talks with PeerB
+        cls.talksWith(cls.hashgraph_peerB, cls.hashgraph_peerC, cls.peerC)
+
+        # PeerB talks with PeerA
+        cls.talksWith(cls.hashgraph_peerA, cls.hashgraph_peerB, cls.peerB)
+
+        # PeerB talks with PeerD
+        cls.talksWith(cls.hashgraph_peerD, cls.hashgraph_peerB, cls.peerB)
+
+        # PeerA talks with PeerB
+        cls.talksWith(cls.hashgraph_peerB, cls.hashgraph_peerA, cls.peerA)
+
+        # PeerD talks with PeerB
+        cls.talksWith(cls.hashgraph_peerB, cls.hashgraph_peerD, cls.peerD)
+
+        # PeerB talks with PeerD
+        cls.talksWith(cls.hashgraph_peerD, cls.hashgraph_peerB, cls.peerB)
+
+        # PeerC talks with PeerA
+        cls.talksWith(cls.hashgraph_peerA, cls.hashgraph_peerC, cls.peerC)
+
+        # PeerA talks with PeerB
+        cls.talksWith(cls.hashgraph_peerB, cls.hashgraph_peerA, cls.peerA)
+
+        # PeerA talks with PeerB
+        cls.talksWith(cls.hashgraph_peerB, cls.hashgraph_peerA, cls.peerA)
+
+        # PeerB talks with PeerC
+        cls.talksWith(cls.hashgraph_peerC, cls.hashgraph_peerB, cls.peerB)
+
+        # PeerC talks with PeerA
+        cls.talksWith(cls.hashgraph_peerA, cls.hashgraph_peerC, cls.peerC)
+
+        # PeerA talks with PeerD
+        cls.talksWith(cls.hashgraph_peerD, cls.hashgraph_peerA, cls.peerA)
+
+        # PeerD talks with PeerB
+        cls.talksWith(cls.hashgraph_peerB, cls.hashgraph_peerD, cls.peerD)
+
+        # PeerB talks with PeerC
+        cls.talksWith(cls.hashgraph_peerC, cls.hashgraph_peerB, cls.peerB)
+
+        # PeerA talks with PeerB
+        cls.talksWith(cls.hashgraph_peerB, cls.hashgraph_peerA, cls.peerA)
+
+        # PeerB talks with PeerC
+        cls.talksWith(cls.hashgraph_peerC, cls.hashgraph_peerB, cls.peerB)
+
+        # PeerC talks with PeerA
+        cls.talksWith(cls.hashgraph_peerA, cls.hashgraph_peerC, cls.peerC)
+
+        # PeerA talks with PeerD
+        cls.talksWith(cls.hashgraph_peerD, cls.hashgraph_peerA, cls.peerA)
+
+        # PeerD talks with PeerB
+        cls.talksWith(cls.hashgraph_peerB, cls.hashgraph_peerD, cls.peerD)
+
+        # PeerB talks with PeerC
+        cls.talksWith(cls.hashgraph_peerC, cls.hashgraph_peerB, cls.peerB)
+
+        # PeerA talks with PeerB
+        cls.talksWith(cls.hashgraph_peerB, cls.hashgraph_peerA, cls.peerA)
+
+        # PeerB talks with PeerC
+        cls.talksWith(cls.hashgraph_peerC, cls.hashgraph_peerB, cls.peerB)
+
+        # PeerC talks with PeerA
+        cls.talksWith(cls.hashgraph_peerA, cls.hashgraph_peerC, cls.peerC)
+
+        # PeerA talks with PeerD
+        cls.talksWith(cls.hashgraph_peerD, cls.hashgraph_peerA, cls.peerA)
+
+        # PeerD talks with PeerB
+        cls.talksWith(cls.hashgraph_peerB, cls.hashgraph_peerD, cls.peerD)
+
+        # PeerB talks with PeerC
+        cls.talksWith(cls.hashgraph_peerC, cls.hashgraph_peerB, cls.peerB)
+
+        # PeerA talks with PeerB
+        cls.talksWith(cls.hashgraph_peerB, cls.hashgraph_peerA, cls.peerA)
+
+        # PeerB talks with PeerC
+        cls.talksWith(cls.hashgraph_peerC, cls.hashgraph_peerB, cls.peerB)
+
+        # PeerC talks with PeerA
+        cls.talksWith(cls.hashgraph_peerA, cls.hashgraph_peerC, cls.peerC)
+
+        # PeerA talks with PeerD
+        cls.talksWith(cls.hashgraph_peerD, cls.hashgraph_peerA, cls.peerA)
+
+        # PeerD talks with PeerB
+        cls.talksWith(cls.hashgraph_peerB, cls.hashgraph_peerD, cls.peerD)
+
+        # PeerB talks with PeerC
+        cls.talksWith(cls.hashgraph_peerC, cls.hashgraph_peerB, cls.peerB)
+
+    @classmethod
+    def talksWith(cls, selfHashGraph: Hashgraph, otherHashgraph: Hashgraph, otherPeer: Peer):
+        print('Peer ' + otherPeer.deviceId + ' talks with' + selfHashGraph.myPeer.deviceId)
+        deserializedOtherStore: Store = StoreJSONDecoder().decode(otherHashgraph.store.toJson())
+        selfHashGraph.getNewOtherRounds(deserializedOtherStore)
+        selfHashGraph.getNewOtherUndeterminedEvents(deserializedOtherStore)
+        selfHashGraph.createEvent(otherPeer, cls.transactions)
+
+    def testPeerSeesOK(self):
+        self.assertFalse(self.hashgraph_peerC.see(
+            self.hashgraph_peerC.store.getEventFromPeerAndCreatorIndex("B", 1),
+            self.hashgraph_peerC.store.getEventFromPeerAndCreatorIndex("A", 1)
+        ))
+
+        self.assertFalse(self.hashgraph_peerC.see(
+            self.hashgraph_peerC.store.getEventFromPeerAndCreatorIndex("D", 4),
+            self.hashgraph_peerC.store.getEventFromPeerAndCreatorIndex("C", 1)
+        ))
+
+        self.assertTrue(self.hashgraph_peerC.see(
+            self.hashgraph_peerC.store.getEventFromPeerAndCreatorIndex("D", 9),
+            self.hashgraph_peerC.store.getEventFromPeerAndCreatorIndex("A", 5)
+        ))
+
+    def testPeerStronglySeesOK(self):
+        self.assertTrue(
+            self.hashgraph_peerC.stronglySee(
+                self.hashgraph_peerC.store.getEventFromPeerAndCreatorIndex("C", 2),
+                self.hashgraph_peerC.store.getEventFromPeerAndCreatorIndex("B", 0)
+            )
+        )
+
+        self.assertFalse(
+            self.hashgraph_peerC.stronglySee(
+                self.hashgraph_peerC.store.getEventFromPeerAndCreatorIndex("B", 5),
+                self.hashgraph_peerC.store.getEventFromPeerAndCreatorIndex("A", 2)
+            )
+        )
 
     def testEncodeDecodeOK(self):
         toJson = self.hashgraph_peerA.store.toJson()
