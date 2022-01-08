@@ -24,14 +24,14 @@ class EventBody(JsonPrintable):
         self.timestamp: int | None = None
 
     @staticmethod
-    def createFirstPeerEventBody(creator: Peer):
+    def createFirstPeerEventBody(creator: Peer) -> EventBody:
         eventBody = EventBody()
         eventBody.creatorAssociation = EventPeerAssociation(creator.deviceId, creator.creatorIndex)
         eventBody.timestamp = DatetimeHelper.getNowTimestamp()
         return eventBody
 
     @staticmethod
-    def createEventBody(transactions: List[Transaction], selfParent: Event, otherParent: Event, creator: Peer):
+    def createEventBody(transactions: List[Transaction], selfParent: Event, otherParent: Event, creator: Peer) -> EventBody:
         eventBody = EventBody()
         eventBody.transactions = transactions
         eventBody.selfParent = EventPeerAssociation(selfParent.eventBody.creatorAssociation.peerDeviceId,
@@ -42,6 +42,7 @@ class EventBody(JsonPrintable):
         eventBody.timestamp = DatetimeHelper.getNowTimestamp()
         eventBody.selfParentHash = Hash.stringToHash(selfParent.eventBody.toJson())
         eventBody.otherParentHash = Hash.stringToHash(otherParent.eventBody.toJson())
+        return eventBody
 
     def getCreator(self) -> str:
         return self.creatorAssociation.peerDeviceId
