@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, List, Dict
 from project.hashgraph.models.Event import Event
 from project.hashgraph.models.EventBody import EventBody
 from project.hashgraph.models.EventPeerAssociation import EventPeerAssociation
+from project.hashgraph.models.Transaction import Transaction
 
 if TYPE_CHECKING:
     from project.hashgraph.models.Store import Store
@@ -15,6 +16,7 @@ TO_ENCODE_EVENTBODY_PROPERTIES = ['creatorAssociation', 'selfParentHash', 'other
                                   'selfParent', 'otherParent', 'timestamp']
 TO_ENCODE_EVENTPEERASSOCIATION_PROPERTIES = ['peerDeviceId', 'eventCreatorIndex', 'key']
 TO_ENCODE_ROUND_PROPERTIES = ['roundCreated', 'roundReceived', 'events', 'determinedEvents', 'inRoundDeterminedEvents', 'witnesses', 'decidedWitnesses', 'peersInRound', 'committed']
+TO_ENCODE_TRANSACTION_PROPERTIES = ['key', 'goalPeerDeviceId', 'creationTime']
 
 
 class StoreJSONEncoder(json.JSONEncoder):
@@ -47,6 +49,12 @@ class StoreJSONEncoder(json.JSONEncoder):
                 elif isinstance(objectAttribute, EventPeerAssociation):
                     toReturnObjectDict[toAddObjectProperty] = self.buildClassObjectDict(objectAttribute,
                                                                                         TO_ENCODE_EVENTPEERASSOCIATION_PROPERTIES)
+                elif isinstance(objectAttribute, Transaction):
+                    toReturnObjectDict[toAddObjectProperty] = self.buildClassObjectDict(objectAttribute, TO_ENCODE_TRANSACTION_PROPERTIES)
+                elif isinstance(objectAttribute, list) and toAddObjectProperty == 'transactions':
+                    toReturnObjectDict[toAddObjectProperty] = []
+                    for transactionDict in objectAttribute:
+                        toReturnObjectDict[toAddObjectProperty].append(self.buildClassObjectDict(transactionDict, TO_ENCODE_TRANSACTION_PROPERTIES))
                 else:
                     if isinstance(objectAttribute, dict):
                         if bool(objectAttribute) is False:
