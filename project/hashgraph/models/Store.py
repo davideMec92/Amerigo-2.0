@@ -55,7 +55,8 @@ class Store(JsonPrintable):
                 self.rounds.get(newRound.roundCreated).witnesses.append(eventKey)
 
             # TODO TO TEST
-            for witnessEventKey in ListHelper.getListDiff(self.rounds.get(newRound.roundCreated).witnesses, newRound.witnesses):
+            for witnessEventKey in ListHelper.getListDiff(self.rounds.get(newRound.roundCreated).witnesses,
+                                                          newRound.witnesses):
                 self.rounds.get(newRound.roundCreated).witnesses.append(witnessEventKey)
         else:
             self.rounds[newRound.roundCreated] = newRound
@@ -133,4 +134,4 @@ class Store(JsonPrintable):
         return json.dumps(self, cls=StoreJSONEncoder, indent=4, sort_keys=True)
 
     def toJson(self) -> str:
-        return json.dumps(self, cls=StoreJSONEncoder)
+        return json.dumps(self, cls=StoreJSONEncoder, sort_keys=True, separators=(',', ':'))

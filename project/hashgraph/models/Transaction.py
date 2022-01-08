@@ -7,7 +7,7 @@ class Transaction:
     def __init__(self, goalPeerDeviceId: str):
         self.key: str | None = None
         self.goalPeerDeviceId: str = goalPeerDeviceId
-        self.creationTime: int | None = None
+        self.creationTime: int = 0
 
     def setKey(self):
         self.key = Hash.stringToHash(self.goalPeerDeviceId + str(self.creationTime))
