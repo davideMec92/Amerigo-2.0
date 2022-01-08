@@ -33,6 +33,6 @@ class Peer:
 
     def createEvent(self, transactions: List[Transaction], myPeerLastEvent: Event, otherPeerLastEvent: Event) -> Event:
         self.incrementCreatorIndex()
-        eventBody: EventBody = EventBody(transactions, myPeerLastEvent, otherPeerLastEvent, self)
+        eventBody: EventBody = EventBody.createEventBody(transactions, myPeerLastEvent, otherPeerLastEvent, self)
         event: Event = Event(eventBody)
         return event
