@@ -322,6 +322,14 @@ class HashgraphTest(unittest.TestCase):
         cls.talksWith(cls.hashgraph_peerC, cls.hashgraph_peerB, cls.peerB)
 
     @classmethod
+    def tearDownClass(cls) -> None:
+        print('Stopping hashgraph block managers..')
+        cls.hashgraph_peerA.blockManager.stopSending()
+        cls.hashgraph_peerB.blockManager.stopSending()
+        cls.hashgraph_peerC.blockManager.stopSending()
+        cls.hashgraph_peerD.blockManager.stopSending()
+
+    @classmethod
     def talksWith(cls, selfHashGraph: Hashgraph, otherHashgraph: Hashgraph, otherPeer: Peer):
         print('Peer ' + otherPeer.deviceId + ' talks with' + selfHashGraph.myPeer.deviceId)
         deserializedOtherStore: Store = StoreJSONDecoder().decode(otherHashgraph.store.toJson())
