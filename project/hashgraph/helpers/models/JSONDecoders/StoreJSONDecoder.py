@@ -96,10 +96,10 @@ class StoreJSONDecoder:
         eventBody.creatorAssociation = self.addEventPeerAssociation(eventBodyDict.get('creatorAssociation'))
 
         if 'selfParent' in eventBodyDict:
-            eventBody.selfParent = eventBodyDict.get('selfParent')
+            eventBody.selfParent = self.addEventPeerAssociation(eventBodyDict.get('selfParent'))
 
         if 'otherParent' in eventBodyDict:
-            eventBody.otherParent = eventBodyDict.get('otherParent')
+            eventBody.otherParent = self.addEventPeerAssociation(eventBodyDict.get('otherParent'))
 
         if 'selfParentHash' in eventBodyDict:
             eventBody.selfParentHash = eventBodyDict.get('selfParentHash')
