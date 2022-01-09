@@ -22,7 +22,7 @@ from project.hashgraph.models.VotesTable import VotesTable
 class Hashgraph(StoreCallback):
     COIN_ROUND_FREQ = 10
     # TODO CHECK IF IT WORKS, IF IS NOT IN __init__ IT'S SHARED BETWEEN ALL INSTANCES OF THIS CLASS
-    __instance: Hashgraph | None = None
+    instance: Hashgraph | None = None
     lock = Lock()
 
     def __init__(self, peers: List[Peer], myPeer: Peer) -> None:
