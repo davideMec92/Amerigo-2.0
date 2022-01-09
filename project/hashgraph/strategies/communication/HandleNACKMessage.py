@@ -7,17 +7,18 @@ from project.hashgraph.models.GossipProtocol import GossipProtocol
 from project.hashgraph.models.Hashgraph import Hashgraph
 from project.hashgraph.models.communication.CommunicationMessage import CommunicationMessage
 from project.hashgraph.models.communication.CommunicationMessageACK import CommunicationMessageACK
+from project.hashgraph.models.communication.CommunicationMessageNACK import CommunicationMessageNACK
 
 
-class HandleACKMessage(ServerMessageHandlerStrategy):
+class HandleNACKMessage(ServerMessageHandlerStrategy):
 
     lock = Lock()
 
     def __init__(self):
         self.hashgraph: Hashgraph | None = None
 
-    def handleMessage(self, message: CommunicationMessageACK) -> None:
-        Logger.createLog(LogLevels.DEBUG, __file__, 'Received ACK')
+    def handleMessage(self, message: CommunicationMessageNACK) -> None:
+        Logger.createLog(LogLevels.DEBUG, __file__, 'Received NACK')
         self.hashgraph = Hashgraph.instance
 
         # Check if hashgraph is not initialized yet
@@ -26,15 +27,15 @@ class HandleACKMessage(ServerMessageHandlerStrategy):
             print('Peer list not initialized, hashgraph null')
             return
 
-        # Check if gossip is waiting an ACK to unlock receive semaphore
+        # Check if gossip is waiting an NACK to unlock receive semaphore
         if self.hashgraph.lockHashgraphGossip() is False:
             try:
-                HandleACKMessage.lock.acquire()
-                Logger.createLog(LogLevels.DEBUG, __file__, 'Try to unlock hashgraph receive lock..')
-                self.hashgraph.unlockHashgraphReceive()
+                HandleNACKMessage.lock.acquire()
+                Logger.createLog(LogLevels.DEBUG, __file__, 'Try to unlock hashgraph gossip lock..')
+                self.hashgraph.unlockHashgraphGossip()
                 if GossipProtocol.instance.unlockGossipProtocolEvent.is_set() is False:
                     GossipProtocol.instance.unlockGossipProtocolEvent.set()
                     Logger.createLog(LogLevels.DEBUG, __file__, 'unlockGossipProtocolEvent unlocked')
             finally:
-                HandleACKMessage.lock.release()
+                HandleNACKMessage.lock.release()
 
