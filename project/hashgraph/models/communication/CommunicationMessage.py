@@ -1,10 +1,7 @@
-import json
-
 from project.hashgraph.enums.CommunicationMessageTypes import CommunicationMessageTypes  # type: ignore
+from project.hashgraph.interfaces.JsonPrintable import JsonPrintable
 
 
-class CommunicationMessage:
+class CommunicationMessage(JsonPrintable):
     type: CommunicationMessageTypes = None
 
-    def toJson(self) -> str:
-        return json.dumps(self, default=vars)
