@@ -6,3 +6,4 @@ project/.idea
 project/venv
 .idea
 *.log
+/project/hashgraph/data/
