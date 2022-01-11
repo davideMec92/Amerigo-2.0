@@ -4,10 +4,18 @@ from project.hashgraph.models.EventBody import EventBody
 from project.hashgraph.models.Event import Event
 from project.hashgraph.enums.PeerStatus import PeerStatus
 from project.hashgraph.models.Transaction import Transaction
+from project.hashgraph.services.database.TinyDB.TinyDBModel import TinyDBModel
+from project.hashgraph.services.database.TinyDB.TinyDBService import TinyDBService
 
 
-class Peer:
+class Peer(TinyDBModel):
+    primaryKey = "deviceId"
+    DB_NAME = 'peers_list'
+
+    tinyDBService: TinyDBService = TinyDBService(DB_NAME)
+
     def __init__(self):
+        super().__init__(Peer.tinyDBService, Peer.primaryKey)
         # TODO IF NOT USED, REMOVE IT
         self.id: int | None = None
         self.deviceId: str | None = None
