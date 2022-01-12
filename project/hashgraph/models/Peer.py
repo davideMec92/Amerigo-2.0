@@ -21,7 +21,7 @@ class Peer(TinyDBModel):
         self.deviceId: str | None = None
         self.address: str | None = None
         self.status: PeerStatus | None = None
-        self.updatedTime: float | None = None
+        self.updatedTime: int | None = None
         self.creatorIndex: int = -1
 
     def incrementCreatorIndex(self):
