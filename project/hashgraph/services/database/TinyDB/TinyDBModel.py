@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import copy
 import time
-
-from tinydb import where, TinyDB, Query
 from typing import Dict
+
+from tinydb import TinyDB, Query
 
 from project.hashgraph.services.database.TinyDB.TinyDBService import TinyDBService
 
@@ -15,17 +15,15 @@ class TinyDBModel:
         self.db: TinyDB = tinyDBService.db
         self.primaryKey: str = primaryKey
         self.updatedTime: float | None = None
+        self.modelQuery = Query()
 
-    def createFromDict(self, **entries: dict) -> TinyDBModel:
-        self.toDict().update(entries)
+    def createFromDict(self, entries: dict) -> TinyDBModel:
+        self.__dict__.update(entries)
         return self
 
-    def getFromProperty(self, propertyName, propertyValue) -> TinyDBModel | None:
-        result = self.db.search(where(propertyName) == propertyValue)
-        if len(result) == 0:
-            return None
-        else:
-            return self.createFromDict(result)
+    def getFromPrimaryKey(self, propertyValue) -> TinyDBModel | None:
+        result = self.db.get(self.modelQuery[self.primaryKey] == propertyValue)
+        return None if result is None else self.createFromDict(result)
 
     def upsert(self) -> None:
         self.db.upsert(self.updateTime(), Query()[self.primaryKey] == getattr(self, self.primaryKey))
@@ -34,13 +32,14 @@ class TinyDBModel:
         self.db.insert(self.updateTime())
 
     def remove(self) -> None:
-        self.db.remove(Query()[self.primaryKey] == getattr(self, self.primaryKey))
+        self.db.remove(self.modelQuery[self.primaryKey] == getattr(self, self.primaryKey))
 
     def updateTime(self) -> Dict:
-        self.updatedTime = str(time.time())
+        self.updatedTime = str(int(time.time()))
         return self.toDict()
 
     def toDict(self) -> Dict:
         objectDict = copy.copy(self).__dict__
         objectDict.pop('db', None)
+        objectDict.pop('modelQuery', None)
         return objectDict
