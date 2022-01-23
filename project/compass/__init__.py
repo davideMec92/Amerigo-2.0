@@ -1,6 +1,6 @@
 import py_qmc5883l
 
-from custom_exceptions import *
+from project.custom_exceptions import *
 
 class Compass:
 

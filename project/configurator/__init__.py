@@ -3,13 +3,16 @@
 import pigpio as gpio
 import json
 from collections import namedtuple
-from custom_exceptions import *
+from project.custom_exceptions import *
+from path import Path
+
 
 class Configurator:
 
     gpio = None
     conf = None
     configFilename = "conf.json"
+    configuratorDir = Path.dirname(Path(__file__)) + '/'
 
     def __init__(self):
         self.conf = self.loadConf()
@@ -33,7 +36,7 @@ class Configurator:
     def loadConf(self):
 
         try:
-            data = self.fileGetContents(self.configFilename)
+            data = self.fileGetContents(self.configuratorDir + self.configFilename)
             jsonData = None
             jsonData = json.loads(data)
             return jsonData

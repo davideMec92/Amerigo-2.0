@@ -1,25 +1,26 @@
 # -*- coding: utf-8 -*-
 
-from proximity import Proximity
-from custom_exceptions import *
+from project.proximity import Proximity
+from project.custom_exceptions import *
 
 import time
 
 class ProximityManager:
 
-    #Oggetto classe Proximity
-    proximity = None
+    def __int__(self):
+        #Oggetto classe Proximity
+        self.proximity = None
 
-    #Variabili direzionali
-    front_availability = None
-    left_availability = None
-    right_availability = None
+        #Variabili direzionali
+        self.front_availability = None
+        self.left_availability = None
+        self.right_availability = None
 
-    #Reference all'istanza della classe Motors
-    motors_object = None
+        #Reference all'istanza della classe Motors
+        self.motors_object = None
 
-    #Dizionario misurazioni
-    measurements = {}
+        #Dizionario misurazioni
+        self.measurements = {}
 
     #Distanze ostacoli
     out_of_range_distance = float(150) #1,5m

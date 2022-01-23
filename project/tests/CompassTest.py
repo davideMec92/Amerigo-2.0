@@ -1,8 +1,19 @@
 import unittest
 
-class MyTestCase(unittest.TestCase):
-    def test_something(self):
-        self.assertEqual(True, False)  # add assertion here
+from project.compass import Compass
+
+
+class CompassTest(unittest.TestCase):
+
+    compass: Compass | None = None
+
+    def testCompass(self):
+        print('Starting Compass..')
+        self.compass = Compass()
+        measuredDegrees = str(self.compass.getDegress())
+        print('Degrees: ' + measuredDegrees)
+        self.assertTrue(measuredDegrees.replace('.','').isdigit())
+
 
 if __name__ == '__main__':
     unittest.main()

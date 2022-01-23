@@ -1,5 +1,5 @@
 import time
-from custom_exceptions import *
+from project.custom_exceptions import *
 
 class Motors:
 
