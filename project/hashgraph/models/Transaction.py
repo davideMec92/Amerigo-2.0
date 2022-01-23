@@ -1,5 +1,5 @@
 from project.hashgraph.helpers.Hash import Hash
-from project.hashgraph.tests.helpers.DatetimeHelper import DatetimeHelper
+from project.hashgraph.helpers.DatetimeHelper import DatetimeHelper
 
 
 class Transaction:

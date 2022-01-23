@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import pigpio as gpio
 import json
-from collections import namedtuple
-from project.custom_exceptions import *
+
+import pigpio as gpio
 from path import Path
+
+from project.custom_exceptions import *
 
 
 class Configurator:

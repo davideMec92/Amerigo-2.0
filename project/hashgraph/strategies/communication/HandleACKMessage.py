@@ -1,11 +1,8 @@
 from threading import Lock
-from typing import Type
 
 from project.Logger.Logger import Logger, LogLevels
 from project.hashgraph.interfaces.Strategies.ServerMessageHandlerStrategy import ServerMessageHandlerStrategy
-from project.hashgraph.models.GossipProtocol import GossipProtocol
 from project.hashgraph.models.Hashgraph import Hashgraph
-from project.hashgraph.models.communication.CommunicationMessage import CommunicationMessage
 from project.hashgraph.models.communication.CommunicationMessageACK import CommunicationMessageACK
 
 

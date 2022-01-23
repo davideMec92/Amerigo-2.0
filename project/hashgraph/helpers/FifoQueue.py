@@ -11,10 +11,10 @@ class FifoQueue(Generic[T]):
     def push(self, element: T) -> None:
         self.elementsList.append(element)
 
-    def pop(self) -> T | None:
+    def pop(self) -> T:
         return self.elementsList.pop(0) if self.isEmpty() is False else None
 
-    def peek(self) -> T | None:
+    def peek(self) -> T:
         return self.elementsList[0] if self.isEmpty() is False else None
 
     def isEmpty(self) -> bool:

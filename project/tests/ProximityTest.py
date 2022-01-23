@@ -7,9 +7,9 @@ from project.motors import Motors
 
 class ProximityTest(unittest.TestCase):
 
-    configurator: Configurator | None = None
-    motors: Motors | None = None
-    proximity_manager: ProximityManager | None = None
+    configurator: Configurator = None
+    motors: Motors = None
+    proximity_manager: ProximityManager = None
 
     @classmethod
     def setUpClass(cls) -> None:

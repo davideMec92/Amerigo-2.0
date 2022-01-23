@@ -3,16 +3,16 @@ import rssi
 import time
 
 class WifiRssiManager(Thread):
-    ssids = []
-    wifiSsids = []
-    wifiSsidsToNormalAssoc = {}
-    wifiSsidsMeasurements = {}
     interface = 'wlan0'
     rssi_scanner = rssi.RSSI_Scan(interface)
     nearSignalThreshold = 33
     continuoslyScanStatus = 'ENABLED'
 
     def __init__(self):
+        self.ssids = []
+        self.wifiSsids = []
+        self.wifiSsidsToNormalAssoc = {}
+        self.wifiSsidsMeasurements = {}
         Thread.__init__(self)
         self.name = self.__class__.__name__
 

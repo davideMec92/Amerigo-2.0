@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import List
 from typing import TYPE_CHECKING
 from project.hashgraph.interfaces.JsonPrintable import JsonPrintable
-from project.hashgraph.tests.helpers.DatetimeHelper import DatetimeHelper
+from project.hashgraph.helpers.DatetimeHelper import DatetimeHelper
 
 if TYPE_CHECKING:
     from project.hashgraph.models.Event import Event

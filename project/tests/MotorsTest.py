@@ -8,8 +8,8 @@ from project.motors import Motors
 
 class MotorsTest(unittest.TestCase):
 
-    configurator: Configurator | None = None
-    motors: Motors | None = None
+    configurator: Configurator = None
+    motors: Motors = None
 
     @classmethod
     def setUpClass(cls) -> None:

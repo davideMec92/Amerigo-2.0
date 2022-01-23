@@ -6,4 +6,4 @@ class EventBlock:
     def __init__(self):
         self.consensusTimestamp: int
         self.transactions: list[Transaction] = []
-        self.creatorAssociation: EventPeerAssociation | None = None
+        self.creatorAssociation: EventPeerAssociation = None

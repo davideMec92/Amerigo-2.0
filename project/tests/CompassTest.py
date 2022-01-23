@@ -5,7 +5,7 @@ from project.compass import Compass
 
 class CompassTest(unittest.TestCase):
 
-    compass: Compass | None = None
+    compass: Compass = None
 
     def testCompass(self):
         print('Starting Compass..')

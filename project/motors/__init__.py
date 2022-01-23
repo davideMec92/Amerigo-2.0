@@ -17,9 +17,6 @@ class Motors:
     motor_left_actual_power = motors_default_power
     motor_right_actual_power = motors_default_power
 
-    gpio = None
-    configurator = None
-
     def __init__(self, configurator):
 
         if configurator is None:

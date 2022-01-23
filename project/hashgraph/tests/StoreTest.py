@@ -13,13 +13,18 @@ class StoreTest(unittest.TestCase):
     peer2 = Peer()
     peer2.deviceId = 'PEER_B'
     peerList: Dict[str, Peer] = {peer1.deviceId: peer1, peer2.deviceId: peer2}
+    hashgraph: Hashgraph = Hashgraph(peerList, peer1)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        print('Stopping hashgraph block manager..')
+        cls.hashgraph.blockManager.stopSending()
 
     def testRoundPutOK(self):
         event = self.peer1.createFirstEvent()
         eventRound = Round.create(event, 1)
-        hashgraph = Hashgraph(self.peerList, self.peer1)
-        hashgraph.store.putRound(eventRound)
-        self.assertIsNotNone(hashgraph.store.rounds.pop(eventRound.roundCreated))
+        self.hashgraph.store.putRound(eventRound)
+        self.assertIsNotNone(self.hashgraph.store.rounds.pop(eventRound.roundCreated))
 
 if __name__ == '__main__':
     unittest.main()

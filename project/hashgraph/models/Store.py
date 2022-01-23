@@ -1,13 +1,10 @@
 from __future__ import annotations
 
 import json
-from functools import reduce
-from lib2to3.pgen2.grammar import op
 from threading import Lock
 from typing import Dict
 
 from project.Logger.Logger import LogLevels, Logger
-from project.hashgraph.dictTypes.StoreRound import StoreRound
 from project.hashgraph.helpers.Hash import Hash
 from project.hashgraph.helpers.ListHelper import ListHelper
 from project.hashgraph.helpers.models.JSONEncoders.StoreJSONEncoder import StoreJSONEncoder
@@ -32,7 +29,7 @@ class Store(JsonPrintable):
     def getEvents(self):
         return self.events
 
-    def getRounds(self) -> StoreRound:
+    def getRounds(self) -> dict[int, Round]:
         return self.rounds
 
     def getLastMissingEvents(self):

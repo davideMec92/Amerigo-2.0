@@ -17,17 +17,17 @@ class Peer(TinyDBModel):
     def __init__(self):
         super().__init__(Peer.tinyDBService, Peer.primaryKey)
         # TODO IF NOT USED, REMOVE IT
-        self.id: int | None = None
-        self.deviceId: str | None = None
-        self.address: str | None = None
-        self.status: PeerStatus | None = None
-        self.updatedTime: int | None = None
+        self.id: int = None
+        self.deviceId: str = None
+        self.address: str = None
+        self.status: PeerStatus = None
+        self.updatedTime: int = None
         self.creatorIndex: int = -1
 
     def incrementCreatorIndex(self):
         self.creatorIndex = self.creatorIndex + 1
 
-    def createFirstEvent(self) -> Event | None:
+    def createFirstEvent(self) -> Event:
         self.incrementCreatorIndex()
 
         if self.creatorIndex == 0:

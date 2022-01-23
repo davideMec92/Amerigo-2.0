@@ -12,7 +12,7 @@ class CommunicationMessageDecrypter:
     fernet_crypt = Fernet(os.getenv('ENCRYPTION_KEY'))
 
     @staticmethod
-    def decrypt(message: str) -> str | None:
+    def decrypt(message: str) -> str:
 
         if message is None:
             raise Exception('Message parameter cannot be empty')

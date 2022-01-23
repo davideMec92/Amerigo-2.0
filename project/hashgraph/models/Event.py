@@ -3,7 +3,6 @@ from __future__ import annotations
 import copy
 from typing import Dict
 
-from project.hashgraph.dictTypes import LastAncestor
 from project.hashgraph.helpers.Hash import Hash
 from project.hashgraph.models.EventBody import EventBody
 
@@ -24,7 +23,7 @@ class Event:
         self.firstDiscendants: Dict[str, int] = {}
         self.bodySignature: str = Hash.stringToHash(eventBody.toJson())
 
-    def copyLastAncestors(self, lastAncestors: LastAncestor):
+    def copyLastAncestors(self, lastAncestors: dict[str, int]):
         self.lastAncestors = copy.deepcopy(lastAncestors)
 
     def addLastAncestor(self, peerDeviceId: str, creatorIndex: int):

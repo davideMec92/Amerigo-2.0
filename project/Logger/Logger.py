@@ -2,11 +2,10 @@ import logging
 import os
 from datetime import datetime
 from enum import Enum
-
 from path import Path
 
 logFilesDir = Path.dirname(Path(__file__)) + '/Log/'
-logging.basicConfig(filename=logFilesDir + datetime.now().strftime("%Y_%m_%d") + '.log', encoding='utf-8', level=logging.DEBUG)
+logging.basicConfig(filename=logFilesDir + datetime.now().strftime("%Y_%m_%d") + '.log', level=logging.DEBUG)
 
 class LogLevels(Enum):
     DEBUG = 0
@@ -30,16 +29,15 @@ class Logger:
 
         message: str = '['+datetime.now().strftime("%Y-%m-%d %H:%M:%S")+'], "' + os.path.basename(filename) + '", ' + message
 
-        match logLevel:
-            case LogLevels.DEBUG:
-                logging.debug(message)
-            case LogLevels.INFO:
-                logging.info(message)
-            case LogLevels.WARNING:
-                logging.warning(message)
-            case LogLevels.ERROR:
-                logging.error(message)
-            case LogLevels.CRITICAL:
-                logging.critical(message)
-            case _:
-                raise Exception('The log level passed in not define')
+        if logLevel == LogLevels.DEBUG:
+            logging.debug(message)
+        elif logLevel == LogLevels.INFO:
+            logging.info(message)
+        elif logLevel == LogLevels.WARNING:
+            logging.warning(message)
+        elif logLevel == LogLevels.ERROR:
+            logging.error(message)
+        elif logLevel == LogLevels.CRITICAL:
+            logging.critical(message)
+        else:
+            raise Exception('The log level passed in not define')

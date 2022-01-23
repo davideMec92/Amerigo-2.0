@@ -4,8 +4,6 @@ from project.custom_exceptions import *
 
 class Compass:
 
-    sensor = None
-
     def __init__(self):
         self.sensor = py_qmc5883l.QMC5883L()
 

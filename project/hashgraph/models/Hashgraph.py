@@ -1,10 +1,9 @@
 from __future__ import annotations
+
 from random import random
 from threading import Lock
 from typing import List, Dict
 
-from project.hashgraph.dictTypes import HashgraphPeerList
-from project.hashgraph.dictTypes.HashgraphLastPeerCreatorIndex import HashgraphLastPeerCreatorIndex
 from project.hashgraph.helpers.FifoQueue import FifoQueue
 from project.hashgraph.helpers.ListHelper import ListHelper
 from project.hashgraph.helpers.LockInitHelper import LockInitHelper
@@ -29,7 +28,7 @@ class Hashgraph(StoreCallback):
         self.peers: Dict[str, Peer] = peers
         self.lastConsensusRound = -1
         self.lastDecidedRound = -1
-        self.lastPeersCreatorIndex: HashgraphLastPeerCreatorIndex = {}
+        self.lastPeersCreatorIndex: Dict[str, int] = {}
         self.myPeer: Peer = myPeer
         self.myPeerLastEvent: Event | None = None
         self.store: Store = Store(self)
@@ -45,7 +44,7 @@ class Hashgraph(StoreCallback):
 
     # TODO CHECK IF INSTANCE IS RETURNED
     @staticmethod
-    def getInstance(peers: HashgraphPeerList, myPeer: Peer) -> Hashgraph:
+    def getInstance(peers: dict[str, Peer], myPeer: Peer) -> Hashgraph:
         if Hashgraph.__instance is None:
             Hashgraph.__instance = Hashgraph(peers, myPeer)
         return Hashgraph.__instance
