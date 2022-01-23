@@ -1,0 +1,20 @@
+{
+  "Motors":{
+    "RIGHT_MOTOR_FORWARDS" : 12,
+    "RIGHT_MOTOR_BACKWARDS" : 16,
+    "LEFT_MOTOR_FORWARDS" : 20,
+    "LEFT_MOTOR_BACKWARDS" : 21
+  },
+  "Proximity":{
+    "Triggers":{
+      "LEFT" : 5,
+      "FRONT" : 6,
+      "RIGHT" : 13
+    },
+    "Echoes":{
+      "LEFT" : 17,
+      "FRONT" : 27,
+      "RIGHT" : 22
+    }
+  }
+}
