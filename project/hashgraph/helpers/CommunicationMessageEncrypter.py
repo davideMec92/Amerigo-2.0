@@ -1,8 +1,13 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
 import os
+
+if TYPE_CHECKING:
+    from project.hashgraph.models.communication.CommunicationMessage import CommunicationMessage
 
 from project.Logger.Logger import LogLevels, Logger  # type: ignore
 from project.hashgraph.enums.CommunicationMessageTypes import CommunicationMessageTypes  # type: ignore
-from project.hashgraph.models.communication.CommunicationMessage import CommunicationMessage  # type: ignore
 from cryptography.fernet import Fernet
 from dotenv import load_dotenv
 
