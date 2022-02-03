@@ -31,6 +31,7 @@ class Logger:
 
         if logLevel == LogLevels.DEBUG:
             logging.debug(message)
+            print(message)
         elif logLevel == LogLevels.INFO:
             logging.info(message)
         elif logLevel == LogLevels.WARNING:
