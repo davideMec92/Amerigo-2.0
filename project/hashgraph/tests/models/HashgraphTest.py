@@ -334,7 +334,7 @@ class HashgraphTest(unittest.TestCase):
     @classmethod
     def talksWith(cls, selfHashGraph: Hashgraph, otherHashgraph: Hashgraph, otherPeer: Peer):
         print('Peer ' + otherPeer.deviceId + ' talks with' + selfHashGraph.myPeer.deviceId)
-        deserializedOtherStore: Store = StoreJSONDecoder().decode(otherHashgraph.store.toJson())
+        deserializedOtherStore: Store = StoreJSONDecoder().decodeFromJsonString(otherHashgraph.store.toJson())
         selfHashGraph.getNewOtherRounds(deserializedOtherStore)
         selfHashGraph.getNewOtherUndeterminedEvents(deserializedOtherStore)
         selfHashGraph.createEvent(otherPeer, cls.transactions)
@@ -372,7 +372,7 @@ class HashgraphTest(unittest.TestCase):
 
     def testEncodeDecodeOK(self):
         toJson = self.hashgraph_peerA.store.toJson()
-        decodedStore = StoreJSONDecoder().decode(toJson)
+        decodedStore = StoreJSONDecoder().decodeFromJsonString(toJson)
         self.assertTrue(toJson == decodedStore.toJson())
 
 

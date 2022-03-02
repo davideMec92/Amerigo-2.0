@@ -14,7 +14,7 @@ class CommunicationMessageHashgraphDeserializer:
         try:
             communicationMessageHashgraphDict: Dict = json.loads(communicationMessageHashgraphJson)
             communicationMessageHashgraph: CommunicationMessageHashgraph = CommunicationMessageHashgraph()
-            communicationMessageHashgraph.store = StoreJSONDecoder().decode(json.dumps(communicationMessageHashgraphDict['store']))
+            communicationMessageHashgraph.store = StoreJSONDecoder().decodeFromJsonString(json.dumps(communicationMessageHashgraphDict['store']))
             communicationMessageHashgraph.type = CommunicationMessageTypes[communicationMessageHashgraphDict['type']]
             communicationMessageHashgraph.peer = Peer().createFromDict(communicationMessageHashgraphDict['peer'])
             return communicationMessageHashgraph

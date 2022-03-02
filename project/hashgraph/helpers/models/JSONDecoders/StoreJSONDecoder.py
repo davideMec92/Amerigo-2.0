@@ -14,11 +14,21 @@ from project.hashgraph.validators.EventValidator import EventValidator
 
 class StoreJSONDecoder:
 
-    def decode(self, jsonString: str) -> Store:
-        storeDict = json.loads(jsonString)
-        store: Store = Store(None)
-
+    def decodeFromJsonString(self, jsonString: str) -> Store:
         try:
+            storeDict = json.loads(jsonString)
+            store: Store = Store(None)
+            store.events = self.addEvents(storeDict.get('events'))
+            store.rounds = self.addRounds(storeDict.get('rounds'))
+        except Exception as e:
+            print('StoreJSONDecoder exception: ' + str(e))
+            traceback.print_exc()
+
+        return store
+
+    def decodeFromDict(self, storeDict: Dict) -> Store:
+        try:
+            store: Store = Store(None)
             store.events = self.addEvents(storeDict.get('events'))
             store.rounds = self.addRounds(storeDict.get('rounds'))
         except Exception as e:

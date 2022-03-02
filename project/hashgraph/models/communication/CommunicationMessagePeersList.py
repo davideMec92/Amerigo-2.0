@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import List
 
 from project.hashgraph.enums.CommunicationMessageTypes import CommunicationMessageTypes
@@ -10,3 +11,16 @@ class CommunicationMessagePeersList(CommunicationMessage):
         super().__init__()
         self.type = CommunicationMessageTypes.PEERS_LIST
         self.peers: List[Peer] = []
+
+    def createFromDict(self, entries: dict) -> CommunicationMessagePeersList:
+        if entries['peers'] is None:
+            raise Exception('"peers" property cannot be null')
+
+        communicationMessagePeersList: CommunicationMessagePeersList = CommunicationMessagePeersList()
+
+        for peerDict in entries['peers']:
+            communicationMessagePeersList.peers.append(Peer().createFromDict(peerDict))
+
+        return communicationMessagePeersList
+
+

@@ -4506,7 +4506,7 @@ class HashgraphStoreDeserializerTest(unittest.TestCase):
 }"""
 
     def test_something(self):
-        decodedStore = StoreJSONDecoder().decode(self.jsonStore)
+        decodedStore = StoreJSONDecoder().decodeFromJsonString(self.jsonStore)
         self.assertTrue(isinstance(decodedStore, Store))
 
 
