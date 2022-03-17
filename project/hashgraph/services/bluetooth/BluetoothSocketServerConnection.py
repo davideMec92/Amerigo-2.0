@@ -55,8 +55,8 @@ class BluetoothSocketServerConnection(BaseSocketServerConnection):
             Logger.createLog(LogLevels.DEBUG, __file__, "Waiting for connection on RFCOMM channel on port: " + str(port))
 
             while self.isRunning is True:
-                connectionSocket, addr = self.serverSocket.accept()
-                bluetoothSocketConnection: BluetoothSocketConnection = BluetoothSocketConnection.createFromBluetoothSocket(self.serverAppUUID, connectionSocket, self.connectionCallbacks, self)
+                connectionSocket, address = self.serverSocket.accept()
+                bluetoothSocketConnection: BluetoothSocketConnection = BluetoothSocketConnection.createFromBluetoothSocket(self.serverAppUUID, connectionSocket, address, self.connectionCallbacks, self)
                 Logger.createLog(LogLevels.DEBUG, __file__, "Added incoming connection socket")
                 self.incomingConnections[bluetoothSocketConnection.key] = bluetoothSocketConnection
                 bluetoothSocketConnection.start()
