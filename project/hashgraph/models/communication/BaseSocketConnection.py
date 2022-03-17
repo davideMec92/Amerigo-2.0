@@ -28,7 +28,7 @@ class BaseSocketConnection(Thread):
         self.connectionCallbacks: list[CommunicationCallback] = []
         self.serverConnectionRemoveCallback: ServerConnectionRemoveCallback = None
         self.isReceiveAvailable: bool = False
-        self.address: str = None
+        self.clientAddress: str = None
         Thread.__init__(self)
 
     def initSocket(self) -> None:
@@ -36,8 +36,8 @@ class BaseSocketConnection(Thread):
         if self.socket is None:
             raise Exception('Socket not initialized')
 
-        Logger.createLog(LogLevels.DEBUG, __file__, 'Device address: ' + str(self.socket.getpeername()))
-        self.key = Hash.stringToHash(str(self.socket.getpeername()))
+        Logger.createLog(LogLevels.DEBUG, __file__, 'Device address: ' + str(self.clientAddress))
+        self.key = Hash.stringToHash(str(self.clientAddress))
         self.isMessageSenderEnabled = True
 
         # Starting listening for sending messages
@@ -58,7 +58,7 @@ class BaseSocketConnection(Thread):
             try:
                 if self.toSendMessages.isEmpty() is False:
                     communicationMessage: CommunicationMessage = self.toSendMessages.pop()
-                    Logger.createLog(LogLevels.DEBUG, __file__ , "Sending message: " + str(communicationMessage.toJson()) + 'to: ' + str(self.address))
+                    Logger.createLog(LogLevels.DEBUG, __file__, "Sending message: " + str(communicationMessage.toJson()) + 'to: ' + str(self.clientAddress))
                     encryptedMessage: str = communicationMessage.encrypt()
                     if type(encryptedMessage) is not str:
                         encryptedMessage = str(encryptedMessage)
@@ -66,7 +66,7 @@ class BaseSocketConnection(Thread):
                         encryptedMessage = encryptedMessage.replace("'", "")
                     # self.socket.send(str(encryptedMessage) + "\r\n")
                     self.socket.send(str(encryptedMessage))
-                    Logger.createLog(LogLevels.DEBUG, __file__ , "Sent encrypted: " + str(communicationMessage.type) + 'to: ' + str(self.address))
+                    Logger.createLog(LogLevels.DEBUG, __file__, "Sent encrypted: " + str(communicationMessage.type) + 'to: ' + str(self.clientAddress))
 
                     # If block sent, close socket
                     if communicationMessage.type == CommunicationMessageTypes.BLOCK:
@@ -105,7 +105,7 @@ class BaseSocketConnection(Thread):
                     continue
 
                 Logger.createLog(LogLevels.DEBUG, __file__, "New Message: " + str(incomingMessage))
-                incomingMessage = self.sanitizeMessage(incomingMessage)
+                incomingMessage = self.parseReceivedString(incomingMessage)
                 incomingMessage = CommunicationMessageDecrypter.decrypt(incomingMessage)
 
                 # Validate received message
@@ -141,6 +141,7 @@ class BaseSocketConnection(Thread):
 
     def parseReceivedString(self, receivedString):
         receivedString = receivedString.replace("\\n", "")
+        receivedString = receivedString.replace("\\r", "")
         receivedString = receivedString.lstrip('b')
         return receivedString
             
@@ -178,6 +179,3 @@ class BaseSocketConnection(Thread):
 
         # join all parts to make final string
         return ''.join(total_data)
-
-    def sanitizeMessage(self, message: str) -> str:
-        return message.replace("\\n", "").lstrip('b')
