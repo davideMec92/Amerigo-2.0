@@ -9,7 +9,6 @@ import bluetooth
 from dotenv import load_dotenv
 
 from project.Logger.Logger import Logger, LogLevels
-from project.hashgraph.helpers.SocketHelper import SocketHelper
 from project.hashgraph.interfaces.Callbacks.CommunicationCallback import CommunicationCallback
 from project.hashgraph.interfaces.Callbacks.ServerConnectionRemoveCallback import ServerConnectionRemoveCallback
 from project.hashgraph.models.Hashgraph import Hashgraph
@@ -25,39 +24,38 @@ class BluetoothSocketConnection(BaseSocketConnection):
         return self
 
     def initReceiveStatus(self) -> None:
-        if self.address == os.getenv('BluetoothServerBluetoothMAC') or (
-                self.address != os.getenv(
+        if self.clientAddress == os.getenv('BluetoothServerBluetoothMAC') or (
+                self.clientAddress != os.getenv(
             'BluetoothServerBluetoothMAC') and Hashgraph.instance is not None and Hashgraph.instance.isHashgraphReceiveLocked is False):
             self.isReceiveAvailable = True
 
     @staticmethod
-    def createFromBluetoothSocket(self, appUUID: UUID, bluetoothSocket: socket, bluetoothConnectionCallbacks: List[CommunicationCallback], serverConnectionRemoveCallback: ServerConnectionRemoveCallback) -> BluetoothSocketConnection:
-        bluetoothSocketConnection: BluetoothSocketConnection = BluetoothSocketConnection()
+    def createFromBluetoothSocket(appUUID: UUID, bluetoothSocket: socket, clientAddress: str, bluetoothConnectionCallbacks: List[CommunicationCallback], serverConnectionRemoveCallback: ServerConnectionRemoveCallback) -> BluetoothSocketConnection:
+        bluetoothSocketConnection: BluetoothSocketConnection = BluetoothSocketConnection().__int__()
         bluetoothSocketConnection.appUUID: UUID = appUUID
         bluetoothSocketConnection.socket = bluetoothSocket
         bluetoothSocketConnection.serverConnectionRemoveCallback = serverConnectionRemoveCallback
-        bluetoothSocketConnection.remoteDeviceMACAddress: str = SocketHelper.getRemoteClientMACAddress(self.socket)
+        bluetoothSocketConnection.clientAddress: str = clientAddress
         bluetoothSocketConnection.isReceiveAvailable: bool = None
         bluetoothSocketConnection.initReceiveStatus()
 
-        Logger.createLog(LogLevels.DEBUG, __file__, "Client mac address: " + self.address)
+        Logger.createLog(LogLevels.DEBUG, __file__, "Client mac address: " + str(bluetoothSocketConnection.clientAddress))
 
         bluetoothSocketConnection.connectionCallbacks = bluetoothConnectionCallbacks
         bluetoothSocketConnection.initSocket()
         return bluetoothSocketConnection
 
     @staticmethod
-    def createFromUUIDAndMACAddress(appUUID: UUID, remoteDeviceMACAddress: str) -> BluetoothSocketConnection:
-        # def createFromUUIDAndMACAddress(appUUID: UUID, remoteDeviceMACAddress: str, bluetoothConnectionCallbacks: List[CommunicationCallback], serverConnectionRemoveCallback: ServerConnectionRemoveCallback) -> BluetoothSocketConnection:
+    def createFromUUIDAndMACAddress(appUUID: UUID, clientAddress: str, bluetoothConnectionCallbacks: List[CommunicationCallback], serverConnectionRemoveCallback: ServerConnectionRemoveCallback) -> BluetoothSocketConnection:
 
         bluetoothSocketConnection: BluetoothSocketConnection = BluetoothSocketConnection().__int__()
         bluetoothSocketConnection.appUUID = appUUID
-        bluetoothSocketConnection.remoteDeviceMACAddress = remoteDeviceMACAddress
-        # bluetoothSocketConnection.serverConnectionRemoveCallback = serverConnectionRemoveCallback
-        # bluetoothSocketConnection.connectionCallbacks = bluetoothConnectionCallbacks
+        bluetoothSocketConnection.clientAddress = clientAddress
+        bluetoothSocketConnection.serverConnectionRemoveCallback = serverConnectionRemoveCallback
+        bluetoothSocketConnection.connectionCallbacks = bluetoothConnectionCallbacks
 
         try:
-            service_matches = bluetooth.find_service(uuid=bluetoothSocketConnection.appUUID, address=bluetoothSocketConnection.remoteDeviceMACAddress)
+            service_matches = bluetooth.find_service(uuid=bluetoothSocketConnection.appUUID, address=bluetoothSocketConnection.clientAddress)
 
             if len(service_matches) == 0:
                 raise Exception("Couldn't find the specified server service.")
