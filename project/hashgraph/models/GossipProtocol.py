@@ -8,13 +8,13 @@ from typing import List
 
 from project.Logger.Logger import Logger, LogLevels
 from project.hashgraph.interfaces.Callbacks.ServerConnectionRemoveCallback import ServerConnectionRemoveCallback
+from project.hashgraph.managers.services.BluetoothConnectionManager import BluetoothConnectionManager
 from project.hashgraph.models.Hashgraph import Hashgraph
 from project.hashgraph.models.Peer import Peer
 from project.hashgraph.models.communication.CommunicationMessageHashgraph import CommunicationMessageHashgraph
 from project.hashgraph.services.bluetooth.BluetoothSocketConnection import BluetoothSocketConnection
 
-
-class GossipProtocol(Thread, ServerConnectionRemoveCallback):
+class GossipProtocol(Thread):
     instance: GossipProtocol | None = None
     lock = Lock()
 
@@ -23,7 +23,7 @@ class GossipProtocol(Thread, ServerConnectionRemoveCallback):
         self.peerDeviceId = peerDeviceId
         self.peersKeys: List[str] = []
         self.run = True
-        # TODO ADD BLUETOOTH CONNECTION MANAGER
+        self.bluetoothConnectionManager: BluetoothConnectionManager = BluetoothConnectionManager.getInstance()
         self.instance = self
         self.unlockGossipProtocolEvent = threading.Event()
         Thread.__init__(self)
@@ -57,16 +57,12 @@ class GossipProtocol(Thread, ServerConnectionRemoveCallback):
 
                     print('Try connecting to: ' + randomPeer.deviceId)
 
-                    bluetoothSocketConnection: BluetoothSocketConnection = BluetoothSocketConnection.createFromUUIDAndMACAddress(randomPeer.deviceId, randomPeer.address, [], self)
+                    bluetoothSocketConnection: BluetoothSocketConnection = self.bluetoothConnectionManager.newBluetoothSocketConnection(randomPeer.deviceId, randomPeer.address, True)
 
-                    # TODO CHECK IF SOCKET IS CONNECTED AND IMPLEMENTE THIS LOGIC
-                    """
-                    if( bluetoothSocketConnection == null ){
-                        System.out.println("Connection failed");
-                        this.hashgraph.unlockHashgraphGossip();
-                        continue;
-                    }
-                    """
+                    if bluetoothSocketConnection is None:
+                        Logger.createLog(LogLevels.ERROR, __file__, 'Cannot initialize bluetooth socket connection')
+                        self.hashgraph.unlockHashgraphGossip()
+                        continue
 
                     communicationMessageHashgraph: CommunicationMessageHashgraph = CommunicationMessageHashgraph.createFromHashgraph(self.hashgraph)
                     bluetoothSocketConnection.isReceiveAvailable = True
@@ -75,13 +71,3 @@ class GossipProtocol(Thread, ServerConnectionRemoveCallback):
 
                 except Exception as e:
                     print('Error while connection to peer for gossip: ' + str(e))
-
-    def removeSocketConnection(self, connectionKey: str) -> None:
-        print('TO IMPLEMENT METHOD IN BLUETOOTH MANAGER')
-
-
-
-
-
-
-
