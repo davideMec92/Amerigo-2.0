@@ -1,4 +1,8 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from project.hashgraph.managers.services.BluetoothConnectionManager import BluetoothConnectionManager
 
 import threading
 from random import randrange
@@ -6,7 +10,6 @@ from threading import Thread, Lock
 from typing import List
 
 from project.Logger.Logger import Logger, LogLevels
-from project.hashgraph.managers.services.BluetoothConnectionManager import BluetoothConnectionManager
 from project.hashgraph.models.Hashgraph import Hashgraph
 from project.hashgraph.models.Peer import Peer
 from project.hashgraph.models.communication.CommunicationMessageHashgraph import CommunicationMessageHashgraph

@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+from typing import List
+
 from project.Logger.Logger import Logger, LogLevels
 from project.hashgraph.handlers.Communication.IncomingCommunicationMessageHandler import \
     IncomingCommunicationMessageHandler
-from project.hashgraph.helpers.FifoQueue import FifoQueue
 from project.hashgraph.interfaces.Callbacks.CommunicationCallback import CommunicationCallback
 from project.hashgraph.interfaces.Callbacks.ServerConnectionRemoveCallback import ServerConnectionRemoveCallback
 from project.hashgraph.managers.services.BluetoothConnectionStore import BluetoothConnectionStore
@@ -18,9 +19,9 @@ class BluetoothConnectionManager(ServerConnectionRemoveCallback):
     def __init__(self) -> None:
         self.bluetoothConnectionStore: BluetoothConnectionStore = BluetoothConnectionStore()
         self.incomingCommunicationMessageHandler: IncomingCommunicationMessageHandler = IncomingCommunicationMessageHandler()
-        self.defaultConnectionCallbacks: FifoQueue[CommunicationCallback] = FifoQueue[CommunicationCallback]()
-        self.defaultConnectionCallbacks.push(self.incomingCommunicationMessageHandler)
-        self.bluetoothSocketServerConnection: BluetoothSocketServerConnection = BluetoothSocketServerConnection(self.defaultConnectionCallbacks)
+        self.defaultConnectionCallbacks: List[CommunicationCallback] = []
+        self.defaultConnectionCallbacks.append(self.incomingCommunicationMessageHandler)
+        self.bluetoothSocketServerConnection: BluetoothSocketServerConnection = BluetoothSocketServerConnection().__int__(self.defaultConnectionCallbacks)
         self.bluetoothSocketServerConnection.start()
 
     @staticmethod
@@ -38,7 +39,7 @@ class BluetoothConnectionManager(ServerConnectionRemoveCallback):
         return self.bluetoothConnectionStore
 
     def addDefaultConnectionCallback(self, communicationCallback: CommunicationCallback) -> None:
-        self.defaultConnectionCallbacks.push(communicationCallback)
+        self.defaultConnectionCallbacks.append(communicationCallback)
 
     def addCallbackToBluetoothSocketServerConnection(self, communicationCallback: CommunicationCallback) -> None:
         self.bluetoothSocketServerConnection.addConnectionCallback(communicationCallback)
@@ -47,12 +48,12 @@ class BluetoothConnectionManager(ServerConnectionRemoveCallback):
         self.bluetoothConnectionStore.deleteConnection(connectionKey)
 
     def storeBluetoothSocketConnection(self, bluetoothSocketConnection: BluetoothSocketConnection, startConnection: bool) -> None:
-        self.bluetoothConnectionStore.bluetoothConnections[bluetoothSocketConnection.key, bluetoothSocketConnection]
+        self.bluetoothConnectionStore.bluetoothConnections[bluetoothSocketConnection.key] = bluetoothSocketConnection
 
         if startConnection is True:
             bluetoothSocketConnection.start()
 
-    def newBluetoothSocketConnection(self, appUUID: str, remoteDeviceAddress, str, startConnection: bool) -> BluetoothSocketConnection:
+    def newBluetoothSocketConnection(self, appUUID: str, remoteDeviceAddress: str, startConnection: bool) -> BluetoothSocketConnection:
 
         try:
             # Check if connection already exists

@@ -6,8 +6,8 @@ from project.hashgraph.interfaces.Strategies.ServerMessageHandlerStrategy import
 from project.hashgraph.models.GossipProtocol import GossipProtocol
 from project.hashgraph.models.Hashgraph import Hashgraph
 from project.hashgraph.models.Store import Store
+from project.hashgraph.models.Transaction import Transaction
 from project.hashgraph.models.communication.CommunicationMessageHashgraph import CommunicationMessageHashgraph
-from project.transaction import Transaction
 
 
 class HandleHashgraphStoreMessage(ServerMessageHandlerStrategy):

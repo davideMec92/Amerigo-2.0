@@ -5,7 +5,7 @@ from project.hashgraph.helpers.DatetimeHelper import DatetimeHelper
 class Transaction:
 
     def __init__(self, goalPeerDeviceId: str):
-        self.key: str | None = None
+        self.key: str = None
         self.goalPeerDeviceId: str = goalPeerDeviceId
         self.creationTime: int = 0
 

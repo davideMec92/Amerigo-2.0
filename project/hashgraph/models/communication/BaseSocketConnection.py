@@ -1,6 +1,7 @@
 import time
 from socket import socket
 from threading import Thread
+from typing import List
 
 from project.Logger.Logger import LogLevels, Logger
 from project.hashgraph.builders.CommunicationMessageBuilder import CommunicationMessageBuilder
@@ -25,7 +26,7 @@ class BaseSocketConnection(Thread):
         self.isMessageSenderEnabled: bool = False
         self.isMessageListenerEnabled: bool = False
         self.toSendMessages: FifoQueue[CommunicationMessage] = FifoQueue[CommunicationMessage]()
-        self.connectionCallbacks: list[CommunicationCallback] = []
+        self.connectionCallbacks: List[CommunicationCallback] = []
         self.serverConnectionRemoveCallback: ServerConnectionRemoveCallback = None
         self.isReceiveAvailable: bool = False
         self.clientAddress: str = None
