@@ -3,16 +3,15 @@ from __future__ import annotations
 import threading
 from random import randrange
 from threading import Thread, Lock
-
 from typing import List
 
 from project.Logger.Logger import Logger, LogLevels
-from project.hashgraph.interfaces.Callbacks.ServerConnectionRemoveCallback import ServerConnectionRemoveCallback
 from project.hashgraph.managers.services.BluetoothConnectionManager import BluetoothConnectionManager
 from project.hashgraph.models.Hashgraph import Hashgraph
 from project.hashgraph.models.Peer import Peer
 from project.hashgraph.models.communication.CommunicationMessageHashgraph import CommunicationMessageHashgraph
 from project.hashgraph.services.bluetooth.BluetoothSocketConnection import BluetoothSocketConnection
+
 
 class GossipProtocol(Thread):
     instance: GossipProtocol | None = None
