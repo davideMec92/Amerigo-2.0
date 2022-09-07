@@ -108,7 +108,7 @@ class CommunicationManager():
             raise Exception('Empty peers list provided')
 
         if message is None or len(message) == 0:
-            raise Exception('Empyt or None message provided')
+            raise Exception('Empty or None message provided')
 
         print ('Sending message to peers..')
 
@@ -117,7 +117,7 @@ class CommunicationManager():
 
 
         for peer in peers:
-            print(('Connecting to: ' + str(peer['address'])))
+            print(('Connecting to peerAddress: ' + str(peer['address']) + ', deviceId: ' + str(peer['deviceId'])))
             try:
                 #tcpClient = TcpClient(peer['address'])
                 tcpClient = BluetoothClient(peer['address'], peer['deviceId'])

@@ -1,12 +1,24 @@
 import bluetooth
+import os
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class BluetoothConnection():
 
-    appName = 'Bluetooth_server_app'
-    appUUID = '94f39d29-7d6d-437d-973b-fba39e49d4ee'
+    appName = os.getenv('BLUETOOTH_SERVER_APP_NAME');
+    appUUID = os.getenv('DEVICE_ID');
 
     @staticmethod
     def initBluetoothConnection():
+
+        if os.getenv('DEVICE_ID') is None:
+            raise Exception('DEVICE_ID not found')
+
+        if os.getenv('BLUETOOTH_SERVER_APP_NAME') is None:
+            raise Exception('BLUETOOTH_SERVER_APP_NAME not found')
+
         server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
         server_sock.bind(("", bluetooth.PORT_ANY))
         server_sock.listen(1)

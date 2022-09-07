@@ -5,6 +5,7 @@ from bluetooth_connection import BluetoothConnection
 from tcp_connection import TCPConnection
 from block_queue import BlockQueue
 import time
+import os
 
 class ConnectionMode(Enum):
     TCP_CONNECTION = 'TCP_CONNECTION'
@@ -19,6 +20,9 @@ class Server():
 
     def __init__(self):
         if self.connectionMode == ConnectionMode.BLUETOOTH_CONNECTION:
+            # Setting bluetooth discoverable
+            print('Setting bluetooth discoverable..')
+            os.system('sudo hciconfig hci0 piscan')
             self.socket = BluetoothConnection.initBluetoothConnection()
         elif self.connectionMode == ConnectionMode.TCP_CONNECTION:
             self.socket == TCPConnection.initTCPConnection()
