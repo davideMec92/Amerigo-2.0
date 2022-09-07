@@ -27,6 +27,11 @@ class BluetoothSocketServerConnection(BaseSocketServerConnection):
         if os.getenv('BLUETOOTH_SERVER_APP_NAME') is None:
             raise Exception('BLUETOOTH_SERVER_APP_NAME not found')
 
+
+        # Setting bluetooth discoverable
+        Logger.createLog(LogLevels.DEBUG, __file__, "Setting bluetooth discoverable..")
+        os.system('sudo hciconfig hci0 piscan')
+
         self.serverAppUUID: UUID = os.getenv('DEVICE_ID');
         self.serverAppName: str = os.getenv('BLUETOOTH_SERVER_APP_NAME');
         self.connectionCallbacks: List[CommunicationCallback] = connectionCallbacks
