@@ -1,11 +1,7 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from project.hashgraph.managers.services.BluetoothConnectionManager import BluetoothConnectionManager
 
 import threading
-from random import randrange
+import random
 from threading import Thread, Lock
 from typing import List
 
@@ -15,18 +11,19 @@ from project.hashgraph.models.Peer import Peer
 from project.hashgraph.models.communication.CommunicationMessageHashgraph import CommunicationMessageHashgraph
 from project.hashgraph.services.bluetooth.BluetoothSocketConnection import BluetoothSocketConnection
 
-
 class GossipProtocol(Thread):
     instance: GossipProtocol | None = None
     lock = Lock()
 
     def __init__(self, hashgraph: Hashgraph, peerDeviceId: str):
+        from project.hashgraph.managers.services.BluetoothConnectionManager import BluetoothConnectionManager
         self.hashgraph: Hashgraph = hashgraph
         self.peerDeviceId = peerDeviceId
         self.peersKeys: List[str] = []
-        self.run = True
+        self.isRunning: bool = True
+        self.updatePeerKeys()
         self.bluetoothConnectionManager: BluetoothConnectionManager = BluetoothConnectionManager.getInstance()
-        self.instance = self
+        GossipProtocol.instance = self
         self.unlockGossipProtocolEvent = threading.Event()
         Thread.__init__(self)
 
@@ -37,10 +34,13 @@ class GossipProtocol(Thread):
             self.peersKeys.append(peerDeviceId)
 
     def getRandomPeer(self) -> Peer | None:
-        return None if not self.peersKeys else self.peersKeys[randrange(len(self.peersKeys))]
+        if not self.peersKeys:
+            return None
 
-    def run(self) -> None:
-        while self.run is True:
+        return self.hashgraph.peers.get(self.peersKeys[random.randrange(len(self.peersKeys))])
+
+    def run(self):
+        while self.isRunning is True:
             if self.hashgraph.lockHashgraphGossip() is False:
                 try:
                     print('Waiting for unlockGossipProtocolEvent unlock')
