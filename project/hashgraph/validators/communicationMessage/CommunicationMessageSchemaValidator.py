@@ -108,6 +108,20 @@ class CommunicationMessageSchemaValidator:
         'type': str
     })
 
+    HASHGRAPH_MESSAGE_SCHEMA = Schema({
+        'type': str,
+        'peer': {
+            'status': str,
+            'updatedTime': str,
+            'deviceId': str,
+            'address': str
+        },
+        'store': {
+            'events': object,
+            'rounds': object,
+        }
+    })
+
     CommunicationMessageTypesSchemaAssoc = {
         CommunicationMessageTypes.LOGIN.name: LOGIN_CONF_SCHEMA,
         CommunicationMessageTypes.PEERS_LIST.name: PEERS_LIST_SCHEMA,
@@ -120,6 +134,7 @@ class CommunicationMessageSchemaValidator:
         CommunicationMessageTypes.TRANSACTION_GET_RESPONSE.name: TRANSACTION_GET_RESPONSE_SCHEMA,
         CommunicationMessageTypes.ACK.name: ACK_MESSAGE_SCHEMA,
         CommunicationMessageTypes.NACK.name: NACK_MESSAGE_SCHEMA,
+        CommunicationMessageTypes.HASHGRAPH.name: HASHGRAPH_MESSAGE_SCHEMA,
     }
 
     @staticmethod
@@ -134,8 +149,7 @@ class CommunicationMessageSchemaValidator:
             if message['type'] not in CommunicationMessageSchemaValidator.CommunicationMessageTypesSchemaAssoc:
                 raise Exception('Validation schema not found for type message: ' + str(message['type']))
 
-            conf = ast.literal_eval(json.dumps(message))
-            CommunicationMessageSchemaValidator.CommunicationMessageTypesSchemaAssoc[message['type']].validate(conf)
+            CommunicationMessageSchemaValidator.CommunicationMessageTypesSchemaAssoc[message['type']].validate(message)
             Logger.createLog(LogLevels.DEBUG, __file__, 'Successfully validated message type: ' + str(message['type']))
             return True
         except SchemaError as e:
