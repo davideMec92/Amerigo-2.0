@@ -12,7 +12,7 @@ class HandleNACKMessage(ServerMessageHandlerStrategy):
     lock = Lock()
 
     def __init__(self):
-        self.hashgraph: Hashgraph | None = None
+        self.hashgraph: Hashgraph = None
 
     def handleMessage(self, message: CommunicationMessageNACK) -> None:
         Logger.createLog(LogLevels.DEBUG, __file__, 'Received NACK')

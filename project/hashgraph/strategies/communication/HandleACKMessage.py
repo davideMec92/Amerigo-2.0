@@ -11,7 +11,7 @@ class HandleACKMessage(ServerMessageHandlerStrategy):
     lock = Lock()
 
     def __init__(self):
-        self.hashgraph: Hashgraph | None = None
+        self.hashgraph: Hashgraph = None
 
     def handleMessage(self, message: CommunicationMessageACK) -> None:
         Logger.createLog(LogLevels.DEBUG, __file__, 'Received ACK')
