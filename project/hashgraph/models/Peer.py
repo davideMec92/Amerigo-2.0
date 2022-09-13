@@ -1,3 +1,4 @@
+import json
 from typing import List
 
 from project.hashgraph.models.EventBody import EventBody
@@ -44,3 +45,11 @@ class Peer(TinyDBModel):
         eventBody: EventBody = EventBody.createEventBody(transactions, myPeerLastEvent, otherPeerLastEvent, self)
         event: Event = Event(eventBody)
         return event
+
+    def toJson(self) -> str:
+        return json.dumps(self.toDict())
+
+    def toPrettyJson(self) -> str:
+        return json.dumps(self.toDict(), sort_keys=True, separators=(',', ':'))
+
+

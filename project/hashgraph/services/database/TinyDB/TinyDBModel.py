@@ -6,10 +6,11 @@ from typing import Dict
 
 from tinydb import TinyDB, Query
 
+from project.hashgraph.interfaces.JsonPrintable import JsonPrintable
 from project.hashgraph.services.database.TinyDB.TinyDBService import TinyDBService
 
 
-class TinyDBModel:
+class TinyDBModel(JsonPrintable):
 
     def __init__(self, tinyDBService: TinyDBService, primaryKey: str):
         self.db: TinyDB = tinyDBService.db
