@@ -34,7 +34,7 @@ class Hashgraph(StoreCallback):
         self.store: Store = Store(self)
         self.blockManager: BlockManager = BlockManager()
         self.blockManager.start()
-        self.toSendTransactions: FifoQueue[Transaction] = []
+        self.toSendTransactions: FifoQueue[Transaction] = FifoQueue[Transaction]()
         self.isHashgraphGossipLocked = None
         self.isHashgraphReceiveLocked = None
 
@@ -45,9 +45,9 @@ class Hashgraph(StoreCallback):
     # TODO CHECK IF INSTANCE IS RETURNED
     @staticmethod
     def getInstance(peers: dict[str, Peer], myPeer: Peer) -> Hashgraph:
-        if Hashgraph.__instance is None:
-            Hashgraph.__instance = Hashgraph(peers, myPeer)
-        return Hashgraph.__instance
+        if Hashgraph.instance is None:
+            Hashgraph.instance = Hashgraph(peers, myPeer)
+        return Hashgraph.instance
 
     def getToSendTransaction(self, peekOnly: bool) -> Transaction | None:
         if peekOnly is True:

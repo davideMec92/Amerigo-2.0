@@ -4516,12 +4516,17 @@ class CommunicationMessageHashgraphDeserializerTest(unittest.TestCase):
       }
     }"""
 
-    def testDeserialization(self):
+    def testDeserializationOK(self):
         communicationMessageHashgraph: CommunicationMessageHashgraph = CommunicationMessageHashgraphDeserializer.deserialize(self.communicationMessageJSON)
         self.assertTrue(communicationMessageHashgraph is not None)
         self.assertTrue(communicationMessageHashgraph.type == CommunicationMessageTypes.HASHGRAPH)
         self.assertTrue(communicationMessageHashgraph.store.events.pop('c879dc6e7e8200d38565e3d604591f6a727273b5b566ee119ea7a22e7d1f888a').eventBody.selfParentHash is not None)
         self.assertTrue(communicationMessageHashgraph.store.rounds.pop(10).events[0] is not None)
+
+    def testToJsonOK(self):
+        communicationMessageHashgraph: CommunicationMessageHashgraph = CommunicationMessageHashgraphDeserializer.deserialize(self.communicationMessageJSON)
+        self.assertTrue(communicationMessageHashgraph.toJson() is not None)
+        print(communicationMessageHashgraph.toJson())
 
 
 if __name__ == '__main__':

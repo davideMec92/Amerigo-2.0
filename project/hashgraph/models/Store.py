@@ -128,7 +128,7 @@ class Store(JsonPrintable):
             self.deleteRoundFromRoundCreatedIndex(i)
 
     def toPrettyJson(self) -> str:
-        return json.dumps(self, cls=StoreJSONEncoder, indent=4, sort_keys=True)
+        return json.dumps(self, cls=StoreJSONEncoder)
 
     def toJson(self) -> str:
         return json.dumps(self, cls=StoreJSONEncoder, sort_keys=True, separators=(',', ':'))

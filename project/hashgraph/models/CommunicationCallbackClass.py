@@ -7,4 +7,4 @@ from project.hashgraph.models.communication.CommunicationMessage import Communic
 class CommunicationCallbackClass(CommunicationCallback):
 
     def clientResponseCallback(self, message: CommunicationMessage) -> None:
-        print('Received message: ' + str(message))
+        print('Received message: ' + str(message.toJson()))

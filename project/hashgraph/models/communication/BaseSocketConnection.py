@@ -48,7 +48,6 @@ class BaseSocketConnection(Thread):
     def sendNewMessage(self, message: CommunicationMessage) -> None:
         self.toSendMessages.push(message)
 
-
     def sendMessageToListeners(self, message: CommunicationMessage) -> None:
         Logger.createLog(LogLevels.DEBUG, __file__, 'Sending message to handlers..')
         for connectionCallback in self.connectionCallbacks:
@@ -66,7 +65,8 @@ class BaseSocketConnection(Thread):
                         encryptedMessage = encryptedMessage.lstrip('b')
                         encryptedMessage = encryptedMessage.replace("'", "")
                     # self.socket.send(str(encryptedMessage) + "\r\n")
-                    self.socket.send(str(encryptedMessage))
+                    self.socket.send(encryptedMessage + "\r\n")
+                    # self.socket.send(str(encryptedMessage))
                     Logger.createLog(LogLevels.DEBUG, __file__, "Sent encrypted: " + str(communicationMessage.type) + 'to: ' + str(self.clientAddress))
 
                     # If block sent, close socket
@@ -124,7 +124,7 @@ class BaseSocketConnection(Thread):
                     # Check if hashgraph received, then send ACK
                     if communicationMessage.type == CommunicationMessageTypes.HASHGRAPH:
                         self.isReceiveAvailable = False
-                        self.toSendMessages(CommunicationMessageACK())
+                        self.sendNewMessage(CommunicationMessageACK())
                         Logger.createLog(LogLevels.DEBUG, __file__, "ACK added to send messages queue, hashgraph received from peer: " + str(communicationMessage.peer.deviceId))
 
                     # Check if ACK or NACK received

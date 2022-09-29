@@ -27,7 +27,7 @@ class Logger:
         if message is None:
             raise Exception('"message" cannot be None')
 
-        message: str = '['+datetime.now().strftime("%Y-%m-%d %H:%M:%S")+'], "' + os.path.basename(filename) + '", ' + message
+        message: str = '['+datetime.now().strftime("%Y-%m-%d %H:%M:%S")+'], "' + os.path.basename(filename) + '", ' + message + '\n'
 
         if logLevel == LogLevels.DEBUG:
             logging.debug(message)
