@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from threading import Lock
-from typing import Dict
+from typing import Dict, List
 
 from project.Logger.Logger import LogLevels, Logger
 from project.hashgraph.helpers.Hash import Hash
@@ -18,11 +18,12 @@ class Store(JsonPrintable):
     ROUND_DELETE_MARGIN = 1
     lock = Lock()
 
-    def __init__(self, storeCallback: StoreCallback | None):
+    def __init__(self, defaultStoreCallback: StoreCallback | None):
         self.events: Dict[str, Event] = {}
         self.rounds: Dict[int, Round] = {}
         self.lastMissingEvents: list[Event] = []
-        self.storeCallback: StoreCallback = storeCallback
+        self.storeCallbacks: List[StoreCallback] = []
+        self.addStoreCallback(defaultStoreCallback)
 
     # TODO ADD STORE CLONE FUNCTION
 
@@ -43,6 +44,13 @@ class Store(JsonPrintable):
 
     def setRounds(self, rounds):
         self.rounds = rounds
+
+    def addStoreCallback(self, storeCallback: StoreCallback) -> None:
+        self.storeCallbacks.append(storeCallback)
+
+    def notifyToStoreCallbacks(self, event: Event):
+        for storeCallback in self.storeCallbacks:
+            storeCallback.eventStoredCallback(event)
 
     def putRound(self, newRound: Round):
         # Check if round exists in order to add a single missing event
@@ -72,8 +80,8 @@ class Store(JsonPrintable):
         self.events[event.eventBody.creatorAssociation.key] = event
         Logger.createLog(LogLevels.DEBUG, __file__, 'Added event with key: ' + event.eventBody.creatorAssociation.key)
 
-        if self.storeCallback is not None:
-            self.storeCallback.eventStoredCallback(self.events.get(event.eventBody.creatorAssociation.key))
+        if self.storeCallbacks:
+            self.notifyToStoreCallbacks(self.events.get(event.eventBody.creatorAssociation.key))
 
     def updateEvent(self, event):
         self.events[event.eventBody.creatorAssociation.key] = event

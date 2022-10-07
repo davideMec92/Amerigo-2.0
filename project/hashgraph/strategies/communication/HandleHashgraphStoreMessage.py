@@ -25,7 +25,7 @@ class HandleHashgraphStoreMessage(ServerMessageHandlerStrategy):
             print('Peer list not initialized, hashgraph null')
             return
 
-        isErrorHappend: bool = False
+        errorHappened: bool = False
         transactionToSendFound: bool = False
 
         try:
@@ -42,10 +42,10 @@ class HandleHashgraphStoreMessage(ServerMessageHandlerStrategy):
 
         except Exception as e:
             print('HandleHashgraphStoreMessage exception: ' + str(e))
-            isErrorHappend = True
+            errorHappened = True
         finally:
 
-            if isErrorHappend is False and transactionToSendFound is True:
+            if errorHappened is False and transactionToSendFound is True:
                 self.hashgraph.removeTransactionsToSendHead()
 
             HandleHashgraphStoreMessage.lock.acquire()

@@ -4,11 +4,13 @@ from random import random
 from threading import Lock
 from typing import List, Dict
 
+from project.Logger.Logger import Logger, LogLevels
 from project.hashgraph.helpers.FifoQueue import FifoQueue
 from project.hashgraph.helpers.ListHelper import ListHelper
 from project.hashgraph.helpers.LockInitHelper import LockInitHelper
 from project.hashgraph.interfaces.StoreCallback import StoreCallback
 from project.hashgraph.managers.BlockManager import BlockManager
+from project.hashgraph.managers.TransactionManager import TransactionManager
 from project.hashgraph.models.Block import Block
 from project.hashgraph.models.Event import Event
 from project.hashgraph.models.Peer import Peer
@@ -32,6 +34,8 @@ class Hashgraph(StoreCallback):
         self.myPeer: Peer = myPeer
         self.myPeerLastEvent: Event | None = None
         self.store: Store = Store(self)
+        # Add Transaction Manager to store callback in order to save new transaction from other peers hashgraph (for robot only)
+        self.store.addStoreCallback(TransactionManager())
         self.blockManager: BlockManager = BlockManager()
         self.blockManager.start()
         self.toSendTransactions: FifoQueue[Transaction] = FifoQueue[Transaction]()
@@ -428,8 +432,8 @@ class Hashgraph(StoreCallback):
 
                         if len(ListHelper.getListDiff(round.determinedEvents, round.events)) == 0:
                             self.lastConsensusRound = roundIndex
-                            block: Block = Block(self.store, round)
                             # TODO UNCOMMENT WHEN READY
+                            # block: Block = Block(self.store, round)
                             # self.blockManager.sendBlock(block)
                             round.committed = True
                             lastDecidedRoundCreatedIndex = roundIndex

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-from json import JSONEncoder
 from typing import Dict, TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -11,9 +10,6 @@ if TYPE_CHECKING:
 class EventBodyJSONEncoder(json.JSONEncoder):
 
     def default(self, eventBody: EventBody) -> Dict:
-        jsonEncoder = JSONEncoder()
-        # jsonEncoder.sort_keys = True
-        # jsonEncoder.indent = 4
 
         tempDict = {
             'creatorAssociation': eventBody.creatorAssociation.toDict() if eventBody.creatorAssociation is not None else None,
