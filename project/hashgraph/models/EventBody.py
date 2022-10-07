@@ -1,6 +1,10 @@
 from __future__ import annotations
+
+import json
 from typing import List
 from typing import TYPE_CHECKING
+
+from project.hashgraph.helpers.models.JSONEncoders.EventBodyJSONEncoder import EventBodyJSONEncoder
 from project.hashgraph.interfaces.JsonPrintable import JsonPrintable
 from project.hashgraph.helpers.DatetimeHelper import DatetimeHelper
 
@@ -49,3 +53,9 @@ class EventBody(JsonPrintable):
 
     def getCreatorIndex(self) -> int:
         return self.creatorAssociation.eventCreatorIndex
+
+    def toJson(self) -> str:
+        return json.dumps(self, cls=EventBodyJSONEncoder)
+
+    def toPrettyJson(self) -> str:
+        return json.dumps(self, cls=EventBodyJSONEncoder, sort_keys=True, separators=(',', ':'))

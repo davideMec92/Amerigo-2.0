@@ -1,7 +1,7 @@
 import json
 
 
-class JsonPrintable():
+class JsonPrintable:
     def toJson(self) -> str:
         return json.dumps(self, default=lambda o: dict(
             (key, value) for key, value in o.__dict__.items() if self.filter(value)), allow_nan=False, sort_keys=True, separators=(',',':'))
