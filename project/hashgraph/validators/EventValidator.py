@@ -7,4 +7,4 @@ class EventValidator:
     @staticmethod
     def validateEventBodyHash(bodySignature: str, eventBody: EventBody):
         if bodySignature != Hash.stringToHash(eventBody.toJson()):
-            raise Exception('Invalid event body signature')
+            raise Exception('Invalid event body signature for: ' + str(eventBody.toJson()))

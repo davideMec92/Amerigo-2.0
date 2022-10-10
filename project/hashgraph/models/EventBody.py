@@ -55,7 +55,7 @@ class EventBody(JsonPrintable):
         return self.creatorAssociation.eventCreatorIndex
 
     def toJson(self) -> str:
-        return json.dumps(self, cls=EventBodyJSONEncoder)
+        return json.dumps(self, cls=EventBodyJSONEncoder, sort_keys=True, separators=(',', ':'))
 
     def toPrettyJson(self) -> str:
         return json.dumps(self, cls=EventBodyJSONEncoder, sort_keys=True, separators=(',', ':'))

@@ -131,6 +131,5 @@ class StoreJSONDecoder:
 
     def addTransaction(self, transactionDict: Dict) -> Transaction:
         transaction: Transaction = Transaction(transactionDict.get('goalPeerDeviceId'))
-        transaction.key = transactionDict.get('key')
         transaction.creationTime = transactionDict.get('creationTime')
         return transaction
