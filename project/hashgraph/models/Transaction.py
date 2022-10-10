@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 import json
 from typing import Dict
 
+from project.hashgraph.enums.TransactionStatus import TransactionStatus
 from project.hashgraph.helpers.Hash import Hash
 from project.hashgraph.helpers.DatetimeHelper import DatetimeHelper
 from project.hashgraph.services.database.TinyDB.TinyDBModel import TinyDBModel
@@ -16,19 +19,27 @@ class Transaction(TinyDBModel):
         super().__init__(Transaction.tinyDBService, Transaction.primaryKey)
         self.key: str = None
         self.goalPeerDeviceId: str = goalPeerDeviceId
-        self.creationTime: int = 0
+        self.creationTime: int = DatetimeHelper.getNowTimestamp()
+        self.status: TransactionStatus = TransactionStatus.READY
+        self.executedAt: int = 0
 
     def setKey(self):
         self.key = Hash.stringToHash(self.goalPeerDeviceId + str(self.creationTime))
 
-    def setCreationTimeAtNow(self):
+    def setCreationTimeAtNow(self) -> int:
         self.creationTime = DatetimeHelper.getNowTimestamp()
+
+    def setExecutedAtNow(self) -> int:
+        self.executedAt = DatetimeHelper.getNowTimestamp()
 
     def toDict(self) -> Dict:
         return {
             'creationTime': self.creationTime,
             'goalPeerDeviceId': self.goalPeerDeviceId,
-            'key': self.key
+            'key': self.key,
+            'status': self.status,
+            'executedAt': self.executedAt,
+            'updatedTime': self.updatedTime
         }
 
     def toJson(self) -> str:
@@ -36,5 +47,11 @@ class Transaction(TinyDBModel):
 
     def toPrettyJson(self) -> str:
         return json.dumps(self.toDict(), allow_nan=False, sort_keys=True, indent=4)
+
+    @staticmethod
+    def getNextTransaction() -> 'Transaction' | None:
+        tinyDBModel = TinyDBModel(Transaction.tinyDBService, Transaction.primaryKey)
+        result = tinyDBModel.db.search(tinyDBModel.modelQuery['status'] == TransactionStatus.READY)
+        return None if not result else tinyDBModel.createFromDict(sorted( result, key=lambda d: d['creationTime'])[0])
 
 

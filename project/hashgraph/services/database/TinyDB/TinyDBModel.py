@@ -6,6 +6,7 @@ from typing import Dict
 
 from tinydb import TinyDB, Query
 
+from project.hashgraph.helpers.DatetimeHelper import DatetimeHelper
 from project.hashgraph.interfaces.JsonPrintable import JsonPrintable
 from project.hashgraph.services.database.TinyDB.TinyDBService import TinyDBService
 
@@ -15,7 +16,7 @@ class TinyDBModel(JsonPrintable):
     def __init__(self, tinyDBService: TinyDBService, primaryKey: str):
         self.db: TinyDB = tinyDBService.db
         self.primaryKey: str = primaryKey
-        self.updatedTime: float | None = None
+        self.updatedTime: int | None = None
         self.modelQuery = Query()
 
     def createFromDict(self, entries: dict) -> TinyDBModel:
@@ -27,17 +28,18 @@ class TinyDBModel(JsonPrintable):
         return None if result is None else self.createFromDict(result)
 
     def upsert(self) -> None:
-        self.db.upsert(self.updateTime(), Query()[self.primaryKey] == getattr(self, self.primaryKey))
+        self.updateTime()
+        self.db.upsert(self.toDict(), Query()[self.primaryKey] == getattr(self, self.primaryKey))
 
     def save(self) -> None:
-        self.db.insert(self.updateTime())
+        self.updateTime()
+        self.db.insert(self.toDict())
 
     def remove(self) -> None:
         self.db.remove(self.modelQuery[self.primaryKey] == getattr(self, self.primaryKey))
 
-    def updateTime(self) -> Dict:
-        self.updatedTime = str(int(time.time()))
-        return self.toDict()
+    def updateTime(self) -> None:
+        self.updatedTime = DatetimeHelper.getNowTimestamp()
 
     def toDict(self) -> Dict:
         objectDict = copy.copy(self).__dict__

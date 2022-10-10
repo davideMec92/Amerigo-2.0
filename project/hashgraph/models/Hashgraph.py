@@ -4,14 +4,12 @@ from random import random
 from threading import Lock
 from typing import List, Dict
 
-from project.Logger.Logger import Logger, LogLevels
 from project.hashgraph.helpers.FifoQueue import FifoQueue
 from project.hashgraph.helpers.ListHelper import ListHelper
 from project.hashgraph.helpers.LockInitHelper import LockInitHelper
 from project.hashgraph.interfaces.StoreCallback import StoreCallback
-from project.hashgraph.managers.BlockManager import BlockManager
-from project.hashgraph.managers.TransactionManager import TransactionManager
-from project.hashgraph.models.Block import Block
+from project.hashgraph.managers.models.BlockManager import BlockManager
+from project.hashgraph.managers.models.TransactionManager import TransactionManager
 from project.hashgraph.models.Event import Event
 from project.hashgraph.models.Peer import Peer
 from project.hashgraph.models.Round import Round

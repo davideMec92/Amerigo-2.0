@@ -22,6 +22,10 @@ class EventBodyJSONEncoder(json.JSONEncoder):
         }
 
         for transaction in eventBody.transactions:
-            tempDict['transactions'].append(transaction.toDict())
+            tempDict['transactions'].append({
+            'creationTime': transaction.creationTime,
+            'goalPeerDeviceId': transaction.goalPeerDeviceId,
+            'key': transaction.key
+        })
 
         return tempDict
