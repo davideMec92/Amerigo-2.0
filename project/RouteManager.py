@@ -2,6 +2,7 @@
 
 from threading import Thread
 from map_file_manager import MapFileManager
+from project.hashgraph.models.Transaction import Transaction
 from transaction_manager import TransactionManager
 from position_degrees import PositionDegrees
 from wifi_rssi_manager import WifiRssiManager
@@ -61,7 +62,7 @@ class RouteManager(Thread):
 
     transactionManager = None
 
-    activeTransaction = None
+    activeTransaction: Transaction = None
 
     actualPositionDeviceId = None
 
@@ -148,15 +149,15 @@ class RouteManager(Thread):
         while self.goal_direction_degrees is None:
 
             #Asking server for a new transaction and check if last transaction is done
-            if self.activeTransaction is None or self.actualPositionDeviceId == self.activeTransaction['goalPeerDeviceId']:
+            if self.activeTransaction is None or self.actualPositionDeviceId == self.activeTransaction.goalPeerDeviceId:
                 time.sleep(0.5)
-                self.activeTransaction = self.transactionManager.getTransaction(None if self.activeTransaction is None else self.activeTransaction['key'])
+                self.activeTransaction = self.transactionManager.getTransaction(None if self.activeTransaction is None else self.activeTransaction.key)
 
             #Check if a new transaction is returned from server
             if self.activeTransaction is not None:
                 print('self.actualPositionDeviceId: ' + str(self.actualPositionDeviceId))
-                print('self.activeTransaction[goalPeerDeviceId]: ' + str(self.activeTransaction['goalPeerDeviceId']))
-                self.goal_direction_degrees = PositionDegrees.getDeviceToDegrees(self.actualPositionDeviceId, self.activeTransaction['goalPeerDeviceId'])
+                print('self.activeTransaction.goalPeerDeviceId: ' + str(self.activeTransaction.goalPeerDeviceId))
+                self.goal_direction_degrees = PositionDegrees.getDeviceToDegrees(self.actualPositionDeviceId, self.activeTransaction.goalPeerDeviceId)
 
             #Ask to server for new version of positions Degrees
             if self.goal_direction_degrees is None:
@@ -179,17 +180,17 @@ class RouteManager(Thread):
     def run(self):
 
         while self.status != self.STOPPED:
-            wifiRssiCheck = self.wifiRssiManager.checkIfSsidIsNearToMe(self.activeTransaction['goalPeerDeviceId'])
+            wifiRssiCheck = self.wifiRssiManager.checkIfSsidIsNearToMe(self.activeTransaction.goalPeerDeviceId)
 
             print('wifiRssiCheck: ' + str(wifiRssiCheck))
 
             if self.activeTransaction is not None and wifiRssiCheck is True:
-                print('Near to ' + str(self.activeTransaction['goalPeerDeviceId']) + 'stopping..')
+                print('Near to ' + str(self.activeTransaction.goalPeerDeviceId) + 'stopping..')
                 self.motors_object.stop()
                 self.goal_direction_degrees = None
                 self.normal_mode_status = 'ENABLED'
                 self.bug_mode_status = 'DISABLED'
-                self.actualPositionDeviceId = self.activeTransaction['goalPeerDeviceId']
+                self.actualPositionDeviceId = self.activeTransaction.goalPeerDeviceId
                 self.getNextActiveTransaction()
             else:
                 time.sleep(0.05)
