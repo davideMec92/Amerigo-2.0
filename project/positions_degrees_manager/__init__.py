@@ -1,9 +1,21 @@
-from position_degrees import PositionDegrees
-from bluetooth_client import BluetoothClient
-from communication_message import CommunicationMessage, CommunicationMessageTypes
-from bluetooth_settings import BluetoothSettings
+import json
+import os
 
-class PositionsDegreesManager():
+from dotenv import load_dotenv
+
+from project.bluetooth_client import BluetoothClient
+from project.hashgraph.helpers.CommunicationMessageDecrypter import CommunicationMessageDecrypter
+from project.hashgraph.interfaces.Callbacks.CommunicationCallback import CommunicationCallback
+from project.hashgraph.models.communication.CommunicationMessageGetPositionDegrees import \
+    CommunicationMessageGetPositionDegrees
+from project.hashgraph.validators.communicationMessage.CommunicationMessageSchemaValidator import \
+    CommunicationMessageSchemaValidator
+from project.position_degrees import PositionDegrees
+
+load_dotenv()
+
+class PositionsDegreesManager:
+
     positionsDegrees = []
 
     def getPositionsDegrees(self):
@@ -15,15 +27,23 @@ class PositionsDegreesManager():
             positionDegreesDevicesIds.append(positionDegreeDevice.deviceId)
         return positionDegreesDevicesIds
 
-    def getPositionsDegrees(self):
-        bluetoothClientSocket = BluetoothClient(BluetoothSettings.serverBluetoothMAC, BluetoothSettings.serverAppUUID)
-        positionDegreesGetCommunicationMessage = {
-            'type': CommunicationMessageTypes.POSITIONS_DEGREES_GET.name,
-            'authToken': BluetoothSettings.serverAuthToken
-        }
-        communication_message = CommunicationMessage()
-        message = bluetoothClientSocket.sendMessageWithResponse(communication_message.setMessage(positionDegreesGetCommunicationMessage, True))
-        decryptedMessage = communication_message.getMessage(message)
+    def getPositionsDegreesFromServer(self):
+
+        if os.getenv('BluetoothServerUUID') is None:
+            raise Exception('BluetoothServerUUID not found')
+
+        if os.getenv('BluetoothServerBluetoothMAC') is None:
+            raise Exception('BluetoothServerBluetoothMAC not found')
+
+        bluetoothClientSocket = BluetoothClient(os.getenv('BluetoothServerBluetoothMAC'), os.getenv('BluetoothServerUUID'))
+
+        message = bluetoothClientSocket.sendMessageWithResponse(CommunicationMessageGetPositionDegrees().encrypt())
+        decryptedMessage = CommunicationMessageDecrypter.decrypt(message)
+
+        if CommunicationMessageSchemaValidator.validate(decryptedMessage) is False:
+            raise Exception('POSITIONS_DEGREES_GET_RESPONSE schema validation error')
+
+        decryptedMessage = json.loads(CommunicationMessageDecrypter.decrypt(message))
         print('Message from server decrypted: ' + str(decryptedMessage))
 
         bluetoothClientSocket.close()
