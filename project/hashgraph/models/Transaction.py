@@ -22,6 +22,8 @@ class Transaction(TinyDBModel):
         self.creationTime: int = DatetimeHelper.getNowTimestamp()
         self.status: TransactionStatus = TransactionStatus.READY
         self.executedAt: int = 0
+        # Set key automatically
+        self.setKey()
 
     def setKey(self):
         self.key = Hash.stringToHash(self.goalPeerDeviceId + str(self.creationTime))
@@ -49,7 +51,12 @@ class Transaction(TinyDBModel):
         return json.dumps(self.toDict(), allow_nan=False, sort_keys=True, indent=4)
 
     @staticmethod
-    def getNextTransaction() -> 'Transaction' | None:
+    def getFromKey(key: str) -> Transaction | None:
+        tinyDBModel = TinyDBModel(Transaction.tinyDBService, Transaction.primaryKey)
+        return tinyDBModel.getFromPrimaryKey(key)
+
+    @staticmethod
+    def getNextTransaction() -> Transaction | None:
         tinyDBModel = TinyDBModel(Transaction.tinyDBService, Transaction.primaryKey)
         result = tinyDBModel.db.search(tinyDBModel.modelQuery['status'] == TransactionStatus.READY)
         return None if not result else tinyDBModel.createFromDict(sorted( result, key=lambda d: d['creationTime'])[0])
