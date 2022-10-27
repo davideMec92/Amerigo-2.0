@@ -3,7 +3,7 @@ import sys
 import time
 
 
-class BluetoothClient():
+class BluetoothClient:
     macAddress = None
     uuid = None
     socket = None
@@ -120,4 +120,8 @@ class BluetoothClient():
         return ''.join(total_data)
 
     def close(self):
+        self.socket.close()
+
+    def stop(self):
+        self.socketRun = False
         self.socket.close()

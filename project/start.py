@@ -69,6 +69,7 @@ try:
     bluetoothSocketConnection: BluetoothSocketConnection = bluetoothConnectionManager.newBluetoothSocketConnection(
         os.getenv('BluetoothServerUUID'), os.getenv('BluetoothServerBluetoothMAC'), True)
 
+    time.sleep(2)
     # Send login request message to server
     bluetoothSocketConnection.sendNewMessage(communicationMessageLogin)
 

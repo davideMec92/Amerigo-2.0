@@ -175,7 +175,7 @@ class RouteManager(Thread):
 
                 # Check if arrived to destination
                 if self.actualPositionDeviceId == self.activeTransaction.goalPeerDeviceId:
-                    print('ARRIVED TO DESTINATION: ' + str(self.activeTransaction.toJson()))
+                    print('ARRIVED TO DESTINATION: ' + str(self.activeTransaction.toDict()))
                     self.activeTransaction.status = TransactionStatus.COMPLETED
 
                     # Update transaction status to COMPLETED

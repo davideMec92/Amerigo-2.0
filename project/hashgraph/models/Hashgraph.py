@@ -444,3 +444,6 @@ class Hashgraph(StoreCallback):
             roundIndex = roundIndex + 1
             round = self.store.getRoundFromRoundCreated(roundIndex)
 
+        # TODO TEST, OPTIMIZATION
+        """if lastDecidedRoundCreatedIndex != -1:
+            self.store.removeRoundsBeforeRoundCreatedIndex(lastDecidedRoundCreatedIndex)"""
