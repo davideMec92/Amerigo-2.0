@@ -1,11 +1,11 @@
 import json
 import os
+from json import JSONDecodeError
 
 from dotenv import load_dotenv
 
 from project.bluetooth_client import BluetoothClient
 from project.hashgraph.helpers.CommunicationMessageDecrypter import CommunicationMessageDecrypter
-from project.hashgraph.interfaces.Callbacks.CommunicationCallback import CommunicationCallback
 from project.hashgraph.models.communication.CommunicationMessageGetPositionDegrees import \
     CommunicationMessageGetPositionDegrees
 from project.hashgraph.validators.communicationMessage.CommunicationMessageSchemaValidator import \
@@ -43,7 +43,14 @@ class PositionsDegreesManager:
         if CommunicationMessageSchemaValidator.validate(decryptedMessage) is False:
             raise Exception('POSITIONS_DEGREES_GET_RESPONSE schema validation error')
 
-        decryptedMessage = json.loads(CommunicationMessageDecrypter.decrypt(message))
+        try:
+            decryptedMessage = json.loads(CommunicationMessageDecrypter.decrypt(message))
+        except JSONDecodeError as e:
+            print('Cannot decode returned message to json')
+            return False
+
+        bluetoothClientSocket.stop()
+
         print('Message from server decrypted: ' + str(decryptedMessage))
 
         bluetoothClientSocket.close()
