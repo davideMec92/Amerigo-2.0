@@ -2,6 +2,7 @@
 
 from threading import Thread
 from map_file_manager import MapFileManager
+from project.hashgraph.enums.TransactionStatus import TransactionStatus
 from project.hashgraph.models.Transaction import Transaction
 from transaction_manager import TransactionManager
 from position_degrees import PositionDegrees
@@ -132,10 +133,10 @@ class RouteManager(Thread):
         #Inizializzazione classe TransactionManager
         self.transactionManager = TransactionManager()
 
-        #Inzializzazione della posizione attuale con quella di partenza al device più vicino
+        # Inzializzazione della posizione attuale con quella di partenza al device più vicino
         self.actualPositionDeviceId = startingSsidPosition
 
-        #Check for a new transaction
+        # Check for a new transaction
         self.getNextActiveTransaction()
 
         print('GOAL DIRECTION: ' + str(self.goal_direction_degrees))
@@ -148,21 +149,38 @@ class RouteManager(Thread):
         print('Asking server for the next active transaction..')
         while self.goal_direction_degrees is None:
 
-            #Asking server for a new transaction and check if last transaction is done
-            if self.activeTransaction is None or self.actualPositionDeviceId == self.activeTransaction.goalPeerDeviceId:
-                time.sleep(0.5)
-                self.activeTransaction = self.transactionManager.getTransaction(None if self.activeTransaction is None else self.activeTransaction.key)
+            # Check if is there an active transaction
+            if self.activeTransaction is None:
 
-            #Check if a new transaction is returned from server
-            if self.activeTransaction is not None:
-                print('self.actualPositionDeviceId: ' + str(self.actualPositionDeviceId))
-                print('self.activeTransaction.goalPeerDeviceId: ' + str(self.activeTransaction.goalPeerDeviceId))
-                self.goal_direction_degrees = PositionDegrees.getDeviceToDegrees(self.actualPositionDeviceId, self.activeTransaction.goalPeerDeviceId)
+                # Check for new transaction
+                self.activeTransaction = self.transactionManager.getTransaction()
 
-            #Ask to server for new version of positions Degrees
-            if self.goal_direction_degrees is None:
-                time.sleep(0.5)
-                self.positionsDegreesManager.getPositionsDegrees()
+                if self.activeTransaction is not None:
+                    self.activeTransaction.status = TransactionStatus.RUNNING
+
+                    # Update transaction status to RUNNING
+                    self.activeTransaction.upsert()
+
+                    print('self.actualPositionDeviceId: ' + str(self.actualPositionDeviceId))
+                    print('self.activeTransaction.goalPeerDeviceId: ' + str(self.activeTransaction.goalPeerDeviceId))
+                    self.goal_direction_degrees = PositionDegrees.getDeviceToDegrees(self.actualPositionDeviceId,
+                                                                                     self.activeTransaction.goalPeerDeviceId)
+
+                    # Ask server for new version of positions Degrees
+                    if self.goal_direction_degrees is None:
+                        time.sleep(0.5)
+                        self.positionsDegreesManager.getPositionsDegrees()
+
+            else:
+
+                # Check if arrived to destination
+                if self.actualPositionDeviceId == self.activeTransaction.goalPeerDeviceId:
+                    print('ARRIVED TO DESTINATION: ' + str(self.activeTransaction.toJson()))
+                    self.activeTransaction.status = TransactionStatus.COMPLETED
+
+                    # Update transaction status to COMPLETED
+                    self.activeTransaction.upsert()
+                    self.activeTransaction = None
 
         self.rotateToDegrees(self.goal_direction_degrees)
 

@@ -58,7 +58,7 @@ class Transaction(TinyDBModel):
     @staticmethod
     def getNextTransaction() -> Transaction | None:
         tinyDBModel = TinyDBModel(Transaction.tinyDBService, Transaction.primaryKey)
-        result = tinyDBModel.db.search(tinyDBModel.modelQuery['status'] == TransactionStatus.READY)
+        result = tinyDBModel.db.search(tinyDBModel.modelQuery['status'] == TransactionStatus.READY.name)
         return None if not result else tinyDBModel.createFromDict(sorted( result, key=lambda d: d['creationTime'])[0])
 
 
